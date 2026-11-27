@@ -1,0 +1,34 @@
+file gtapPARM = default.prm;
+Verbal Description =
+Removal of tariffs with unemployment;
+Method = Gragg;
+Steps = 2 4 6;
+automatic accuracy = no;
+subintervals = 1;
+exogenous
+          pop
+          pcgdswld
+          ams 
+          tms
+          qo(ENDW_COMM,REG) ;
+Rest Endogenous ;
+swap qo("Labor",REG)=pfactreal("Labor",REG);
+ Shock tms(TRAD_COMM,REG,REG) = target% 0 from file tms.shk;
+Subtotal tms(TRAD_COMM,REG,"USA")
+ =   tms(TRAD_COMM,REG,"USA") changes ;
+Subtotal tms(TRAD_COMM,REG,"EU")
+ =   tms(TRAD_COMM,REG,"EU") changes ;
+Subtotal tms(TRAD_COMM,REG,"ROW")
+ =   tms(TRAD_COMM,REG,"ROW") changes ;
+
+!@ contents of CMFStart when this EXP file was last saved
+!@ below is a record only....not read by RunGTAP
+!@ RunGTAP reads from the actual CMFSTART file
+!@ ! If a version has no CMFSTART file of its own
+!@ ! RunGTAP creates one by copying the supplied file CMFSTART.DEF
+!@ CPU = yes;  ! log show simulation times
+!@ NDS = yes;  ! no displays
+!@ Extrapolation accuracy file = NO ; ! No XAC file
+!@ !servants=1; ! use 2 processors at once, if possible
+!@ 
+!@ end of CMFSTART part

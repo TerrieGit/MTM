@@ -1,0 +1,360 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ file with set specification
+GTAPSOL               In     n  HAR
+ file containing all solution variables
+GTAPBASE              In     n  HAR
+ file containing all base data
+GTAPUPDATE            In     n  HAR
+ file containing all updated base data
+WELVIEW               Out    n  HAR
+ file containing welfare decompositions
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+decomp.tab
+#TMDATE
+at 17:00:09 on 25-MAR-2021
+#STIFILE
+C:\runGTAP375\MTM\decomp.STI
+#SETS
+   18
+    1 REG                 -1  u regions in the model
+    2 TRAD_COMM           -1  u traded commodities
+    3 CGDS_COMM           -1  u capital goods commodities
+    4 ENDW_COMM           -1  u endowment commodities
+    5 ENDWC_COMM           1  k capital endowment commodity
+capital     
+    6 PROD_COMM           -1  u produced commodities
+    7 DEMD_COMM           -1  u demanded commodities
+    8 NSAV_COMM           -1  u non-savings commodities
+    9 COLUMN               5  k
+alloc_A1    
+endw_B1     
+tech_C1     
+pop_D1      
+tot_E1      
+   10 TECHTYPE             1  k
+import      
+   11 TYPE                 1  k
+mtax        
+   12 PRICES               3  k
+pworld      
+pexport     
+pimport     
+   13 DIR                  2  k
+imported    
+domestic    
+   14 ACTIVITY             2  k
+firm        
+private     
+   15 COL                  4  k
+welcnt      
+dvol        
+taxrateb    
+taxrateu    
+   16 DIREC                1  k
+import      
+   17 FORM                 2  k
+percent     
+value       
+   18 COLM                 3  k
+ISbal       
+p_cgds      
+p_save      
+#VARIABLES
+         0
+#SUBSETS
+    10
+     1     2     6
+     2     3     6
+     3     4     7
+     4     2     7
+     5     7     8
+     6     3     8
+     7     2     8
+     8     4     8
+     9     6     8
+    10     5     8
+#COEFFICIENTS
+   37
+    1 BEVFM           3 r y n  producer expenditure on i by industry j
+    4    6    1
+    2 BVIFM           3 r y n  purchases of imported i r for use in j in region r
+    2    6    1
+    3 BVDFM           3 r y n  purchases of domestic i r for use in j in region r
+    2    6    1
+    4 BVOM            2 r n n  value of commodity i output in region r
+    8    1
+    5 BVIWS           3 r y n  exports of i from r to s at market prices (tradeables only)
+    2    1    1
+    6 UVIWS           3 r y n  exports of i from r to s at market prices (tradeables only)
+    2    1    1
+    7 BVIMS           3 r y n  imports of i from r to s at domestic market prices
+    2    1    1
+    8 UVIMS           3 r y n  imports of i from r to s at domestic market prices
+    2    1    1
+    9 CNTalleffr      1 r y n  total contribution to regional EV of allocative effects
+    1
+   10 CNTendwr        1 r y n  contribution to regional EV of changes in all ENDW_COMM
+    1
+   11 CNTtechr        1 r y n  contribution to regional EV of all technical change
+    1
+   12 CNTpopr         1 r y n  contribution to regional EV of all technical change
+    1
+   13 CNTtotr         1 r y n  contribution to regional EV of changes in its terms of trade
+    1
+   14 CNTcgdsr        1 r y n  contribution to regional EV of changes in the price of cgds
+    1
+   15 WELFARE         2 r n n  aggregate report of welfare change
+    1    9
+   16 CNTqimisr       3 r y n  contrib. to WEV of changes in imports of i from srce s to dest r
+    2    1    1
+   17 TTAX            4 r n n
+    2    1    1   11
+   18 BIMTAX          3 r n n
+    2    1    1
+   19 UIMTAX          3 r n n
+    2    1    1
+   20 qxs             3 r y n  export sales of commodity i from r to region s
+    2    1    1
+   21 TRADE           5 r n n
+    2    1    1   15   16
+   22 CNTendwir       2 r y n  contribution to regional EV of changes in ENDW_COMM i
+    4    1
+   23 CNTendw         2 r n n  contribution to welfare by ENDW_COMM i in region r
+    1    4
+   24 CNTtech_amsr    1 r y n  contribution to regional EV of import-augmenting technical change
+    1
+   25 CNTtech         2 r n n  contribution to welfare change by tech
+    1   10
+   26 Ctech_amsirs    3 r y n
+    2    1    1
+   27 c1_ir           2 r y n  contribution of world price, px_i, to ToT
+    2    1
+   28 c2_ir           2 r y n  contribution of regional export price, px_ir, to ToT
+    2    1
+   29 c3_ir           2 r y n  contribution of regional import price, pm_ir, to ToT
+    2    1
+   30 TOT             4 r n n  terms trade effects decomposed by effects of different prices
+    2    1   12   17
+   31 BSAVE           1 r y n  expenditure on NET savings in region r at agents prices
+    1
+   32 BVDEP           1 r y n  value of capital depeciation in r (exogenous)
+    1
+   33 NETINV          1 r n n  regional net investment in region r
+    1
+   34 ISBAL           1 r n n  I-S balance, NETINV(r) - SAVE(r)
+    1
+   35 pcgds           1 r y n  price of investment goods = ps("cgds",r)
+    1
+   36 psave           1 r y n  price of savings in region r
+    1
+   37 CGDSCOMP        2 r n n  components of cgds effect
+    1   18
+#EQUATIONS
+    0
+#READS
+   25
+    1     1 BEVFM             3 GTAPBASE             EVFM a h     3
+     4     6     1
+    2     2 BVIFM             3 GTAPBASE             VIFM a h     3
+     2     6     1
+    3     3 BVDFM             3 GTAPBASE             VDFM a h     3
+     2     6     1
+    4     5 BVIWS             3 GTAPBASE             VIWS a h     3
+     2     1     1
+    5     6 UVIWS             4 GTAPUPDATE           VIWS a h     3
+     2     1     1
+    6     7 BVIMS             3 GTAPBASE             VIMS a h     3
+     2     1     1
+    7     8 UVIMS             4 GTAPUPDATE           VIMS a h     3
+     2     1     1
+    8     9 CNTalleffr        2 GTAPSOL              ALLR a h     1
+     1
+    9    10 CNTendwr          2 GTAPSOL              ENDR a h     1
+     1
+   10    11 CNTtechr          2 GTAPSOL              TECR a h     1
+     1
+   11    12 CNTpopr           2 GTAPSOL              POPR a h     1
+     1
+   12    13 CNTtotr           2 GTAPSOL              TOTR a h     1
+     1
+   13    14 CNTcgdsr          2 GTAPSOL              CGDS a h     1
+     1
+   14    16 CNTqimisr         2 GTAPSOL              QIMS a h     3
+     2     1     1
+   15    20 qxs               2 GTAPSOL              qxs  a h     3
+     2     1     1
+   16    22 CNTendwir         2 GTAPSOL              ENDI a h     2
+     4     1
+   17    24 CNTtech_amsr      2 GTAPSOL              AMSR a h     1
+     1
+   18    26 Ctech_amsirs      2 GTAPSOL              AMIR a h     3
+     2     1     1
+   19    27 c1_ir             2 GTAPSOL              C1IR a h     2
+     2     1
+   20    28 c2_ir             2 GTAPSOL              C2IR a h     2
+     2     1
+   21    29 c3_ir             2 GTAPSOL              C3IR a h     2
+     2     1
+   22    31 BSAVE             3 GTAPBASE             SAVE a h     1
+     1
+   23    32 BVDEP             3 GTAPBASE             VDEP a h     1
+     1
+   24    35 pcgds             2 GTAPSOL              pcgd a h     1
+     1
+   25    36 psave             2 GTAPSOL              psav a h     1
+     1
+#READ(EXTRA)
+    4
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ TRAD_COMM    GTAPSETS             H2  
+    3 el
+ CGDS_COMM    GTAPSETS             H9  
+    4 el
+ ENDW_COMM    GTAPSETS             H6  
+#NCVARIABLES
+    0
+#STATEMENTS
+      69   1 fl                                                 70  45    0 n
+      71   1 fl                                                 72  55    0 n
+      73   1 fl                                                 74  47    0 n
+      75   1 fl                                                 76  57    0 n
+      77   1 fl                                                 78  55    0 n
+      87   1 st REG                                             89  65    0 n
+      90   1 st TRAD_COMM                                       92  65    0 n
+      93   1 st CGDS_COMM                                       95  64    0 n
+      96   1 st ENDW_COMM                                       98  64    0 n
+      99   1 st ENDWC_COMM                                     100  57    0 n
+     101   1 st PROD_COMM                                      102  67    0 n
+     101   1 ss                                                102  67    0 n
+     101   1 ss                                                102  67    0 n
+     103   1 st DEMD_COMM                                      104  67    0 n
+     103   1 ss                                                104  67    0 n
+     103   1 ss                                                104  67    0 n
+     105   1 st NSAV_COMM                                      106  70    0 n
+     105   1 ss                                                106  70    0 n
+     105   1 ss                                                106  70    0 n
+     105   1 ss                                                106  70    0 n
+     105   1 ss                                                106  70    0 n
+     107   1 ss                                                108  37    0 n
+     109   1 ss                                                110  38    0 n
+     118   1 st COLUMN                                         119  51    0 n
+     120   1 st TECHTYPE                                       121  21    0 n
+     122   1 st TYPE                                           123  15    0 n
+     124   1 st PRICES                                         125  35    0 n
+     126   1 st DIR                                            127  27    0 n
+     128   1 st ACTIVITY                                       129  28    0 n
+     130   1 st COL                                            131  42    0 n
+     132   1 st DIREC                                          133  18    0 n
+     134   1 st FORM                                           135  24    0 n
+     136   1 st COLM                                           137  30    0 n
+     147   1 cs BEVFM                                          148  61    0 n
+     149   1 rd BEVFM                a                         150  43    0 n
+     151   1 cs BVIFM                                          152  72    0 n
+     153   1 rd BVIFM                a                         154  43    0 n
+     155   1 cs BVDFM                                          156  72    0 n
+     157   1 rd BVDFM                a                         158  43    0 n
+     160   1 cs BVOM                                           161  58    0 n
+     162   1 fm                                                163  48    0 n
+     164   1 fm                                                167  56    0 n
+     169   1 cs BVIWS                                          171  68    0 n
+     172   1 rd BVIWS                a                         173  43    0 n
+     174   1 cs UVIWS                                          176  68    0 n
+     177   1 rd UVIWS                a                         178  45    0 n
+     180   1 cs BVIMS                                          181  72    0 n
+     182   1 rd BVIMS                a                         183  43    0 n
+     185   1 cs UVIMS                                          186  72    0 n
+     187   1 rd UVIMS                a                         188  45    0 n
+     214   1 cs CNTalleffr                                     216  64    0 n
+     217   1 rd CNTalleffr           a                         218  47    0 n
+     220   1 cs CNTendwr                                       222  64    0 n
+     223   1 rd CNTendwr             a                         224  45    0 n
+     226   1 cs CNTtechr                                       228  60    0 n
+     229   1 rd CNTtechr             a                         230  45    0 n
+     232   1 cs CNTpopr                                        234  60    0 n
+     235   1 rd CNTpopr              a                         236  44    0 n
+     238   1 cs CNTtotr                                        240  69    0 n
+     241   1 rd CNTtotr              a                         242  44    0 n
+     244   1 cs CNTcgdsr                                       246  68    0 n
+     247   1 rd CNTcgdsr             a                         248  45    0 n
+     250   1 cs WELFARE                                        251  56    0 n
+     252   1 fm                                                253  42    0 n
+     254   1 fm                                                255  39    0 n
+     256   1 fm                                                257  39    0 n
+     258   1 fm                                                259  37    0 n
+     260   1 fm                                                261  51    0 n
+     263   1 wr WELFARE              a                         265  41    0 n
+     284   1 cs CNTqimisr                                      286  73    0 n
+     287   1 rd CNTqimisr            a                         288  46    0 n
+     290   1 cs TTAX                                           291  18    0 n
+     292   1 fm                                                293  37    0 n
+     295   1 cs BIMTAX                                         296  18    0 n
+     297   1 fm                                                298  71    0 n
+     300   1 cs UIMTAX                                         301  18    0 n
+     302   1 fm                                                303  71    0 n
+     305   1 cs qxs                                            306  66    0 n
+     307   1 rd qxs                  a                         308  39    0 n
+     310   1 cs TRADE                                          311  21    0 n
+     312   1 fm                                                313  56    0 n
+     314   1 fm                                                315  67    0 n
+     316   1 fm                                                317  53    0 n
+     318   1 fm                                                319  53    0 n
+     321   1 wr TRADE                a                         323  53    0 n
+     332   1 cs CNTendwir                                      333  77    0 n
+     334   1 rd CNTendwir            a                         335  46    0 n
+     337   1 cs CNTendw                                        338  72    0 n
+     339   1 fm                                                340  34    0 n
+     341   1 wr CNTendw              a                         343  55    0 n
+     356   1 cs CNTtech_amsr                                   358  74    0 n
+     359   1 rd CNTtech_amsr         a                         360  49    0 n
+     362   1 cs CNTtech                                        363  60    0 n
+     364   1 fm                                                365  35    0 n
+     367   1 wr CNTtech              a                         369  48    0 n
+     377   1 cs Ctech_amsirs                                   378  24    0 n
+     379   1 rd Ctech_amsirs         a                         380  49    0 n
+     381   1 wr Ctech_amsirs         a                         383  64    0 n
+     391   1 cs c1_ir                                          392  61    0 n
+     393   1 rd c1_ir                a                         394  42    0 n
+     396   1 cs c2_ir                                          397  72    0 n
+     398   1 rd c2_ir                a                         399  42    0 n
+     401   1 cs c3_ir                                          402  72    0 n
+     403   1 rd c3_ir                a                         404  42    0 n
+     406   1 cs TOT                                            408  70    0 n
+     409   1 fm                                                410  45    0 n
+     411   1 fm                                                412  46    0 n
+     413   1 fm                                                414  47    0 n
+     415   1 fm                                                418  64    0 n
+     419   1 fm                                                422  64    0 n
+     423   1 fm                                                426  64    0 n
+     428   1 wr TOT                  a                         430  37    0 n
+     439   1 cs BSAVE                                          440  74    0 n
+     441   1 rd BSAVE                a                         442  43    0 n
+     444   1 cs BVDEP                                          445  63    0 n
+     446   1 rd BVDEP                a                         447  43    0 n
+     449   1 cs NETINV                                         450  54    0 n
+     451   1 fm                                                452  55    0 n
+     454   1 cs ISBAL                                          455  50    0 n
+     456   1 fm                                                457  36    0 n
+     459   1 cs pcgds                                          460  58    0 n
+     461   1 rd pcgds                a                         462  42    0 n
+     464   1 cs psave                                          465  46    0 n
+     466   1 rd psave                a                         467  42    0 n
+     469   1 cs CGDSCOMP                                       470  48    0 n
+     471   1 fm                                                472  35    0 n
+     473   1 fm                                                474  36    0 n
+     475   1 fm                                                476  36    0 n
+     477   1 wr CGDSCOMP             a                         479  47    0 n
+     477   1 en CGDSCOMP             a                         479  47    0 n
+#GPVER
+  121004
+#PRVER
+    7000
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn

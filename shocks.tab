@@ -1,0 +1,97 @@
+!_______________________________SHOCKS.TAB FILE ______________________________!
+!                                                                             !
+!                           Shocks file for GTAPMini                          !
+!_____________________________________________________________________________!
+!-----------------------------------------------------------------------------!
+! HISTORY of SHOCKS.TAB                                                       !
+!-----------------------------------------------------------------------------!
+! Version 1    July 1994   (Used in GTAP Short Course, July-August 1994)
+  Version 2    Nov. 1995   (Augments endowments to accommodate v.4 data.
+			    Display file is also eliminated, since this
+                            information can be accessed via GTAPVIEW)    
+               Feb, 2006    removed "max size" keywords,
+                            turned comments into # ... # text  
+  Version 3    October 2019 revised for mini GTAP!
+
+!-----------------------------------------------------------------------------!
+! This file reads in any of the GTAP data sets and associated set
+  specifications and computes the shocks needed to remove existing policies.
+  These shocks are written to text files which may then be edited in order to
+  achieve partial liberalization. Or, make your own version of this 
+  program to compute your special shocks !
+!-----------------------------------------------------------------------------!
+
+File GTAPSETS # File with set specification #;
+
+Set
+ REG # Regions # read elements from file GTAPSETS header "H1";
+ TRAD_COMM # Traded commodities # read elements from file GTAPSETS header "H2";
+ ENDW_COMM # Endowment commodities #
+   read elements from file GTAPSETS header "H6";
+ CGDS_COMM # Capital goods commodities #
+   read elements from file GTAPSETS header "H9";
+ ENDWC_COMM # Capital Endowment Commodity # (capital);
+ PROD_COMM # Produced commodities # = TRAD_COMM union CGDS_COMM;
+ DEMD_COMM # Demanded commodities # = ENDW_COMM union TRAD_COMM;
+ NSAV_COMM # Non-savings commodities # = DEMD_COMM union CGDS_COMM;
+Subset
+ PROD_COMM is subset of NSAV_COMM;
+ ENDWC_COMM is subset of NSAV_COMM;
+
+!-----------------------------------------------------------------------------!
+! FILES                                                                       !
+!-----------------------------------------------------------------------------!
+
+File GTAPDATA # The file containing all base data. #;
+
+!-----------------------------------------------------------------------------!
+!              base revenues and expenditures at agent's prices               !
+!-----------------------------------------------------------------------------!
+
+Coefficient
+ (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)             VIMS(i,r,s)
+     # Imports of commodity i from r to s, valued at domestic market prices #;
+
+ (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)             VIWS(i,r,s)
+     # Imports of commodity i from r to s, valued cif (tradeables only)  #;
+
+!-----------------------------------------------------------------------------!
+!                   Reading basedata.                                         !
+!-----------------------------------------------------------------------------!
+
+Read
+ VIMS from file GTAPDATA header "VIMS";
+ VIWS from file GTAPDATA header "VIWS";
+
+!-----------------------------------------------------------------------------!
+!                   DERIVATIVES OF THE BASE DATA                              !
+!-----------------------------------------------------------------------------!
+
+Zerodivide default 1;
+
+Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TMS_L(i,r,s)
+ # benchmark power: tax on imports of i from r into s #;
+Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+     TMS_L(i,r,s) = VIMS(i,r,s)/VIWS(i,r,s);
+Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TMS_HAT(i,r,s)
+ # shock to remove tax on imports of i from r into s #;
+Formula  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+     TMS_HAT(i,r,s) = 100*[1-TMS_L(i,r,s)] / TMS_L(i,r,s);
+
+File (new,text) TOHAT  # The file with shocks to obtain TO = 1  #;
+File (new,text) TFHAT  # The file with shocks to obtain TF = 1  #;
+File (new,text) TPIHAT # The file with shocks to obtain TPI = 1 #;
+File (new,text) TPDHAT # The file with shocks to obtain TPD = 1 #;
+File (new,text) TGIHAT # The file with shocks to obtain TGI = 1 #;
+File (new,text) TGDHAT # The file with shocks to obtain TGD = 1 #;
+File (new,text) TFIHAT # The file with shocks to obtain TFI = 1 #;
+File (new,text) TFDHAT # The file with shocks to obtain TFD = 1 #;
+File (new,text) TXSHAT # The file with shocks to obtain TXS = 1 #;
+File (new,text) TMSHAT # The file with shocks to obtain TMS = 1 #;
+! nb, RunGTAP requires the logical file names above !  
+
+Write TMS_HAT to file TMSHAT;
+
+!_____________________________________________________________________________!
+!                                                                             !
+!_______________________End of TABLO File SHOCKS.TAB__________________________!

@@ -1,0 +1,135 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ File with set specification
+GTAPDATA              In     n  HAR
+ The file containing all base data.
+TOHAT                 Out    n  TXT
+ The file with shocks to obtain TO = 1
+TFHAT                 Out    n  TXT
+ The file with shocks to obtain TF = 1
+TPIHAT                Out    n  TXT
+ The file with shocks to obtain TPI = 1
+TPDHAT                Out    n  TXT
+ The file with shocks to obtain TPD = 1
+TGIHAT                Out    n  TXT
+ The file with shocks to obtain TGI = 1
+TGDHAT                Out    n  TXT
+ The file with shocks to obtain TGD = 1
+TFIHAT                Out    n  TXT
+ The file with shocks to obtain TFI = 1
+TFDHAT                Out    n  TXT
+ The file with shocks to obtain TFD = 1
+TXSHAT                Out    n  TXT
+ The file with shocks to obtain TXS = 1
+TMSHAT                Out    n  TXT
+ The file with shocks to obtain TMS = 1
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+shocks.tab
+#TMDATE
+at 22:06:54 on 17-OCT-2019
+#STIFILE
+TABmate.sif
+#SETS
+    8
+    1 REG             -1  u Regions
+    2 TRAD_COMM       -1  u Traded commodities
+    3 ENDW_COMM       -1  u Endowment commodities
+    4 CGDS_COMM       -1  u Capital goods commodities
+    5 ENDWC_COMM       1  k Capital Endowment Commodity
+capital     
+    6 PROD_COMM       -1  u Produced commodities
+    7 DEMD_COMM       -1  u Demanded commodities
+    8 NSAV_COMM       -1  u Non-savings commodities
+#VARIABLES
+         0
+#SUBSETS
+     8
+     1     2     6
+     2     4     6
+     3     3     7
+     4     2     7
+     5     7     8
+     6     4     8
+     7     6     8
+     8     5     8
+#COEFFICIENTS
+    4
+    1 VIMS            3 r y n  Imports of commodity i from r to s, valued at domestic market prices
+    2    1    1
+    2 VIWS            3 r y n  Imports of commodity i from r to s, valued cif (tradeables only)
+    2    1    1
+    3 TMS_L           3 r n n  benchmark power: tax on imports of i from r into s
+    2    1    1
+    4 TMS_HAT         3 r n n  shock to remove tax on imports of i from r into s
+    2    1    1
+#EQUATIONS
+    0
+#READS
+    2
+    1     1 VIMS              2 GTAPDATA             VIMS a h     3
+     2     1     1
+    2     2 VIWS              2 GTAPDATA             VIWS a h     3
+     2     1     1
+#READ(EXTRA)
+    4
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ TRAD_COMM    GTAPSETS             H2  
+    3 el
+ ENDW_COMM    GTAPSETS             H6  
+    4 el
+ CGDS_COMM    GTAPSETS             H9  
+#NCVARIABLES
+    0
+#STATEMENTS
+      24   1 fl                                                 24  46    0 n
+      26   1 st REG                                             27  62    0 n
+      28   2 st TRAD_COMM                                       28  79    0 n
+      29   2 st ENDW_COMM                                       30  48    0 n
+      31   2 st CGDS_COMM                                       32  48    0 n
+      33   2 st ENDWC_COMM                                      33  54    0 n
+      34   2 st PROD_COMM                                       34  64    0 n
+      34   2 ss                                                 34  64    0 n
+      34   2 ss                                                 34  64    0 n
+      35   2 st DEMD_COMM                                       35  64    0 n
+      35   2 ss                                                 35  64    0 n
+      35   2 ss                                                 35  64    0 n
+      36   2 st NSAV_COMM                                       36  67    0 n
+      36   2 ss                                                 36  67    0 n
+      36   2 ss                                                 36  67    0 n
+      37   1 ss                                                 38  34    0 n
+      39   2 ss                                                 39  35    0 n
+      45   1 fl                                                 45  53    0 n
+      51   1 cs VIMS                                            53  78    0 n
+      55   2 cs VIWS                                            56  75    0 n
+      62   1 rd VIMS                 a                          63  39    0 n
+      64   2 rd VIWS                 a                          64  39    0 n
+      70   1 zd                                                 70  21    0 n
+      72   1 cs TMS_L                                           73  56    0 n
+      74   1 fm                                                 75  44    0 n
+      76   1 cs TMS_HAT                                         77  55    0 n
+      78   1 fm                                                 79  58    0 n
+      81   1 fl                                                 81  66    0 n
+      82   1 fl                                                 82  66    0 n
+      83   1 fl                                                 83  66    0 n
+      84   1 fl                                                 84  66    0 n
+      85   1 fl                                                 85  66    0 n
+      86   1 fl                                                 86  66    0 n
+      87   1 fl                                                 87  66    0 n
+      88   1 fl                                                 88  66    0 n
+      89   1 fl                                                 89  66    0 n
+      90   1 fl                                                 90  66    0 n
+      93   1 wr TMS_HAT              a                          93  29    0 n
+      93   1 en TMS_HAT              a                          93  29    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnn

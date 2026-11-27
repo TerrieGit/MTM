@@ -1,0 +1,221 @@
+#TMDATE
+at 17:30:41 on 27-NOV-2026              
+#AVAIL
+y n y     0
+#LEV4
+#NSOL
+    1    0    0    3
+#VBDSC
+    3
+Numeraire shock                                                                
+[Solution method is euler. Steps = 1.]                                         
+[CMF file: gtapmini.cmf]                                                       
+#SETS
+    8
+    1 REG              3  k regions in the model
+USA         
+EU          
+ROW         
+    2 TRAD_COMM        3  k traded commodities
+Agriculture 
+Manufactures
+Services    
+    3 CGDS_COMM        1  k capital goods commodities
+CGDS        
+    4 ENDW_COMM        3  k endowment commodities
+Land        
+Labor       
+Capital     
+    5 PROD_COMM        4  k produced commodities
+Agriculture 
+Manufactures
+Services    
+CGDS        
+    6 DEMD_COMM        6  k demanded commodities
+Land        
+Labor       
+Capital     
+Agriculture 
+Manufactures
+Services    
+    7 NSAV_COMM        7  k non-savings commodities
+Land        
+Labor       
+Capital     
+Agriculture 
+Manufactures
+Services    
+CGDS        
+    8 ENDWC_COMM       1  k capital endowment commodity
+capital     
+#VARIABLES
+        75
+    1 pm                      21     2 N market price of commodity i in region r
+    7    1
+    2 qpd                      9     2 N private hhld demand for domestic i in region s
+    2    1
+    3 pim                      9     2 N market price of composite import i in region r
+    2    1
+    4 qpm                      9     2 N private hhld demand for imports of i in region s
+    2    1
+    5 qfe                     36     3 N demand for endowment e for use in ind. j in region r
+    4    5    1
+    6 qfd                     36     3 N domestic good i demanded by industry j in region r
+    2    5    1
+    7 qfm                     36     3 N demand for i by industry j in region r
+    2    5    1
+    8 tms                     27     3 X source-spec. change in tax on imports of i from r into s
+    2    1    1
+    9 ams                     27     3 X import i from region r augmenting tech change in region s
+    2    1    1
+   10 pms                     27     3 N dom. price for good i from r to region s (incl imp duties)
+    2    1    1
+   11 qxs                     27     3 N export sales of commodity i from r to region s
+    2    1    1
+   12 pcif                    27     3 N FOB and CIF world price of commodity i supplied from r to s
+    2    1    1
+   13 qo                      21     2 x ind. output (TRAD_COMM) and factor (ENDW_COMM) i in region r
+    7    1
+        9
+        1        3
+        8       10
+       15       17
+        0        0
+   14 psave                    3     1 N price of savings in region r
+    1
+   15 qsave                    3     1 N regional demand for NET savings
+    1
+   16 pcgds                    3     1 N price of investment goods = ps("cgds",r)
+    1
+   17 qcgds                    3     1 N output of capital goods sector = qo("cgds",r)
+    1
+   18 kb                       3     1 N beginning-of-period capital stock in r
+    1
+   19 pop                      3     1 X regional population - exogenous
+    1
+   20 y                        3     1 N regional household income in region r
+    1
+   21 yp                       3     1 N regional private consumption expenditure in region r
+    1
+   22 ppriv                    3     1 N price index for private consumption expenditure in region r
+    1
+   23 pp                       9     2 N private consumption price for commodity i in region r
+    2    1
+   24 up                       3     1 N per capita utility from private expend. in region r
+    1
+   25 qp                       9     2 N private hhld demand for commodity i in region r
+    2    1
+   26 pf                      36     3 N firms price for commodity i for use by j in r
+    2    5    1
+   27 qf                      36     3 N demand for commodity i for use by j in region r
+    2    5    1
+   28 pva                      9     2 N firms price of value added in industry j of region r
+    2    1
+   29 qva                      9     2 N value added in industry j of region r
+    2    1
+   30 qim                      9     2 N aggregate imports of i in region s, market price weights
+    2    1
+   31 qds                      9     2 N domestic sales of commodity i in r
+    2    1
+   32 pcgdswld                 1     0 X world average price of capital goods (net investment weights)
+   33 globalcgds               1     0 N global supply of capital goods for NET investment
+   34 walras_dem               1     0 N demand in the omitted market--global demand for savings
+   35 walras_sup               1     0 N supply in omitted market--global supply of cgds composite
+   36 walraslack               1     0 N slack variable in the omitted market
+   37 pfactreal                9     2 N ratio of return to primary factor i to CPI in r
+    4    1
+   38 psw                      3     1 N index of prices received for tradeables produced in r
+    1
+   39 pdw                      3     1 N index of prices paid for tradeables used in region r
+    1
+   40 tot                      3     1 N terms of trade for region r: tot(r) = psw(r) - pdw(r)
+    1
+   41 qgdp                     3     1 N GDP quantity index
+    1
+   42 qxw                      9     2 N aggregate exports of i from region r, FOB weights
+    2    1
+   43 qxwreg                   3     1 N volume of merchandise exports, by region
+    1
+   44 qiw                      9     2 N aggregate imports of i into region s, CIF weights
+    2    1
+   45 qiwreg                   3     1 N volume of merchandise imports, by region
+    1
+   46 DTBAL                    3     1 N change in trade balance X - M, $ US million
+    1
+   47 ke                       3     1 N end-of-period capital stock in r
+    1
+   48 expand                   3     2 N change in investment levels relative to endowment stock
+    8    1
+   49 DTBALR                   3     1 N change in ratio of trade balance to regional income
+    1
+   50 p                        3     1 N price index for disposition of income by regional household
+    1
+   51 u                        3     1 N per capita utility from aggregate hhld expend. in region r
+    1
+   52 yev                      3     1 N regional household income in region r, for EV calc.
+    1
+   53 EV                       3     1 N equivalent variation, $ US million
+    1
+   54 WEV                      1     0 N equivalent variation for the world
+   55 EV_ALT                   3     1 N regional EV computed in alternative way
+    1
+   56 WEV_ALT                  1     0 N expression for WEV computed in alternative way
+   57 CNTpopr                  3     1 N contribution to EV in region r of change in population
+    1
+   58 CNTalleffr               3     1 N total contribution to regional EV of allocative effects
+    1
+   59 CNTalleffir              9     2 N total contribution to regional EV of allocative effects
+    2    1
+   60 CNTqimisr               27     3 N cont. to EV of changes in imports of i from SRCE s to DEST r
+    2    1    1
+   61 pxwwld                   1     0 N price index of world trade
+   62 CNTtotr                  3     1 N contribution to regional EV of changes in its terms of trade
+    1
+   63 CNTcgdsr                 3     1 N contribution to regional EV of changes in the price of cgds
+    1
+   64 CNTendwr                 3     1 N contribution to regional EV of changes in all ENDW_COMM
+    1
+   65 CNTendwir                9     2 N contribution to regional EV of changes in ENDW_COMM i
+    4    1
+   66 CNTtechr                 3     1 N contribution to regional EV of all technical change
+    1
+   67 CNTtech_amsr             3     1 N cont. to EV of bilateral import-augmenting tech change
+    1
+   68 CNTtech_amsirs          27     3 N cont. to EV of bilateral import augmenting tech change for TRAD_COMM i
+    2    1    1
+   69 px_ir                    9     2 N export price index for good i and region r
+    2    1
+   70 pm_ir                    9     2 N imports price index for good i and region r
+    2    1
+   71 px_i                     3     1 N world export price index for commodity i
+    2
+   72 px_                      1     0 N world export price index for all commodities
+   73 c1_ir                    9     2 N contribution of world price, px_i, to ToT
+    2    1
+   74 c2_ir                    9     2 N contribution of regional export price, px_ir, to ToT
+    2    1
+   75 c3_ir                    9     2 N contribution of regional import price, pm_ir, to ToT
+    2    1
+#VCSTAT
+cccbcbbccbcbcccccccccccccbbbbccccccccccc
+cccccccccccccccccbcccbcccccbccccccc
+#VCTP
+pppppppppppppppppppppppppppppppppppppppp
+pppppcppcpppccccccccpcccccccppppppp
+#SUBSETS
+    12
+     1     2     5
+     2     3     5
+     3     4     6
+     4     2     6
+     5     6     7
+     6     3     7
+     7     2     7
+     8     4     7
+     9     5     7
+    10     8     4
+    11     8     6
+    12     8     7
+#TMDATEAXT
+at 13:59:48 on 19-AUG-2025              
+#NCVARIABLES

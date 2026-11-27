@@ -1,0 +1,1147 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 7.0   August 2018>                                    
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2018:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+
+ ! This file was created at 17:32:24 on 27-NOV-2026 by the program
+ !  <TABLO  Version 7.0   August 2018>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 12.1.004   January 2020>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Single-user Source-code Licence for GEMPACK on a PC  !               
+ !    !                 Licence No.  GFS-1744                 !               
+ !    !          Licence for Release 12.1 of GEMPACK          !               
+ !    !                  Terrie L. Walmsley                   !               
+ !    !             Named User-Terrie L. Walmsley             !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                  --> L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION            L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+
+
+ ==================================================
+ ++> TABLO Input file is 'ECON550.tab'
+ ++> This Information file is 'ECON550'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !<
+      2       =============================
+      3       GTAPMini
+      4       The GTAP Modeling Framework
+      5       ECON550.TAB FILE
+      6       =============================
+      7    
+      8       Adapted to GTAPmini by Terrie Walmsley
+      9    
+     10       --------------------
+     11       History of this file
+     12       --------------------
+     13       July 2025: Needed a tab file that created an IO table and calculated trade
+     14                  intensity indexes for GTAPmini model data
+     15    
+     16       --------------------------------------
+     17       Overview of the GTAPVIEW.TAB structure
+     18       --------------------------------------
+     19       FILE declaration
+     20       SET declaration
+     21       READ statements of Base Data
+     22       Derivatives of the Base Data
+     23       Write statements of the Derivatives
+     24    
+     25   >!
+     26    
+     27   !<
+     28       -----
+     29       FILES
+     30       -----
+     31   >!
+     32    
+     33   File
+     34       GTAPDATA # File containing all base data #;
+     35   File
+     36       GTAPSETS # File with set specification #;
+     37   File
+     38       GTAPPARM # File containing behavioral prameters #;
+     39      ! above not actually used, but must leave in !
+     40    
+     41   !<
+     42       ----
+     43       SETS
+     44       ----
+     45   >!
+     46    
+     47   Set
+     48       REG # Regions in the model #
+     49       maximum size 10 read elements from file GTAPSETS header "H1";
+     50   Set
+     51       TRAD_COMM # Traded commodities #
+     52       maximum size 10 read elements from file GTAPSETS header "H2";
+     53   Set
+     54       CGDS_COMM # Capital goods commodities #
+     55       maximum size 1  read elements from file GTAPSETS header "H9";
+     56   Set
+     57       ENDW_COMM # Endowment commodities #
+     58       maximum size 5  read elements from file GTAPSETS header "H6";
+     59   Set
+     60       ENDWC_COMM # Capital Endowment Commodity # (capital);
+     61   Set
+     62       PROD_COMM # PRODUCED COMMODITIES  # = TRAD_COMM union CGDS_COMM;
+     63   Set
+     64       DEMD_COMM # DEMANDED COMMODITIES # = ENDW_COMM union TRAD_COMM;
+     65   Set
+     66       NSAV_COMM # NON-SAVINGS COMMODITIES # = DEMD_COMM union CGDS_COMM;
+     67   Subset
+     68       PROD_COMM is subset of NSAV_COMM;
+     69   Subset
+     70       ENDWC_COMM is subset of NSAV_COMM;
+     71    
+     72   !<
+     73       ----------------------------
+     74       READ statements of Base Data
+     75       ----------------------------
+     76    
+     77       base revenues and expenditures at agent's prices
+     78       ------------------------------------------------
+     79   >!
+     80    
+     81   Coefficient (all,r,REG)
+     82       SAVE(r) # Expenditure on NET savings in region r valued at agent's prices #;
+     83   Read
+     84       SAVE from file GTAPDATA header "SAVE";
+     85    
+     86   Coefficient (all, r, REG)
+     87       VDEP(r) # Value of capital depreciation in r (exogenous) #;
+     88   Read
+     89       VDEP from file GTAPDATA header "VDEP";
+     90    
+     91   !<
+     92       base revenues and expenditures at prices
+     93       ----------------------------------------
+     94   >!
+     95    
+     96   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+     97       EVFM(i,j,r) # Producer expenditure on i by j in r at market prices #;
+     98   Read
+     99       EVFM from file GTAPDATA header "EVFM";
+    100    
+    101   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    102       VIFM(i,j,r) # Purchases of imports i for use in j in region r #;
+    103   Read
+    104       VIFM from file GTAPDATA header "VIFM";
+    105    
+    106   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    107       VDFM(i,j,r) # Purchases of domestic i r for use in j in region r #;
+    108   Read
+    109       VDFM from file GTAPDATA header "VDFM";
+    110    
+    111   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    112       VIPM(i,r) # Private household expenditure on i in r #;
+    113   Read
+    114       VIPM from file GTAPDATA header "VIPM";
+    115    
+    116   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    117       VDPM(i,r) # Private household expenditure on domestic i in r #;
+    118   Read
+    119       VDPM from file GTAPDATA header "VDPM";
+    120    
+    121   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    122       VIMS(i,r,s) # Imports of i from r to s valued at domestic mkt prices #;
+    123   Read
+    124       VIMS from file GTAPDATA header "VIMS";
+    125    
+    126   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    127       VIWS(i,r,s) # Imports of i from r to s valued cif (tradeables only) #;
+    128   Read
+    129       VIWS from file GTAPDATA header "VIWS";
+    130    
+    131   !<
+    132       ----------------------------
+    133       DERIVATIVES OF THE BASE DATA
+    134       ----------------------------
+    135    
+    136       1. Macro variables ( Reg )
+    137       --------------------------
+    138           GDPEXP
+    139           GDPSRC
+    140           CAPITALACCT
+    141           CURRENTACCT
+    142    
+    143   >!
+    144    
+    145   Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    146       VFM(i,j,r) # Firm's expenditure on i by industry j #;
+    147   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    148       VFM(i,j,r) = EVFM(i,j,r);
+    149   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    150       VFM(i,j,s) = VDFM(i,j,s) + VIFM(i,j,s);
+    151   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    152       VOM(i,r) # Value of commodity i output in region r #;
+    153   Formula (all,i,ENDW_COMM)(all,r,REG)
+    154       VOM(i,r) = sum(j, PROD_COMM, VFM(i,j,r));
+    155   Formula (all,i,PROD_COMM)(all,r,REG)
+    156       VOM(i,r) = sum{j,DEMD_COMM, VFM(j,i,r)};
+    157    
+    158   Coefficient (all,r,REG)
+    159       VEXPORTS(r)
+    160       # Value of merchandise and services sales to the world market from r #;
+    161   Formula (all,r,REG)
+    162       VEXPORTS(r)
+    163           = sum{i,TRAD_COMM, sum{s,REG, VIWS(i,r,s)}};
+    164    
+    165   Coefficient (all,s,REG)
+    166       VIMPORTS(s)
+    167       # Value of merchandise and services purchases from world market by s #;
+    168   Formula (all,s,REG)
+    169       VIMPORTS(s) = sum{i,TRAD_COMM, sum{r,REG, VIWS(i,r,s)}};
+    170    
+    171   Coefficient  (all,r,REG)(all,k,GDPEXPEND)
+                                         ?
+ %% Semantic problem.
+ Unknown set.
+    
+    172       GDPEXP(r,k) # Composition of GDP from the expenditure side #;
+    173   Formula  (all,r,REG)
+    174       GDPEXP(r,"cons") = PRIVEXP(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+
+ [   174]     GDPEXP(r,"cons") = PRIVEXP(r);
+                                 ?
+ %% Semantic problem.
+ Unknown Coefficient, Variable or Mapping.
+    
+    175   Formula  (all,r,REG)
+    176       GDPEXP(r,"inv") = REGINV(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+
+ [   176]     GDPEXP(r,"inv") = REGINV(r);
+                                ?
+ %% Semantic problem.
+ Unknown Coefficient, Variable or Mapping.
+    
+    177   Formula  (all,r,REG)
+    178       GDPEXP(r,"exp") = VEXPORTS(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    179   Formula  (all,r,REG)
+    180       GDPEXP(r,"imp") = - VIMPORTS(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    181    
+    182   Set GDPSOURCE(fact,tax,depr);
+    183    
+    184   Coefficient (all,r,REG)
+    185       NETFACTINC(r) # Factor income, net of depreciation #;
+    186   Formula (all,r,REG)
+    187       NETFACTINC(r) = sum{i,ENDW_COMM, VOM(i,r)} - VDEP(r);
+    188    
+    189   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    190       VDM(i,r) # Domestic sales of i in r at market prices (tradeables only) #;
+    191   Formula (all,i,TRAD_COMM)(all,r,REG)
+    192       VDM(i,r) = VDPM(i,r) + sum{j,PROD_COMM, VDFM(i,j,r)};
+    193    
+    194   Coefficient (all,r,REG)
+    195       NETAXES(r) # Net tax revenues in r #;
+    196   Formula (all,r,REG)
+    197       NETAXES(r)
+    198           = sum{i,TRAD_COMM, sum{s,REG, VIMS(i,s,r) - VIWS(i,s,r)}};
+    199    
+    200   Coefficient (all,r,REG)(all,k,GDPSOURCE)
+    201       GDPSRC(r,k) # Composition of GDP from the sources side #;
+    202   Formula (all,r,REG)
+    203       GDPSRC(r,"fact") = NETFACTINC(r);
+    204   Formula (all,r,REG)
+    205       GDPSRC(r,"tax") = NETAXES(r);
+    206   Formula (all,r,REG)
+    207       GDPSRC(r,"depr") = VDEP(r);
+    208    
+    209   Coefficient (all, r, REG)
+    210       NETINV(r) # Regional net investment in region r #;
+    211   Formula (all, r, REG)
+    212       NETINV(r) = REGINV(r) - VDEP(r);
+                          ?
+ %% Semantic problem.
+ Unknown Coefficient, Variable or Mapping.
+    
+    213    
+    214   Coefficient (all,r,REG)(all,k,CAPACCT)
+                                        ?
+ %% Semantic problem.
+ Unknown set.
+    
+    215       CAPITALACCT(r,k) # S - I = X - M #;
+    216   Formula (all,r,REG)
+    217       CAPITALACCT(r,"save") = SAVE(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    218   Formula (all,r,REG)
+    219       CAPITALACCT(r,"inv") = - NETINV(r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    220    
+    221   Coefficient (all,r,REG)(all,k,CURACCT)(all,i,TRAD_COMM)
+                                        ?
+ %% Semantic problem.
+ Unknown set.
+    
+    222       CURRENTACCT(r,k,i) # X - M = S - I #;
+    223   Formula (all,r,REG)(all,m,TRAD_COMM)
+    224       CURRENTACCT(r,"exp",m) = sum{s,REG, VIWS(m,r,s)};
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    225   Formula  (all,r,REG)(all,i,TRAD_COMM)
+    226       CURRENTACCT(r,"imp",i) = - sum{s,REG, VIWS(i,s,r)};
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    227    
+    228   !<
+    229       2.Trade, Transport and Protection ( Reg x Reg )
+    230       -----------------------------------------------
+    231           VALEXPORTS
+    232           VALIMPORTS
+    233           CIFDECOMP
+    234    
+    235   >!
+    236    
+    237   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,IMPVALUE)
+                                                                    ?
+ %% Semantic problem.
+ Unknown set.
+    
+    238       VALIMPORTS(i,r,s,k) # Value of imports at domestic prices #;
+    239   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    240       VALIMPORTS(i,r,s,"impcost") = VIWS(i,r,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    241   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    242       VALIMPORTS(i,r,s,"mtax") = VIMS(i,r,s) - VIWS(i,r,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    243    
+    244   !<
+    245       3. Commodities ( Comm x Reg )
+    246       -----------------------------
+    247           OUTDISP
+    248           DOMSALESDISP
+    249           IMPSALESDISP
+    250           VALOUTPUT
+    251           SUFFICIENCY
+    252    
+    253   >!
+    254    
+    255   Coefficient (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+                                              ?
+ %% Semantic problem.
+ Unknown set.
+    
+    256       OUTDISP(i,j,r)
+    257       # Value of sales of tradables to different markets at dom market price #;
+    258   Formula (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+                                          ?
+ %% Semantic problem.
+ Unknown set.
+    
+    259       OUTDISP(i,j,r) = 0.0;
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    260   Formula (all,i,TRAD_COMM)(all,r,REG)
+    261       OUTDISP(i,"dom",r) = VDM(i,r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    262   Formula (all,i,TRAD_COMM)(all,r,REG)
+    263       OUTDISP(i,"export",r) = sum{s,REG, VIWS(i,r,s)};
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    264    
+    265   Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+                                              ?
+ %% Semantic problem.
+ Unknown set.
+    
+    266       DOMSALESDISP(i,m,r)
+    267       # Value of domestic sales of tradables at dom market price #;
+    268   !
+    269   July 2003.Changed "prod" to "prd" to be compatible with Release 8.0 of GEMPACK
+    270   !
+    271   Formula (all,i,TRAD_COMM)(all,r,REG)
+    272       DOMSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VDFM(i,j,r)};
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    273   Formula  (all,i,TRAD_COMM)(all,r,REG)
+    274       DOMSALESDISP(i,"cons",r) = VDPM(i,r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    275    
+    276   Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+                                              ?
+ %% Semantic problem.
+ Unknown set.
+    
+    277       IMPSALESDISP(i,m,r)
+    278       # Value of sales of tradables to different markets at dom market price #;
+    279   !
+    280   July 2003.Changed "prod" to "prd" to be compatible with Release 8.0 of GEMPACK
+    281   !
+    282   Formula (all,i,TRAD_COMM)(all,r,REG)
+    283       IMPSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VIFM(i,j,r)};
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    284   Formula (all,i,TRAD_COMM)(all,r,REG)
+    285       IMPSALESDISP(i,"cons",r) = VIPM(i,r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    286    
+    287   !<
+    288       Finally, calculate some policy instruments of interest.
+    289       Note that this approach produces positive taxes,
+    290       but GROSS tax rates.
+    291   >!
+    292    
+    293   Zerodivide (zero_by_zero) default 0;
+    294   Zerodivide (NONZERO_BY_ZERO) default 0;
+    295    
+    296   Coefficient (all,i, TRAD_COMM)(all,r, REG)
+    297       SUFFICIENCY(i,r) # Region's r rate of self-sufficiency for good i #;
+    298   Formula (all,i, TRAD_COMM)(all,r, REG)
+    299       SUFFICIENCY(i,r) = VOM(i,r) / [VDM(i,r) + sum{s,REG, VIMS(i,s,r)}];
+    300    
+    301   Zerodivide (zero_by_zero) off;
+    302   Zerodivide (NONZERO_BY_ZERO) off;
+    303    
+    304   !<
+    305       4. Sectors ( Comm x Reg )
+    306       -------------------------
+    307           NVFA
+    308           NVPA
+    309           NVGA
+    310    
+    311   >!
+    312    
+    313   Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,d,DIR)
+                                                                          ?
+ %% Semantic problem.
+ Unknown set.
+    
+    314       (all,k,PURCHVALUE)
+                     ?
+ %% Semantic problem.
+ Unknown set.
+    
+    315       NVFA(i,j,r,d,k) # Firm's expenditure on i by industry j #;
+    316   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    317       NVFA(i,j,r,"domestic","mktexp") = VFM(i,j,r);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    318   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    319       NVFA(i,j,r,"imported","mktexp") = 0;
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    320   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    321       NVFA(i,j,s,"domestic","mktexp") = VDFM(i,j,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    322   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    323       NVFA(i,j,s,"imported","mktexp") = VIFM(i,j,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    324    
+    325   Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+                                                         ?
+ %% Semantic problem.
+ Unknown set.
+
+ [   325] Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+                                                                    ?
+ %% Semantic problem.
+ Unknown set.
+    
+    326       NVPA(i,s,d,k) # Consumption expenditure on i by industry j #;
+    327   Formula (all,i,TRAD_COMM)(all,s,REG)
+    328       NVPA(i,s,"domestic","mktexp") = VDPM(i,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    329   Formula (all,i,TRAD_COMM)(all,s,REG)
+    330       NVPA(i,s,"imported","mktexp") = VIPM(i,s);
+              ?
+ %% Semantic problem.
+ Unknown coefficient or variable.
+    
+    331    
+    332    
+    333    
+    334   ! Trade indexes !
+    335   File (new)
+    336       Index # File with trade indexes #;
+    337    
+    338   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    339       EXPORTSir(i,r) # Exports by commodity i and region r #;
+    340   Formula (all,i,TRAD_COMM)(all,r,REG)
+    341       EXPORTSir(i,r) = sum(s, REG, VIWS(i,r,s));
+    342    
+    343   Coefficient (all,r,REG)
+    344       EXPORTSr(r) # Exports by region r #;
+    345   Formula (all,r,REG)
+    346       EXPORTSr(r) = sum(i, TRAD_COMM, EXPORTSir(i,r));
+    347    
+    348   Coefficient (all,i,TRAD_COMM)
+    349       EXPORTSi(i) # Total Exports of commodity i #;
+    350   Formula (all,i,TRAD_COMM)
+    351       EXPORTSi(i) = sum(r, REG, EXPORTSir(i,r));
+    352    
+    353   Coefficient
+    354       EXPORTS_wld # World Exports #;
+    355   Formula
+    356       EXPORTS_wld = sum(r, REG, sum(i, TRAD_COMM, EXPORTSir(i,r)));
+    357    
+    358   Coefficient (all,r,REG)
+    359       IMPORTSr(r) # Imports #;
+    360   Formula (all,r,REG)
+    361       IMPORTSr(r) = sum(i, TRAD_COMM, sum(rr, REG, VIWS(i,rr,r)));
+    362    
+    363   Coefficient (all,r,REG)
+    364       GDP(r) # GDP #;
+    365   Formula (all,r,REG)
+    366       GDP(r) = sum(k,GDPSOURCE, GDPSRC(r,k));
+    367    
+    368   Coefficient (all,r,REG)
+    369       OPENESS(r) # Openness #;
+    370   Formula (all,r,REG)
+    371       OPENESS(r) = (EXPORTSr(r) + IMPORTSr(r))
+    372                  / GDP(r);
+    373    
+    374   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    375       RCA(i,r) # Revealed comparative advantage #;
+    376   Formula (all,i,TRAD_COMM)(all,r,REG)
+    377       RCA(i,r) = (EXPORTSir(i,r) / EXPORTSr(r))/(EXPORTSi(i)/EXPORTS_wld) ;
+    378    
+    379   Coefficient (all,e,ENDW_COMM)(all,i,TRAD_COMM)(all,r,REG)
+    380       FactInt(e,i,r) # Factor Intensity #;
+    381   Formula (all,e,ENDW_COMM)(all,i,TRAD_COMM)(all,r,REG)
+    382       FactInt(e,i,r) = VFM(e,i,r) / sum(ee, ENDW_COMM, VFM(ee,i,r));
+    383    
+    384   Coefficient (all,e,ENDW_COMM)(all,i,TRAD_COMM)
+    385       avFactInt(e,i) # average world Factor Intensity #;
+    386   Formula (all,e,ENDW_COMM)(all,i,TRAD_COMM)
+    387       avFactInt(e,i) = sum(r, REG, VFM(e,i,r))
+    388               / sum(r, REG, sum(ee, ENDW_COMM, VFM(ee,i,r)));
+    389    
+    390   set RCAlabel (Exports,RCA) ;
+    391   set avlabel (av) ;
+    392   set avENDW = avlabel x ENDW_COMM;
+    393   MAPPING (PROJECT) MAPAVENDW from avENDW to ENDW_COMM ;
+    394    
+    395   set tdindexes0 = RCAlabel + ENDW_COMM;
+    396   set tdindexes1 = tdindexes0 + avENDW;
+    397    
+    398   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,k,tdindexes1)
+    399       TRAD_INDEXES(i,r,k) # various trade indexes in table #;
+    400   Formula (all,i,TRAD_COMM)(all,r,REG)
+    401       TRAD_INDEXES(i,r,"Exports") = EXPORTSir(i,r);
+    402   Formula (all,i,TRAD_COMM)(all,r,REG)
+    403       TRAD_INDEXES(i,r,"RCA") = RCA(i,r);
+    404    Formula (all,i,TRAD_COMM)(all,r,REG)(all,e,ENDW_COMM)
+    405       TRAD_INDEXES(i,r,e) = FactInt(e,i,r);
+    406    Formula (all,i,TRAD_COMM)(all,r,REG)(all,e,avENDW)
+    407       TRAD_INDEXES(i,r,e) = avFactInt(MAPAVENDW(e),i);
+    408    
+    409   write OPENESS to file index header "OPEN";
+    410   write TRAD_INDEXES to file index header "TIDX";
+    411    
+    412   ! IO tables !
+    413   File (new)
+    414       IOtable # File with IO tables #;
+    415    
+    416   set DOM (d_) ;
+    417   set IMP (m_) ;
+    418   set ExpTax (exptax) ;
+    419   set Marg (marg) ;
+    420   set Tarf (tariff) ;
+    421   set SalTax (salestax) ;
+    422   set FUseT (factuseTax) ;
+    423   set ProdTax (prodtax) ;
+    424   set PrivCons (priv) ;
+    425   set GovtCons (gov) ;
+    426   set Invest (inv) ;
+    427   set Exports (export) ;
+    428    
+    429   set DTRAD = DOM x TRAD_COMM;
+    430   set MTRAD = IMP x TRAD_COMM;
+    431   MAPPING (PROJECT) MAPD from DTRAD to TRAD_COMM ;
+    432   MAPPING (PROJECT) MAPM from MTRAD to TRAD_COMM ;
+    433    
+    434   set ROWS = DTRAD + MTRAD + ENDW_COMM + ExpTax + Marg + Tarf + SalTax + FUseT + ProdTax ;
+    435   set COLS = TRAD_COMM + PrivCons + Invest + Exports ;
+    436    
+    437   Coefficient (all,o,ROWS)(all,c,COLS)(all,r,REG)
+    438       IOT(o,c,r) #IO tables by region# ;
+    439   Formula (all,o,ENDW_COMM)(all,c,TRAD_COMM)(all,r,REG)
+    440       IOT(o,c,r) = EVFM(o,c,r);
+    441   Formula (all,o,DTRAD)(all,c,TRAD_COMM)(all,r,REG)
+    442       IOT(o,c,r) = VDFM(MAPD(o),c,r);
+    443   Formula (all,o,MTRAD)(all,c,TRAD_COMM)(all,r,REG)
+    444       IOT(o,c,r) = VIFM(MAPM(o),c,r);
+    445   Formula (all,o,DTRAD)(all,c,PrivCons)(all,r,REG)
+    446       IOT(o,c,r) = VDPM(MAPD(o),r);
+    447   Formula (all,o,MTRAD)(all,c,PrivCons)(all,r,REG)
+    448       IOT(o,c,r) = VIPM(MAPM(o),r);
+    449   Formula (all,o,DTRAD)(all,c,Invest)(all,r,REG)
+    450       IOT(o,c,r) = sum(j, CGDS_COMM, VDFM(MAPD(o),j,r));
+    451   Formula (all,o,MTRAD)(all,c,Invest)(all,r,REG)
+    452       IOT(o,c,r) = sum(j, CGDS_COMM, VIFM(MAPM(o),j,r));
+    453   Formula (all,o,DTRAD)(all,c,Exports)(all,r,REG)
+    454       IOT(o,c,r) = EXPORTSir(MAPD(o),r);
+    455    
+    456   write IOT to file IOtable header "IOT";
+    457    
+    458   !<
+    459       ------------------------
+    460       End of GTAPVIEW.TAB file
+    461       ------------------------
+    462   >!
+    463    
+
+
+MESSAGE(S) ABOUT APPARENTLY REDUNDANT STATEMENTS
+------------------------------------------------
+
+ FORMULA for 'SUFFICIENCY' starting at line 298.
+
+ %%WARNING.  This formula appears to be redundant because
+    the coefficient 'SUFFICIENCY' affected by it occurs in no equation
+    update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+    subsequent formula, nor in any subsequent DISPLAY,
+    ZERODIVIDE, WRITE or SET statement.
+
+COEFFICIENT INITIALIZATION SUMMARY
+----------------------------------
+
+ %% NOTE the 1 WARNING(s) above about coefficients.
+
+ %%INFORMATION. TABLO has created 2 new sets as follows:
+  S@Exports # Set with one element Exports, a subset of tdindexes1 #
+  S@RCA # Set with one element RCA, a subset of tdindexes1 #
+
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        33     no       no      FILE 'GTAPDATA'                         
+     2        35     no       no      FILE 'GTAPSETS'                         
+     3        37     no       no      FILE 'GTAPPARM'                         
+     4        47     no       no      SET 'REG'                               
+     5        50     no       no      SET 'TRAD_COMM'                         
+     6        53     no       no      SET 'CGDS_COMM'                         
+     7        56     no       no      SET 'ENDW_COMM'                         
+     8        59     no       no      SET 'ENDWC_COMM'                        
+     9        61     no       no      SET 'PROD_COMM'                         
+    10        61     no       no      SUBSET 1 'TRAD_COMM' of 'PROD_COMM'     
+    11        61     no       no      SUBSET 2 'CGDS_COMM' of 'PROD_COMM'     
+    12        63     no       no      SET 'DEMD_COMM'                         
+    13        63     no       no      SUBSET 3 'ENDW_COMM' of 'DEMD_COMM'     
+    14        63     no       no      SUBSET 4 'TRAD_COMM' of 'DEMD_COMM'     
+    15        65     no       no      SET 'NSAV_COMM'                         
+    16        65     no       no      SUBSET 5 'DEMD_COMM' of 'NSAV_COMM'     
+    17        65     no       no      SUBSET 6 'CGDS_COMM' of 'NSAV_COMM'     
+    18        65     no       no      SUBSET 7 'TRAD_COMM' of 'NSAV_COMM'     
+    19        65     no       no      SUBSET 8 'ENDW_COMM' of 'NSAV_COMM'     
+    20        67     no       no      SUBSET 9 'PROD_COMM' of 'NSAV_COMM'     
+    21        69     no       no      SUBSET 10 'ENDWC_COMM' of 'NSAV_COMM'   
+    22        81     no       no      COEFFICIENT 'SAVE'                      
+    23        83     no       no      READ into 'SAVE'                        
+    24        86     no       no      COEFFICIENT 'VDEP'                      
+    25        88     no       no      READ into 'VDEP'                        
+    26        96     no       no      COEFFICIENT 'EVFM'                      
+    27        98     no       no      READ into 'EVFM'                        
+    28       101     no       no      COEFFICIENT 'VIFM'                      
+    29       103     no       no      READ into 'VIFM'                        
+    30       106     no       no      COEFFICIENT 'VDFM'                      
+    31       108     no       no      READ into 'VDFM'                        
+    32       111     no       no      COEFFICIENT 'VIPM'                      
+    33       113     no       no      READ into 'VIPM'                        
+    34       116     no       no      COEFFICIENT 'VDPM'                      
+    35       118     no       no      READ into 'VDPM'                        
+    36       121     no       no      COEFFICIENT 'VIMS'                      
+    37       123     no       no      READ into 'VIMS'                        
+    38       126     no       no      COEFFICIENT 'VIWS'                      
+    39       128     no       no      READ into 'VIWS'                        
+    40       145     no       no      COEFFICIENT 'VFM'                       
+    41       147     no       no      Formula for 'VFM'                       
+    42       149     no       no      Formula for 'VFM'                       
+    43       151     no       no      COEFFICIENT 'VOM'                       
+    44       153     no       no      Formula for 'VOM'                       
+    45       155     no       no      Formula for 'VOM'                       
+    46       158     no       no      COEFFICIENT 'VEXPORTS'                  
+    47       161     no       no      Formula for 'VEXPORTS'                  
+    48       165     no       no      COEFFICIENT 'VIMPORTS'                  
+    49       168     no       no      Formula for 'VIMPORTS'                  
+    50       171     no       yes     COEFFICIENT declaration                 
+    51       173     no       yes     FORMULA                                 
+    52       175     no       yes     FORMULA                                 
+    53       177     no       yes     FORMULA                                 
+    54       179     no       yes     FORMULA                                 
+    55       182     no       no      SET 'GDPSOURCE'                         
+    56       184     no       no      COEFFICIENT 'NETFACTINC'                
+    57       186     no       no      Formula for 'NETFACTINC'                
+    58       189     no       no      COEFFICIENT 'VDM'                       
+    59       191     no       no      Formula for 'VDM'                       
+    60       194     no       no      COEFFICIENT 'NETAXES'                   
+    61       196     no       no      Formula for 'NETAXES'                   
+    62       200     no       no      COEFFICIENT 'GDPSRC'                    
+    63       202     no       no      Formula for 'GDPSRC'                    
+    64       204     no       no      Formula for 'GDPSRC'                    
+    65       206     no       no      Formula for 'GDPSRC'                    
+    66       209     no       no      COEFFICIENT 'NETINV'                    
+    67       211     no       yes     Formula for 'NETINV'                    
+    68       214     no       yes     COEFFICIENT declaration                 
+    69       216     no       yes     FORMULA                                 
+    70       218     no       yes     FORMULA                                 
+    71       221     no       yes     COEFFICIENT declaration                 
+    72       223     no       yes     FORMULA                                 
+    73       225     no       yes     FORMULA                                 
+    74       237     no       yes     COEFFICIENT declaration                 
+    75       239     no       yes     FORMULA                                 
+    76       241     no       yes     FORMULA                                 
+    77       255     no       yes     COEFFICIENT declaration                 
+    78       258     no       yes     FORMULA                                 
+    79       260     no       yes     FORMULA                                 
+    80       262     no       yes     FORMULA                                 
+    81       265     no       yes     COEFFICIENT declaration                 
+    82       271     no       yes     FORMULA                                 
+    83       273     no       yes     FORMULA                                 
+    84       276     no       yes     COEFFICIENT declaration                 
+    85       282     no       yes     FORMULA                                 
+    86       284     no       yes     FORMULA                                 
+    87       293     no       no      ZERODIVIDE instruction                  
+    88       294     no       no      ZERODIVIDE instruction                  
+    89       296     no       no      COEFFICIENT 'SUFFICIENCY'               
+    90       298     no       no      Formula for 'SUFFICIENCY'               
+    91       301     no       no      ZERODIVIDE instruction                  
+    92       302     no       no      ZERODIVIDE instruction                  
+    93       313     no       yes     COEFFICIENT declaration                 
+    94       316     no       yes     FORMULA                                 
+    95       318     no       yes     FORMULA                                 
+    96       320     no       yes     FORMULA                                 
+    97       322     no       yes     FORMULA                                 
+    98       325     no       yes     COEFFICIENT declaration                 
+    99       327     no       yes     FORMULA                                 
+   100       329     no       yes     FORMULA                                 
+   101       335     no       no      FILE 'Index'                            
+   102       338     no       no      COEFFICIENT 'EXPORTSir'                 
+   103       340     no       no      Formula for 'EXPORTSir'                 
+   104       343     no       no      COEFFICIENT 'EXPORTSr'                  
+   105       345     no       no      Formula for 'EXPORTSr'                  
+   106       348     no       no      COEFFICIENT 'EXPORTSi'                  
+   107       350     no       no      Formula for 'EXPORTSi'                  
+   108       353     no       no      COEFFICIENT 'EXPORTS_wld'               
+   109       355     no       no      Formula for 'EXPORTS_wld'               
+   110       358     no       no      COEFFICIENT 'IMPORTSr'                  
+   111       360     no       no      Formula for 'IMPORTSr'                  
+   112       363     no       no      COEFFICIENT 'GDP'                       
+   113       365     no       no      Formula for 'GDP'                       
+   114       368     no       no      COEFFICIENT 'OPENESS'                   
+   115       370     no       no      Formula for 'OPENESS'                   
+   116       374     no       no      COEFFICIENT 'RCA'                       
+   117       376     no       no      Formula for 'RCA'                       
+   118       379     no       no      COEFFICIENT 'FactInt'                   
+   119       381     no       no      Formula for 'FactInt'                   
+   120       384     no       no      COEFFICIENT 'avFactInt'                 
+   121       386     no       no      Formula for 'avFactInt'                 
+   122       390     no       no      SET 'RCAlabel'                          
+   123       391     no       no      SET 'avlabel'                           
+   124       392     no       no      SET 'avENDW'                            
+   125       393     no       no      MAPPING 'MAPAVENDW'                     
+   126       395     no       no      SET 'tdindexes0'                        
+   127       395     no       no      SUBSET 11 'RCAlabel' of 'tdindexes0'    
+   128       395     no       no      SUBSET 12 'ENDW_COMM' of 'tdindexes0'   
+   129       396     no       no      SET 'tdindexes1'                        
+   130       396     no       no      SUBSET 13 'tdindexes0' of 'tdindexes1'  
+   131       396     no       no      SUBSET 14 'avENDW' of 'tdindexes1'      
+   132       396     no       no      SUBSET 15 'ENDW_COMM' of 'tdindexes1'   
+   133       396     no       no      SUBSET 16 'RCAlabel' of 'tdindexes1'    
+   134       398     no       no      COEFFICIENT 'TRAD_INDEXES'              
+   135       400     no       no      SET 'S@Exports'                         
+   136       400     no       no      SUBSET 17 'S@Exports' of 'tdindexes1'   
+   137       400     no       no      Formula for 'TRAD_INDEXES'              
+   138       402     no       no      SET 'S@RCA'                             
+   139       402     no       no      SUBSET 18 'S@RCA' of 'tdindexes1'       
+   140       402     no       no      Formula for 'TRAD_INDEXES'              
+   141       404     no       no      Formula for 'TRAD_INDEXES'              
+   142       406     no       no      Formula for 'TRAD_INDEXES'              
+   143       409     no       no      WRITE from 'OPENESS'                    
+   144       410     no       no      WRITE from 'TRAD_INDEXES'               
+   145       413     no       no      FILE 'IOtable'                          
+   146       416     no       no      SET 'DOM'                               
+   147       417     no       no      SET 'IMP'                               
+   148       418     no       no      SET 'ExpTax'                            
+   149       419     no       no      SET 'Marg'                              
+   150       420     no       no      SET 'Tarf'                              
+   151       421     no       no      SET 'SalTax'                            
+   152       422     no       no      SET 'FUseT'                             
+   153       423     no       no      SET 'ProdTax'                           
+   154       424     no       no      SET 'PrivCons'                          
+   155       425     no       no      SET 'GovtCons'                          
+   156       426     no       no      SET 'Invest'                            
+   157       427     no       no      SET 'Exports'                           
+   158       429     no       no      SET 'DTRAD'                             
+   159       430     no       no      SET 'MTRAD'                             
+   160       431     no       no      MAPPING 'MAPD'                          
+   161       432     no       no      MAPPING 'MAPM'                          
+   162       434     no       no      SET 'ROWS'                              
+   163       434     no       no      SUBSET 19 'DTRAD' of 'ROWS'             
+   164       434     no       no      SUBSET 20 'MTRAD' of 'ROWS'             
+   165       434     no       no      SUBSET 21 'ENDW_COMM' of 'ROWS'         
+   166       434     no       no      SUBSET 22 'ExpTax' of 'ROWS'            
+   167       434     no       no      SUBSET 23 'Marg' of 'ROWS'              
+   168       434     no       no      SUBSET 24 'Tarf' of 'ROWS'              
+   169       434     no       no      SUBSET 25 'SalTax' of 'ROWS'            
+   170       434     no       no      SUBSET 26 'FUseT' of 'ROWS'             
+   171       434     no       no      SUBSET 27 'ProdTax' of 'ROWS'           
+   172       435     no       no      SET 'COLS'                              
+   173       435     no       no      SUBSET 28 'TRAD_COMM' of 'COLS'         
+   174       435     no       no      SUBSET 29 'PrivCons' of 'COLS'          
+   175       435     no       no      SUBSET 30 'Invest' of 'COLS'            
+   176       435     no       no      SUBSET 31 'Exports' of 'COLS'           
+   177       437     no       no      COEFFICIENT 'IOT'                       
+   178       439     no       no      Formula for 'IOT'                       
+   179       441     no       no      Formula for 'IOT'                       
+   180       443     no       no      Formula for 'IOT'                       
+   181       445     no       no      Formula for 'IOT'                       
+   182       447     no       no      Formula for 'IOT'                       
+   183       449     no       no      Formula for 'IOT'                       
+   184       451     no       no      Formula for 'IOT'                       
+   185       453     no       no      Formula for 'IOT'                       
+   186       456     no       no      WRITE from 'IOT'                        
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            47 [      10]  no   read 
+     2  TRAD_COMM      50 [      10]  no   read      6     7     8    32
+
+     3  CGDS_COMM      53 [       1]  no   read      6     8
+     4  ENDW_COMM      56 [       5]  no   read      7     8    13    14
+                                                     31
+     5  ENDWC_COMM     59         1   no   fixed     8
+     6  PROD_COMM      61 [       0]  no   other     8
+     7  DEMD_COMM      63 [       0]  no   other     8
+     8  NSAV_COMM      65 [       0]  no   other
+     9  GDPSOURCE     182         3   no   fixed
+    10  RCAlabel      390         2   no   fixed    13    14
+    11  avlabel       391         1   no   fixed
+    12  avENDW        392 [       5]  no   other    14
+    13  tdindexes0    395 [       0]  no   other    14
+    14  tdindexes1    396 [       0]  no   other
+    15  S@Exports     400         1   no   fixed    14
+    16  S@RCA         402         1   no   fixed    14
+    17  DOM           416         1   no   fixed
+    18  IMP           417         1   no   fixed
+    19  ExpTax        418         1   no   fixed    31
+    20  Marg          419         1   no   fixed    31
+    21  Tarf          420         1   no   fixed    31
+    22  SalTax        421         1   no   fixed    31
+    23  FUseT         422         1   no   fixed    31
+    24  ProdTax       423         1   no   fixed    31
+    25  PrivCons      424         1   no   fixed    32
+    26  GovtCons      425         1   no   fixed
+    27  Invest        426         1   no   fixed    32
+    28  Exports       427         1   no   fixed    32
+    29  DTRAD         429 [      10]  no   other    31
+    30  MTRAD         430 [      10]  no   other    31
+    31  ROWS          434 [       0]  no   other
+    32  COLS          435 [       0]  no   other
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPDATA                33    old  head
+     2  GTAPSETS                35    old  head
+     3  GTAPPARM                37    old  head
+     4  Index                  335    new  head
+     5  IOtable                413    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    SAVE              81     1  real       1
+     2    VDEP              86     1  real       1
+     3    EVFM              96     3  real       4     6     1
+     4    VIFM             101     3  real       2     6     1
+     5    VDFM             106     3  real       2     6     1
+     6    VIPM             111     2  real       2     1
+     7    VDPM             116     2  real       2     1
+     8    VIMS             121     3  real       2     1     1
+     9    VIWS             126     3  real       2     1     1
+    10    VFM              145     3  real       7     6     1
+    11    VOM              151     2  real       8     1
+    12    VEXPORTS         158     1  real       1
+    13    VIMPORTS         165     1  real       1
+    14    NETFACTINC       184     1  real       1
+    15    VDM              189     2  real       2     1
+    16    NETAXES          194     1  real       1
+    17    GDPSRC           200     2  real       1     9
+    18    NETINV           209     1  real       1
+    19    SUFFICIENCY      296     2  real       2     1
+    20    EXPORTSir        338     2  real       2     1
+    21    EXPORTSr         343     1  real       1
+    22    EXPORTSi         348     1  real       2
+    23    EXPORTS_wld      353     0  real
+    24    IMPORTSr         358     1  real       1
+    25    GDP              363     1  real       1
+    26    OPENESS          368     1  real       1
+    27    RCA              374     2  real       2     1
+    28    FactInt          379     3  real       4     2     1
+    29    avFactInt        384     2  real       4     2
+    30    MAPAVENDW        393     1  int       12
+    31    TRAD_INDEXES     398     3  real       2     1    14
+    32    MAPD             431     1  int       29
+    33    MAPM             432     1  int       30
+    34    IOT              437     3  real      31    32     1
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         147     no      VFM                3
+     2         149     no      VFM                5     4
+     3         153     no      VOM               10
+     4         155     no      VOM               10
+     5         161     no      VEXPORTS           9
+     6         168     no      VIMPORTS           9
+     7         173     yes                 
+     8         175     yes                 
+     9         177     yes                       12
+    10         179     yes                       13
+    11         186     no      NETFACTINC        11     2
+    12         191     no      VDM                7     5
+    13         196     no      NETAXES            8     9
+    14         202     no      GDPSRC            14
+    15         204     no      GDPSRC            16
+    16         206     no      GDPSRC             2
+    17         211     yes     NETINV             2
+    18         216     yes                        1
+    19         218     yes                       18
+    20         223     yes                        9
+    21         225     yes                        9
+    22         239     yes                        9
+    23         241     yes                        8     9
+    24         258     yes                 
+    25         260     yes                       15
+    26         262     yes                        9
+    27         271     yes                        5
+    28         273     yes                        7
+    29         282     yes                        4
+    30         284     yes                        6
+    31         298     no      SUFFICIENCY       11    15     8
+    32         316     yes                       10
+    33         318     yes                 
+    34         320     yes                        5
+    35         322     yes                        4
+    36         327     yes                        7
+    37         329     yes                        6
+    38         340     no      EXPORTSir          9
+    39         345     no      EXPORTSr          20
+    40         350     no      EXPORTSi          20
+    41         355     no      EXPORTS_wld       20
+    42         360     no      IMPORTSr           9
+    43         365     no      GDP               17
+    44         370     no      OPENESS           21    24    25
+    45         376     no      RCA               20    21    22    23
+    46         381     no      FactInt           10
+    47         386     no      avFactInt         10
+    48         400     no      TRAD_INDEXES      20
+    49         402     no      TRAD_INDEXES      27
+    50         404     no      TRAD_INDEXES      28
+    51         406     no      TRAD_INDEXES      29    30
+    52         439     no      IOT                3
+    53         441     no      IOT                5    32
+    54         443     no      IOT                4    33
+    55         445     no      IOT                7    32
+    56         447     no      IOT                6    33
+    57         449     no      IOT                5    32
+    58         451     no      IOT                4    33
+    59         453     no      IOT               20    32
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1         83       no      SAVE                1       SAVE
+     2         88       no      VDEP                1       VDEP
+     3         98       no      EVFM                1       EVFM
+     4        103       no      VIFM                1       VIFM
+     5        108       no      VDFM                1       VDFM
+     6        113       no      VIPM                1       VIPM
+     7        118       no      VDPM                1       VDPM
+     8        123       no      VIMS                1       VIMS
+     9        128       no      VIWS                1       VIWS
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem     Coeff/Var     Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      409   no      OPENESS           4  OPEN    Not defined by the user
+     2      410   no      TRAD_INDEXES      4  TIDX    Not defined by the user
+     3      456   no      IOT               5  IOT     Not defined by the user
+
+
+
+
+ ===================
+ ++ ZERODIVIDE TABLE
+ ===================
+
+           Defined          Coefficient or
+  Number   at line   Type   real value specified
+  -----------------------------------------------
+     1        293     ZDZ   0                   
+     2        294     NDZ   0                   
+     3        301     ZDZ   (Turned OFF)
+     4        302     NDZ   (Turned OFF)
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+
+ Total number of statements is 186.
+ There are NO syntax errors.
+
+ Total number of semantic problems found is 38.

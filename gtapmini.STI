@@ -1,0 +1,57 @@
+!   gtap.sti
+!   ========
+!
+!   TABLO sti file for GTAP 6.1
+!
+bat         ! Run in batch.
+
+gtapmini        ! name of TABLO input file
+gtapmini        ! name of information file
+c           ! Perform condensation.
+!condoptbegin
+b                   
+qpm                 
+PHHLDAGRIMP         
+b                   
+pva                 
+VAPRICE             
+b                   
+qva                 
+VADEMAND            
+b                   
+pcif                
+EXPRICES              
+b                   
+qf                  
+INTDEMAND           
+b                   
+CNTtech_amsirs      
+CONT_EV_tech_amsirs 
+b                   
+pms                 
+MKTPRICES           
+b                  
+qfd                 
+INDDOM              
+b                   
+pf                  
+ICOMPRICE           
+b                   
+CNTtotr             
+CONT_EV_totr        
+b                   
+qfm                 
+INDIMP              
+b                   
+CNTalleffr          
+CONT_EV_alleffr     
+!condoptend
+e           ! Exit condensation.
+a           ! Proceed to automatic code generation.
+wfp         ! Write a Fortran program.
+
+gtapmini        ! name of Fortran program file
+!
+!
+!   end of stored input
+!   -------------------

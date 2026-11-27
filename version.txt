@@ -1,0 +1,34 @@
+Mini Trade Model
+
+This application is for a miniature trade model based on GTAP. 
+
+The miniature version removes the following from the std GTAP model:
+
+- all taxes (except import duties) 
+- transport margins
+- Government expenditure
+- CDE from private consumption - income is allocated across consumption and savings using Cobb Douglas
+- all technological change variables (except AMS)
+- ESUBT - production is Leontieff and cannot be changed
+- no sluggish variables - they are either mobile or sector specific depending on the data.
+- altertax is not available as the trade balance relative to income cannot be fixed.
+- slack variables (except walraslack)
+- Demand for value added by CGDS is set equal to zero to avoid issues with zero shares.
+
+The mini model is useful as a tool for learning some of the basics in the GTAP model and trade theory.  
+- It has two trade policy instruments (tariffs (tms) and iceberg costs (ams)).  
+- Users can also implement an unemployment closure and/or a long run closure.  
+- The application includes simplified versions of GTAPView, GTAPVol and the welfare decomposition.
+- numeraire is pcgdswld
+- investment in all regions increases with global savings/investment (eqivalent to RORDELTA = 0 in GTAP model)
+
+Exogenous variables include:
+          pop - population
+          pcgdswld - numeraire
+          ams - iceberg cost
+          tms - bilateral tariff
+          qo(ENDW_COMM,REG) - supply of endowments/factors of production
+
+Database:
+The model is run using a special version of the GTAP database with taxes and transport margins removed.  
+It can be run with any GTAP sectoral/regional aggregation.

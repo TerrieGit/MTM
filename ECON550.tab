@@ -1,0 +1,463 @@
+!<
+    =============================
+    GTAPMini
+    The GTAP Modeling Framework  
+    ECON550.TAB FILE            
+    =============================
+
+    Adapted to GTAPmini by Terrie Walmsley 
+   
+    --------------------
+    History of this file
+    --------------------
+    July 2025: Needed a tab file that created an IO table and calculated trade 
+               intensity indexes for GTAPmini model data
+
+    --------------------------------------
+    Overview of the GTAPVIEW.TAB structure
+    --------------------------------------
+    FILE declaration
+    SET declaration
+    READ statements of Base Data
+    Derivatives of the Base Data
+    Write statements of the Derivatives
+
+>!
+
+!<
+    -----
+    FILES
+    -----
+>!
+
+File
+    GTAPDATA # File containing all base data #;
+File
+    GTAPSETS # File with set specification #;
+File
+    GTAPPARM # File containing behavioral prameters #;
+   ! above not actually used, but must leave in !
+
+!<
+    ----
+    SETS
+    ----
+>!
+
+Set
+    REG # Regions in the model #
+    maximum size 10 read elements from file GTAPSETS header "H1";
+Set
+    TRAD_COMM # Traded commodities #
+    maximum size 10 read elements from file GTAPSETS header "H2";
+Set
+    CGDS_COMM # Capital goods commodities #
+    maximum size 1  read elements from file GTAPSETS header "H9";
+Set
+    ENDW_COMM # Endowment commodities #
+    maximum size 5  read elements from file GTAPSETS header "H6";
+Set
+    ENDWC_COMM # Capital Endowment Commodity # (capital);
+Set
+    PROD_COMM # PRODUCED COMMODITIES  # = TRAD_COMM union CGDS_COMM;
+Set
+    DEMD_COMM # DEMANDED COMMODITIES # = ENDW_COMM union TRAD_COMM;
+Set
+    NSAV_COMM # NON-SAVINGS COMMODITIES # = DEMD_COMM union CGDS_COMM;
+Subset
+    PROD_COMM is subset of NSAV_COMM;
+Subset
+    ENDWC_COMM is subset of NSAV_COMM;
+
+!<
+    ----------------------------
+    READ statements of Base Data
+    ----------------------------
+
+    base revenues and expenditures at agent's prices
+    ------------------------------------------------
+>!
+
+Coefficient (all,r,REG)
+    SAVE(r) # Expenditure on NET savings in region r valued at agent's prices #;
+Read
+    SAVE from file GTAPDATA header "SAVE";
+
+Coefficient (all, r, REG)
+    VDEP(r) # Value of capital depreciation in r (exogenous) #;
+Read
+    VDEP from file GTAPDATA header "VDEP";
+
+!<
+    base revenues and expenditures at prices
+    ----------------------------------------
+>!
+
+Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    EVFM(i,j,r) # Producer expenditure on i by j in r at market prices #;
+Read
+    EVFM from file GTAPDATA header "EVFM";
+
+Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    VIFM(i,j,r) # Purchases of imports i for use in j in region r #;
+Read
+    VIFM from file GTAPDATA header "VIFM";
+
+Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    VDFM(i,j,r) # Purchases of domestic i r for use in j in region r #;
+Read
+    VDFM from file GTAPDATA header "VDFM";
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    VIPM(i,r) # Private household expenditure on i in r #;
+Read
+    VIPM from file GTAPDATA header "VIPM";
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    VDPM(i,r) # Private household expenditure on domestic i in r #;
+Read
+    VDPM from file GTAPDATA header "VDPM";
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    VIMS(i,r,s) # Imports of i from r to s valued at domestic mkt prices #;
+Read
+    VIMS from file GTAPDATA header "VIMS";
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    VIWS(i,r,s) # Imports of i from r to s valued cif (tradeables only) #;
+Read
+    VIWS from file GTAPDATA header "VIWS";
+
+!<
+    ----------------------------
+    DERIVATIVES OF THE BASE DATA
+    ----------------------------
+
+    1. Macro variables ( Reg )
+    --------------------------
+        GDPEXP
+        GDPSRC
+        CAPITALACCT
+        CURRENTACCT
+
+>!
+
+Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    VFM(i,j,r) # Firm's expenditure on i by industry j #;
+Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    VFM(i,j,r) = EVFM(i,j,r);
+Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    VFM(i,j,s) = VDFM(i,j,s) + VIFM(i,j,s);
+Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    VOM(i,r) # Value of commodity i output in region r #;
+Formula (all,i,ENDW_COMM)(all,r,REG)
+    VOM(i,r) = sum(j, PROD_COMM, VFM(i,j,r));
+Formula (all,i,PROD_COMM)(all,r,REG)
+    VOM(i,r) = sum{j,DEMD_COMM, VFM(j,i,r)};
+
+Coefficient (all,r,REG)
+    VEXPORTS(r)
+    # Value of merchandise and services sales to the world market from r #;
+Formula (all,r,REG)
+    VEXPORTS(r)
+        = sum{i,TRAD_COMM, sum{s,REG, VIWS(i,r,s)}};
+
+Coefficient (all,s,REG)
+    VIMPORTS(s)
+    # Value of merchandise and services purchases from world market by s #;
+Formula (all,s,REG)
+    VIMPORTS(s) = sum{i,TRAD_COMM, sum{r,REG, VIWS(i,r,s)}};
+
+Coefficient  (all,r,REG)(all,k,GDPEXPEND)
+    GDPEXP(r,k) # Composition of GDP from the expenditure side #;
+Formula  (all,r,REG)
+    GDPEXP(r,"cons") = PRIVEXP(r);
+Formula  (all,r,REG)
+    GDPEXP(r,"inv") = REGINV(r);
+Formula  (all,r,REG)
+    GDPEXP(r,"exp") = VEXPORTS(r);
+Formula  (all,r,REG)
+    GDPEXP(r,"imp") = - VIMPORTS(r);
+
+Set GDPSOURCE(fact,tax,depr);
+
+Coefficient (all,r,REG)
+    NETFACTINC(r) # Factor income, net of depreciation #;
+Formula (all,r,REG)
+    NETFACTINC(r) = sum{i,ENDW_COMM, VOM(i,r)} - VDEP(r);
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    VDM(i,r) # Domestic sales of i in r at market prices (tradeables only) #;
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    VDM(i,r) = VDPM(i,r) + sum{j,PROD_COMM, VDFM(i,j,r)};
+
+Coefficient (all,r,REG)
+    NETAXES(r) # Net tax revenues in r #;
+Formula (all,r,REG)
+    NETAXES(r)
+        = sum{i,TRAD_COMM, sum{s,REG, VIMS(i,s,r) - VIWS(i,s,r)}};
+
+Coefficient (all,r,REG)(all,k,GDPSOURCE)
+    GDPSRC(r,k) # Composition of GDP from the sources side #;
+Formula (all,r,REG)
+    GDPSRC(r,"fact") = NETFACTINC(r);
+Formula (all,r,REG)
+    GDPSRC(r,"tax") = NETAXES(r);
+Formula (all,r,REG)
+    GDPSRC(r,"depr") = VDEP(r);
+
+Coefficient (all, r, REG)
+    NETINV(r) # Regional net investment in region r #;
+Formula (all, r, REG)
+    NETINV(r) = REGINV(r) - VDEP(r);
+
+Coefficient (all,r,REG)(all,k,CAPACCT)
+    CAPITALACCT(r,k) # S - I = X - M #;
+Formula (all,r,REG)
+    CAPITALACCT(r,"save") = SAVE(r);
+Formula (all,r,REG)
+    CAPITALACCT(r,"inv") = - NETINV(r);
+
+Coefficient (all,r,REG)(all,k,CURACCT)(all,i,TRAD_COMM)
+    CURRENTACCT(r,k,i) # X - M = S - I #;
+Formula (all,r,REG)(all,m,TRAD_COMM)
+    CURRENTACCT(r,"exp",m) = sum{s,REG, VIWS(m,r,s)};
+Formula  (all,r,REG)(all,i,TRAD_COMM)
+    CURRENTACCT(r,"imp",i) = - sum{s,REG, VIWS(i,s,r)};
+
+!<
+    2.Trade, Transport and Protection ( Reg x Reg )
+    -----------------------------------------------
+        VALEXPORTS
+        VALIMPORTS
+        CIFDECOMP
+
+>!
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,IMPVALUE)
+    VALIMPORTS(i,r,s,k) # Value of imports at domestic prices #;
+Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    VALIMPORTS(i,r,s,"impcost") = VIWS(i,r,s);
+Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    VALIMPORTS(i,r,s,"mtax") = VIMS(i,r,s) - VIWS(i,r,s);
+
+!<
+    3. Commodities ( Comm x Reg )
+    -----------------------------
+        OUTDISP
+        DOMSALESDISP
+        IMPSALESDISP
+        VALOUTPUT
+        SUFFICIENCY
+
+>!
+
+Coefficient (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+    OUTDISP(i,j,r)
+    # Value of sales of tradables to different markets at dom market price #;
+Formula (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+    OUTDISP(i,j,r) = 0.0;
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    OUTDISP(i,"dom",r) = VDM(i,r);
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    OUTDISP(i,"export",r) = sum{s,REG, VIWS(i,r,s)};
+
+Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+    DOMSALESDISP(i,m,r)
+    # Value of domestic sales of tradables at dom market price #;
+!
+July 2003.Changed "prod" to "prd" to be compatible with Release 8.0 of GEMPACK
+!
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    DOMSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VDFM(i,j,r)};
+Formula  (all,i,TRAD_COMM)(all,r,REG)
+    DOMSALESDISP(i,"cons",r) = VDPM(i,r);
+
+Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+    IMPSALESDISP(i,m,r)
+    # Value of sales of tradables to different markets at dom market price #;
+!
+July 2003.Changed "prod" to "prd" to be compatible with Release 8.0 of GEMPACK
+!
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    IMPSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VIFM(i,j,r)};
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    IMPSALESDISP(i,"cons",r) = VIPM(i,r);
+
+!<
+    Finally, calculate some policy instruments of interest.
+    Note that this approach produces positive taxes,
+    but GROSS tax rates.
+>!
+
+Zerodivide (zero_by_zero) default 0;
+Zerodivide (NONZERO_BY_ZERO) default 0;
+
+Coefficient (all,i, TRAD_COMM)(all,r, REG)
+    SUFFICIENCY(i,r) # Region's r rate of self-sufficiency for good i #;
+Formula (all,i, TRAD_COMM)(all,r, REG)
+    SUFFICIENCY(i,r) = VOM(i,r) / [VDM(i,r) + sum{s,REG, VIMS(i,s,r)}];
+
+Zerodivide (zero_by_zero) off;
+Zerodivide (NONZERO_BY_ZERO) off;
+
+!<
+    4. Sectors ( Comm x Reg )
+    -------------------------
+        NVFA
+        NVPA
+        NVGA
+
+>!
+
+Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,d,DIR)
+    (all,k,PURCHVALUE)
+    NVFA(i,j,r,d,k) # Firm's expenditure on i by industry j #;
+Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    NVFA(i,j,r,"domestic","mktexp") = VFM(i,j,r);
+Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    NVFA(i,j,r,"imported","mktexp") = 0;
+Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    NVFA(i,j,s,"domestic","mktexp") = VDFM(i,j,s);
+Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    NVFA(i,j,s,"imported","mktexp") = VIFM(i,j,s);
+
+Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+    NVPA(i,s,d,k) # Consumption expenditure on i by industry j #;
+Formula (all,i,TRAD_COMM)(all,s,REG)
+    NVPA(i,s,"domestic","mktexp") = VDPM(i,s);
+Formula (all,i,TRAD_COMM)(all,s,REG)
+    NVPA(i,s,"imported","mktexp") = VIPM(i,s);
+
+
+
+! Trade indexes !
+File (new)
+    Index # File with trade indexes #;
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    EXPORTSir(i,r) # Exports by commodity i and region r #;
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    EXPORTSir(i,r) = sum(s, REG, VIWS(i,r,s));
+
+Coefficient (all,r,REG)
+    EXPORTSr(r) # Exports by region r #;
+Formula (all,r,REG)
+    EXPORTSr(r) = sum(i, TRAD_COMM, EXPORTSir(i,r));
+
+Coefficient (all,i,TRAD_COMM)
+    EXPORTSi(i) # Total Exports of commodity i #;
+Formula (all,i,TRAD_COMM)
+    EXPORTSi(i) = sum(r, REG, EXPORTSir(i,r));
+
+Coefficient 
+    EXPORTS_wld # World Exports #;
+Formula 
+    EXPORTS_wld = sum(r, REG, sum(i, TRAD_COMM, EXPORTSir(i,r)));
+
+Coefficient (all,r,REG)
+    IMPORTSr(r) # Imports #;
+Formula (all,r,REG)
+    IMPORTSr(r) = sum(i, TRAD_COMM, sum(rr, REG, VIWS(i,rr,r)));
+
+Coefficient (all,r,REG)
+    GDP(r) # GDP #;
+Formula (all,r,REG)
+    GDP(r) = sum(k,GDPSOURCE, GDPSRC(r,k));
+
+Coefficient (all,r,REG)
+    OPENESS(r) # Openness #;
+Formula (all,r,REG)
+    OPENESS(r) = (EXPORTSr(r) + IMPORTSr(r))
+               / GDP(r);
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    RCA(i,r) # Revealed comparative advantage #;
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    RCA(i,r) = (EXPORTSir(i,r) / EXPORTSr(r))/(EXPORTSi(i)/EXPORTS_wld) ;
+
+Coefficient (all,e,ENDW_COMM)(all,i,TRAD_COMM)(all,r,REG)
+    FactInt(e,i,r) # Factor Intensity #;
+Formula (all,e,ENDW_COMM)(all,i,TRAD_COMM)(all,r,REG)
+    FactInt(e,i,r) = VFM(e,i,r) / sum(ee, ENDW_COMM, VFM(ee,i,r));
+
+Coefficient (all,e,ENDW_COMM)(all,i,TRAD_COMM)
+    avFactInt(e,i) # average world Factor Intensity #;
+Formula (all,e,ENDW_COMM)(all,i,TRAD_COMM)
+    avFactInt(e,i) = sum(r, REG, VFM(e,i,r)) 
+            / sum(r, REG, sum(ee, ENDW_COMM, VFM(ee,i,r)));
+
+set RCAlabel (Exports,RCA) ;
+set avlabel (av) ;
+set avENDW = avlabel x ENDW_COMM; 
+MAPPING (PROJECT) MAPAVENDW from avENDW to ENDW_COMM ;
+
+set tdindexes0 = RCAlabel + ENDW_COMM;
+set tdindexes1 = tdindexes0 + avENDW;
+
+Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,k,tdindexes1)
+    TRAD_INDEXES(i,r,k) # various trade indexes in table #;
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    TRAD_INDEXES(i,r,"Exports") = EXPORTSir(i,r);
+Formula (all,i,TRAD_COMM)(all,r,REG)
+    TRAD_INDEXES(i,r,"RCA") = RCA(i,r);
+ Formula (all,i,TRAD_COMM)(all,r,REG)(all,e,ENDW_COMM)
+    TRAD_INDEXES(i,r,e) = FactInt(e,i,r);
+ Formula (all,i,TRAD_COMM)(all,r,REG)(all,e,avENDW)
+    TRAD_INDEXES(i,r,e) = avFactInt(MAPAVENDW(e),i);
+
+write OPENESS to file index header "OPEN";
+write TRAD_INDEXES to file index header "TIDX";
+
+! IO tables !
+File (new)
+    IOtable # File with IO tables #;
+
+set DOM (d_) ;
+set IMP (m_) ;
+set ExpTax (exptax) ;
+set Marg (marg) ;
+set Tarf (tariff) ;
+set SalTax (salestax) ;
+set FUseT (factuseTax) ;
+set ProdTax (prodtax) ;
+set PrivCons (priv) ;
+set GovtCons (gov) ;
+set Invest (inv) ;
+set Exports (export) ;
+
+set DTRAD = DOM x TRAD_COMM; 
+set MTRAD = IMP x TRAD_COMM; 
+MAPPING (PROJECT) MAPD from DTRAD to TRAD_COMM ;
+MAPPING (PROJECT) MAPM from MTRAD to TRAD_COMM ;
+
+set ROWS = DTRAD + MTRAD + ENDW_COMM + ExpTax + Marg + Tarf + SalTax + FUseT + ProdTax ;
+set COLS = TRAD_COMM + PrivCons + Invest + Exports ;
+
+Coefficient (all,o,ROWS)(all,c,COLS)(all,r,REG)
+    IOT(o,c,r) #IO tables by region# ;
+Formula (all,o,ENDW_COMM)(all,c,TRAD_COMM)(all,r,REG)
+    IOT(o,c,r) = EVFM(o,c,r);
+Formula (all,o,DTRAD)(all,c,TRAD_COMM)(all,r,REG)
+    IOT(o,c,r) = VDFM(MAPD(o),c,r);
+Formula (all,o,MTRAD)(all,c,TRAD_COMM)(all,r,REG)
+    IOT(o,c,r) = VIFM(MAPM(o),c,r);
+Formula (all,o,DTRAD)(all,c,PrivCons)(all,r,REG)
+    IOT(o,c,r) = VDPM(MAPD(o),r);
+Formula (all,o,MTRAD)(all,c,PrivCons)(all,r,REG)
+    IOT(o,c,r) = VIPM(MAPM(o),r);
+Formula (all,o,DTRAD)(all,c,Invest)(all,r,REG)
+    IOT(o,c,r) = sum(j, CGDS_COMM, VDFM(MAPD(o),j,r));
+Formula (all,o,MTRAD)(all,c,Invest)(all,r,REG)
+    IOT(o,c,r) = sum(j, CGDS_COMM, VIFM(MAPM(o),j,r));
+Formula (all,o,DTRAD)(all,c,Exports)(all,r,REG)
+    IOT(o,c,r) = EXPORTSir(MAPD(o),r);
+
+write IOT to file IOtable header "IOT";
+
+!<
+    ------------------------
+    End of GTAPVIEW.TAB file
+    ------------------------
+>!
+

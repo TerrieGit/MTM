@@ -1,0 +1,980 @@
+ 
+ This GEMPACK log file was created at 17:30:41 on 27-NOV-2026 by the program
+  <gtapmini.for 19-AUG-2025 (a TABLO-generated program)>
+ which accesses some of the routines in the GEMPACK software release
+  <GEMPACK Release 12.1.004   January 2020>
+ 
+ 
+  (Processing command line options.)
+ 
+ 
+  (Opening log file 'gtapmini.log')
+ (Opened new text file 'gtapmini.log'.)
+ Sending output just to a log file
+  
+ 
+ <gtapmini.for 19-AUG-2025 (a TABLO-generated program)>
+   This program accesses some of the routines in the GEMPACK software release
+ <GEMPACK Release 12.1.004   January 2020>
+  
+ Licence file: C:\GP\licen.gem
+ 
+     -------------------------------------------------------
+    !            GEMPACK Software System Licence            !
+    !  Single-user Source-code Licence for GEMPACK on a PC  !
+    !                 Licence No.  GFS-1744                 !
+    !          Licence for Release 12.1 of GEMPACK          !
+    !                  Terrie L. Walmsley                   !
+    !             Named User-Terrie L. Walmsley             !
+     -------------------------------------------------------
+ 
+     << COPYRIGHT 1987-2018: CoPS/Impact and KPSOFT >>
+ 
+  Current directory is: C:\runGTAP375\work
+ 
+  Full path name of running EXE is: C:\runGTAP375\MTM\GTAPMINI.exe
+  Fortran compiler = GF64   version 6.4.0 64 bit
+  BLAS library: OpenBlas
+  OPENMP number of threads: 8
+  Gempack source corresponds to revision 1187.
+  Operating System is Unknwon/ Error retrieving info
+ 
+ 
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ 
+                    TABLO-GENERATED PROGRAM OPTIONS
+               ( --> indicates those in effect )
+ 
+       BAT Run in batch              STI Take inputs from a Stored-input file
+       BPR Brief prompts             SIF Store inputs on a file
+   --> LOG Output to log file        ASI Add to incomplete Stored-input file
+                                     CMF Take inputs from a Command file
+       EAA Echo all activity           SVX Select variables on XAC file (later)
+   --> CPU Report CPU times            RQF Required figures agreement (extrap)
+       NRP Don't reuse pivots        NIR Don't do solution iterative refinement
+                                 --> IZ1 Ignore zero coefficients in step 1
+                                     KZ2 Keep zero coefficients in steps 2,3 etc
+       NEQ Do no equations           NWE Don't warn how well equations solved
+       NDS Do no displays            SSI Several subintervals; extrap after each
+       NWR Do no writes              M28 Use MA28 routines (rather than MA48)
+       NAS Do no assertions          SUI Save updated formula(initial) data
+       NUD Do no final updates              Extra Options Screen
+       NSM Don't do simulation              --------------------
+       NWT Use Newton's method      DTO Display, Terminal/Text write Options
+       CR  Check-on-read options
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+  
+ (Opened, as text, existing file 'gtapmini.cmf'.)
+  (Taking inputs from a command file.)
+ (Opened, as text, existing file 'gtapmini.cmf'.)
+ 
+  !  (There is no CREATION information on this file.)
+  
+ 
+  --> Reading the Command file.
+  
+ ! This Command file
+ ! C:\runGTAP375\work\gtapmini.cmf
+ ! was written by RunGTAP (Version 3.75 built 23/May/2022)
+ ! If a version has no CMFSTART file of its own
+ ! RunGTAP creates one by copying the supplied file CMFSTART.DEF
+ CPU = yes;  ! log show simulation times
+ NDS = yes;  ! no displays
+ Extrapolation accuracy file = NO ; ! No XAC file
+ !servants=1; ! use 2 processors at once, if possible
+ 
+ !@ end of CMFSTART part
+ aux files = C:\runGTAP375\MTM\GTAPMINI;
+ file gtapSETS = C:\runGTAP375\MTM\sets.har;
+ file gtapDATA = C:\runGTAP375\MTM\basedata.har;
+ Updated file gtapDATA = gdata.upd;
+ Solution file = C:\runGTAP375\work\gtapmini;
+ file gtapPARM = C:\runGTAP375\MTM\default.prm;
+ Verbal Description =
+ Numeraire shock;
+ Method = Johansen;
+ Steps = 1;
+ automatic accuracy = no;
+ exogenous
+           pop
+           pcgdswld
+           ams
+           tms
+           qo(ENDW_COMM,REG)  ;
+ Rest Endogenous ;
+ shock pcgdswld = uniform 10;
+ 
+  (Finished reading the command file.)
+ 
+  Auxiliary Statement File
+  ---------------------
+ (Opened, as binary, existing file 'C:\runGTAP375\MTM\GTAPMINI.axs'.)
+ 
+  Auxiliary Table File
+  -----------------
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\GTAPMINI.axt'.)
+ 
+  !  This file was created at 13:59:48 on 19-AUG-2025 by the program
+  !    <TABLO  Version 7.0   August 2018>
+  !  which accesses some of the routines in the GEMPACK software release
+  !    <GEMPACK Release 12.1.004   January 2020>
+  !  [The program which created this file was compiled with GF64.]
+  
+ Auxiliary Table File was created by TABLO at 13:59:48 on 19-AUG-2025
+ [TABLO file used here is "gtapmini.tab".]
+ [TABLO STI file used here is "C:\runGTAP375\MTM\gtapmini.STI".]
+  [Reporting CPU times]
+ 
+  (Doing no displays.)
+ 
+  Using Gempack optimized version of LU decompositions
+  With this option active several old options are obsolete.
+  These options concern: Markowitz pivots, and those starting with pivots, MA48 and MA28.
+ 
+  Search depth for LU is set to 32
+  Column Filter threshold is set to 5.0000001E-02
+  Harwell paramter for reuse is set to -1.000000
+ 
+ [This TG-program was created by TABLO at 13:59:48 on 19-AUG-2025.]
+ When TABLO was run, GPDIR="C:\GP"
+ 
+  [Starting to check "extra" statements on the Command file.]
+  
+ 
+  [Finished checking "extra" statements on the Command file.]
+  
+ 
+ ++++++++++++++++++++++++++++++++++++++++++++++++++
+  This program was written by the GEMPACK program TABLO 
+  as described in the Information file
+  'gtapmini.inf
+ 
+  This run of the TABLO-generated program
+      o can create the Equations file (for the condensed system)
+      o can carry out multi-step simulations
+ 
+ ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  (Automatic accuracy testing will not be done.)
+ (Range test of updated or extrapolated values will produce warnings.)
+ 
+  (Using Johansen's method.)
+ (Range test of initial values will produce warnings.)
+  (Model is ''.   Version number is 1.)
+ (Opened new header file 'C:\runGTAP375\work\gtapmini.sl4'.)
+ (Solution file is 'C:\runGTAP375\work\gtapmini.sl4'.)
+ (Opened new header file 'C:\runGTAP375\work\gtapmini.slc'.)
+ (Opened, as text, existing file 'gtapmini.cmf'.)
+ 
+  !  (There is no CREATION information on this file.)
+  
+ 
+  (Data file with logical name 'GTAPSETS')
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\sets.har'.)
+ 
+  !  This file was created at 8/19/2025 2:13:06 PM by the program
+  !    ViewHAR
+  !  which accesses some of the routines in the GEMPACK software release
+  !    HARFILE.PAS 23/May/2022
+  !  [The program which created this file was compiled with DELPHI.]
+  
+ 
+  (Data file with logical name 'GTAPDATA')
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\basedata.har'.)
+ 
+  !  This file was created at 15:37:00 on 18-OCT-2019 by the program
+  !    <aggMTM.for 18-OCT-2019> [aggMTM.tab,TABmate.sif]
+  !  which accesses some of the routines in the GEMPACK software release
+  !    <GEMPACK Release 11.3.001   May 2014>
+  !  [The program which created this file was compiled with IF64.]
+  
+ 
+  (Data file with logical name 'GTAPPARM')
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\default.prm'.)
+ 
+  !  This file was created at 15:37:00 on 18-OCT-2019 by the program
+  !    <aggMTM.for 18-OCT-2019> [aggMTM.tab,TABmate.sif]
+  !  which accesses some of the routines in the GEMPACK software release
+  !    <GEMPACK Release 11.3.001   May 2014>
+  !  [The program which created this file was compiled with IF64.]
+  
+ 
+  UPDATED VERSION OF DATA FILE WITH LOGICAL NAME 'GTAPDATA
+  ---------------------------------------------------------
+ (Opened new header file 'gdata.upd'.)
+ 
+  --->  Beginning the preliminary pass (aimed at sets and subsets).
+ Set 'REG'
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\sets.har'.)
+   [Set has size 3.]
+ Set 'TRAD_COMM'
+   [Set has size 3.]
+ Set 'CGDS_COMM'
+   [Set has size 1.]
+ Set 'ENDW_COMM'
+   [Set has size 3.]
+ Set 'PROD_COMM'
+   [Set has size 4.]
+ 'TRAD_COMM' as a subset of 'PROD_COMM'
+ 'CGDS_COMM' as a subset of 'PROD_COMM'
+ Set 'DEMD_COMM'
+   [Set has size 6.]
+ 'ENDW_COMM' as a subset of 'DEMD_COMM'
+ 'TRAD_COMM' as a subset of 'DEMD_COMM'
+ Set 'NSAV_COMM'
+   [Set has size 7.]
+ 'DEMD_COMM' as a subset of 'NSAV_COMM'
+ 'CGDS_COMM' as a subset of 'NSAV_COMM'
+ 'TRAD_COMM' as a subset of 'NSAV_COMM'
+ 'ENDW_COMM' as a subset of 'NSAV_COMM'
+ 'PROD_COMM' as a subset of 'NSAV_COMM'
+ Set 'ENDWC_COMM'
+   [Set has size 1.]
+ 'ENDWC_COMM' as a subset of 'ENDW_COMM'
+ 'ENDWC_COMM' as a subset of 'DEMD_COMM'
+ 'ENDWC_COMM' as a subset of 'NSAV_COMM'
+ [CPU for reads, formulas etc is 0.00 seconds.]
+ Elapsed time for reads, formulas etc is: less than one second.
+ 
+  ------- MODEL REPORT ------
+  The un-condensed model contains:
+      75 variables comprising 690 components
+  and 74 equation blocks comprising 623 separate equations.
+ 
+      12 variables (comprising 258 components) will be backsolved for.
+      0 variables (comprising 0 components) were substituted out.
+      0 variables (comprising 0 components) were omitted.
+ 
+  So the condensed model contains:
+      63 variables comprising 432 components
+  and 62 equation blocks comprising 365 separate equations.
+  ------- END OF MODEL REPORT ------
+  
+   (1 character strings, each of length 1 read. Header "SVFM")
+ 
+  Total memory currently used for all arrays is approximately 0.12 megabytes.
+  [This does NOT include memory related to MMNZ, MMNZ1 and MMNZ2. The
+   associated arrays are not allocated.]
+  [Add about 5-10 megabytes for the memory used by the code.]
+  [Total memory currently allocated for Coefficients and Updated
+   Coefficients is about        0.0 and        0.0 MB respectively.]
+ 
+  --->  Beginning pass number 1 of 1-pass calculation.
+ 
+  CHOICE OF ECONOMIC ENVIRONMENT
+  (All components of 'pop' chosen to be exogenous.)
+  (All components of 'pcgdswld' chosen to be exogenous.)
+  (All components of 'ams' chosen to be exogenous.)
+  (All components of 'tms' chosen to be exogenous.)
+  (The following components of 'qo' have been chosen to be exogenous :
+  1-3, 8-10, 15-17
+ (Finished specifying closure.)
+ 
+  [ Current closure is valid, namely,
+    there are 67 exogenous and 365 endogenous.]
+ 
+ 
+ (Completed specifying a closure.)
+ 
+  (Value of Harwell parameter U to be used is  0.1000000.)
+ 
+  SHOCKS
+  ------
+  
+  (All components of 'pcgdswld' chosen to be shocked.)
+  Component 1,  value 10.00000
+ 
+ (Total number of nonzero shocks is 1.)
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\basedata.har'.)
+ Reading VDPM(TRAD_COMM,REG)
+ (Read real array, size 3x3, header "VDPM".)
+ Reading VIPM(TRAD_COMM,REG)
+ (Read real array, size 3x3, header "VIPM".)
+ Reading EVFM(ENDW_COMM,PROD_COMM,REG)
+ (Read real array, size 3x4x3, header "EVFM".)
+ Reading VDFM(TRAD_COMM,PROD_COMM,REG)
+ (Read real array, size 3x4x3, header "VDFM".)
+ Reading VIFM(TRAD_COMM,PROD_COMM,REG)
+ (Read real array, size 3x4x3, header "VIFM".)
+  Formula for 'VFM'
+  Formula for 'VFM'
+ Reading VIMS(TRAD_COMM,REG,REG)
+ (Read real array, size 3x3x3, header "VIMS".)
+ Reading VIWS(TRAD_COMM,REG,REG)
+ (Read real array, size 3x3x3, header "VIWS".)
+  Formula for 'VIM'
+  Formula for 'VIM_ALT'
+  Formula for 'VOM'
+  Formula for 'VOM'
+  Formula for 'VDM'
+  Formula for 'VOM_ALT'
+ Reading SAVE(REG)
+ (Read real array, size 3, header "SAVE".)
+  Formula for 'REGINV'
+ Reading VDEP(REG)
+ (Read real array, size 3, header "VDEP".)
+  Formula for 'NETINV'
+ Reading VKB(REG)
+ (Read real array, size 3, header "VKB".)
+ Reading POPN(REG)
+ (Read real array, size 3, header "POP".)
+ (Opened, as header, existing file 'C:\runGTAP375\MTM\default.prm'.)
+ Reading ESUBD(TRAD_COMM)
+ (Read real array, size 3, header "ESBD".)
+ Reading ESUBM(TRAD_COMM)
+ (Read real array, size 3, header "ESBM".)
+ Reading ESUBVA(PROD_COMM)
+ (Read real array, size 4, header "ESBV".)
+  Formula for 'VPM'
+  Formula for 'PRIVEXP'
+  Formula for 'INCOME'
+  Formula for 'MTAX'
+  Formula for 'INCOME_ALT'
+  Formula for 'VVA'
+  Formula for 'GLOBINV'
+  Formula for 'GLOBINV_ALT'
+  Formula for 'GDP'
+  Formula for 'TBAL'
+  Formula for 'INCOMEEV'
+  Formula for 'SX_IRS'
+  Formula for 'SM_IRS'
+  Formula for 'SW_IR'
+  Formula for 'SW_I'
+  Formula for 'SX_IR'
+  Formula for 'SM_IR'
+  (Checking that values of 'VDPM' are in the required range.)
+  (Checking that values of 'VIPM' are in the required range.)
+  (Checking that values of 'EVFM' are in the required range.)
+  (Checking that values of 'VDFM' are in the required range.)
+  (Checking that values of 'VIFM' are in the required range.)
+  (Checking that values of 'VFM' are in the required range.)
+  (Checking that values of 'VIMS' are in the required range.)
+  (Checking that values of 'VIWS' are in the required range.)
+  (Checking that values of 'VDEP' are in the required range.)
+  Formula for 'C00040'
+  Formula for 'C00041'
+  Formula for 'C00042'
+  Formula for 'C00043'
+  Formula for 'C00044'
+  Formula for 'C00045'
+  Formula for 'C00046'
+  Formula for 'C00047'
+  Formula for 'C00048'
+  Formula for 'C00049'
+  Formula for 'C00050'
+  Formula for 'C00051'
+  Formula for 'C00052'
+  Formula for 'C00053'
+  Formula for 'C00054'
+  Formula for 'C00055'
+ [CPU for reads, formulas etc is 0.00 seconds.]
+ Elapsed time for reads, formulas etc is: less than one second.
+ 
+  (Writing the Solution Coefficients (SLC) file.)
+ 
+  Total memory currently used for all arrays is approximately 0.69 megabytes.
+  [This includes memory relating to current values:    MMNZ=50000, MMNZ1=50000 and MMNZ2=50000.]
+  [Add about 5-10 megabytes for the memory used by the code.]
+  [Total memory currently allocated for Coefficients and Updated
+   Coefficients is about        0.0 and        0.0 MB respectively.]
+ 
+  [Starting TGCSM2W submatrices]
+ 
+  Equation 'CAPGOODS'
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'qcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'PRCGOODS'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'KAPSVCES'
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'REGIONALINCOME'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 18, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'pcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'y'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'PRIVCONSEXP'
+     Submatrix for variable 'y'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'yp'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'SAVING'
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'qsave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'y'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'PCOMPRICE'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pp'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'PHHLDINDEX'
+     Submatrix for variable 'ppriv'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pp'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'PRIVU'
+     Submatrix for variable 'yp'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'ppriv'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'up'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'FNLDEM'
+     Submatrix for variable 'ppriv'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pp'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'up'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qp'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'PHHLDDOM'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qpd'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pp'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qp'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'ENDWDEMAND'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 69, all on the LHS.)
+     Submatrix for variable 'qfe'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 27, all on the LHS.)
+ 
+  Equation 'ENDWDEMAND_CGDS'
+     Submatrix for variable 'qfe'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'ZEROPROFITS'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 60, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 36, all on the LHS.)
+ 
+  Equation 'DPRICEIMP'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'MKTCLIMP'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 36, all on the LHS.)
+     Submatrix for variable 'pp'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qp'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qim'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'IMPORTDEMAND'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qim'
+     (Number of nonzeros is 27, all on the LHS.)
+ 
+  Equation 'MKTCLDOM'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qpd'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pim'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 36, all on the LHS.)
+     Submatrix for variable 'qds'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'MKTCLTRD_MARG'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qds'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'MKTCLENDWM'
+     Submatrix for variable 'qfe'
+     (Number of nonzeros is 21, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+ 
+  Equation 'WALRAS_D'
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'qsave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'walras_dem'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'RORGLOBAL'
+     Submatrix for variable 'qcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'globalcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'SAVEPRICE'
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pcgdswld'
+     (Number of nonzeros is 3, all corresponding to shocks.)
+ 
+  Equation 'PRICGDS'
+     Submatrix for variable 'pcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pcgdswld'
+     (Number of nonzeros is 1, all corresponding to shocks.)
+ 
+  Equation 'WALRAS_S'
+     Submatrix for variable 'pcgdswld'
+     (Number of nonzeros is 1, all corresponding to shocks.)
+     Submatrix for variable 'globalcgds'
+     (Number of nonzeros is 1, all on the LHS.)
+     Submatrix for variable 'walras_sup'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'WALRAS'
+     Submatrix for variable 'walras_dem'
+     (Number of nonzeros is 1, all on the LHS.)
+     Submatrix for variable 'walras_sup'
+     (Number of nonzeros is 1, all on the LHS.)
+     Submatrix for variable 'walraslack'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'REALRETURN'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'ppriv'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pfactreal'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'REGSUPRICE'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'psw'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'REGDEMPRICE'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'pdw'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'TOTeq'
+     Submatrix for variable 'psw'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pdw'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'tot'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'QGDP_r'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 36, all on the LHS.)
+     Submatrix for variable 'qcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'qp'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qgdp'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'QREGEX_ir_MARG'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qxw'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'QREGEX_r'
+     Submatrix for variable 'qxw'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qxwreg'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'QREGIM_is'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qiw'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'QREGIM_s'
+     Submatrix for variable 'qiw'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'qiwreg'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'TRADEBALANCE'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 36, all on the LHS.)
+     Submatrix for variable 'DTBAL'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'KEND'
+     Submatrix for variable 'qcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'ke'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'BALDWIN'
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'qcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'expand'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'DTBALRATIO'
+     Submatrix for variable 'y'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'DTBAL'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'DTBALR'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'PRICEINDEXREG'
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'ppriv'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'p'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'UTILITY'
+     Submatrix for variable 'y'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'p'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'u'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'INCOME_EQUIV'
+     Submatrix for variable 'u'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'yev'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'EVREG'
+     Submatrix for variable 'yev'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'EV'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'EVWLD'
+     Submatrix for variable 'EV'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'WEV'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'EV_DECOMPOSITION'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 18, all on the LHS.)
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'EV_ALT'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'WORLDEV'
+     Submatrix for variable 'EV_ALT'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'WEV_ALT'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'CONT_EV_pop'
+     Submatrix for variable 'CNTpopr'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'CONT_EV_alleffir_T'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 18, all on the LHS.)
+     Submatrix for variable 'CNTalleffir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'CONT_EV_qimisr'
+     Submatrix for variable 'qxs'
+     (Number of nonzeros is 18, all on the LHS.)
+     Submatrix for variable 'CNTqimisr'
+     (Number of nonzeros is 27, all on the LHS.)
+ 
+  Equation 'PWLDEX'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'pxwwld'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'CNT_EV_cgdsr'
+     Submatrix for variable 'psave'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pcgds'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'pxwwld'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'CNTcgdsr'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'CONT_EV_endwr'
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'kb'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'CNTendwr'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'CONT_EV_endwir'
+     Submatrix for variable 'qo'
+     (Number of nonzeros is 0.)
+     Submatrix for variable 'CNTendwir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'CONT_EV_techr'
+     Submatrix for variable 'CNTtechr'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'CONT_EV_tech_amsr'
+     Submatrix for variable 'CNTtech_amsr'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'EXPPRICE_NMRG'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'px_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'IMPPRICE1_NMRG'
+     Submatrix for variable 'pm'
+     (Number of nonzeros is 27, all on the LHS.)
+     Submatrix for variable 'pm_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'WRLDPRICEi'
+     Submatrix for variable 'px_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'px_i'
+     (Number of nonzeros is 3, all on the LHS.)
+ 
+  Equation 'WRLDPRICE'
+     Submatrix for variable 'px_i'
+     (Number of nonzeros is 3, all on the LHS.)
+     Submatrix for variable 'px_'
+     (Number of nonzeros is 1, all on the LHS.)
+ 
+  Equation 'c1_irEQ'
+     Submatrix for variable 'px_i'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'px_'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'c1_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'c2_irEQ'
+     Submatrix for variable 'px_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'px_i'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'c2_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+ 
+  Equation 'c3_irEQ'
+     Submatrix for variable 'pm_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'px_i'
+     (Number of nonzeros is 9, all on the LHS.)
+     Submatrix for variable 'c3_ir'
+     (Number of nonzeros is 9, all on the LHS.)
+ [CPU for equations is 0.00 seconds.]
+ Elapsed time for equations is: less than one second.
+ [CPU for formulas and equations is 0.02 seconds.]
+ Elapsed time for formulas and equations is: less than one second.
+ 
+  CUMULATIVELY-RETAINED ENDOGENOUS
+  --------------------------------
+  
+ 
+   Total number (of components) chosen to
+    be cumulatively-retained endogenous is 623.
+  
+ 
+  VERBAL DESCRIPTION IS AS FOLLOWS:
+  
+ Numeraire shock
+ [Solution method is euler. Steps = 1.]
+ [CMF file: gtapmini.cmf]
+ (Opened new binary file 'C:\runGTAP375\work\gtapmini.cdk'.)
+ 
+  (Beginning a simulation.)
+ 
+   (Total number of endogenous variables is 365.)
+   (Total number of nonzero entries 
+    in the left hand side matrix is 1501.)
+  [KSTEPA=1, NPASSA=1]
+ 
+  (Calculating the LU decomposition.)
+  Karp-Sipser Initialization matched 363 rows corresponding to 99.45%
+   [CPU time for GPLU analysis is 0.00 seconds.]
+   Elapsed time for  GPLU analysis is: less than one second.
+  [Calling MA48BG.]
+   [CPU time for MA48B is 0.00 seconds.]
+   Elapsed time for MA48B is: less than one second.
+  (Minimum size of MMNZ and MMNZ1 to allow LU decomposition by MA48 is 3244.)
+  [CPU time for LU decomposition is 0.00 seconds.]
+  Elapsed time for LU decomposition is: less than one second.
+  [CPU time for MA48C/MA28I is 0.00 seconds.]
+  [CPU time for solution accuracy check is 0.00 seconds.]
+  (Cumulative solution obtained.)
+ [CPU for simulation is 0.00 seconds.]
+ Elapsed time for simulation is: less than one second.
+ Elapsed time to do up to first solve (this subinterval) is
+   less than one second.
+ 
+  (Beginning the backsolve after pass 1 of this 1-pass calculation.)
+  Backsolving for variable 'CNTalleffr using equation 'CONT_EV_alleffr'
+  Backsolving for variable 'qfm using equation 'INDIMP'
+  Backsolving for variable 'CNTtotr using equation 'CONT_EV_totr'
+  Backsolving for variable 'pf using equation 'ICOMPRICE'
+  Backsolving for variable 'qfd using equation 'INDDOM'
+  Backsolving for variable 'pms using equation 'MKTPRICES'
+  Backsolving for variable 'CNTtech_amsirs using equation 'CONT_EV_tech_amsirs'
+  Backsolving for variable 'qf using equation 'INTDEMAND'
+  Backsolving for variable 'pcif using equation 'EXPRICES'
+  Backsolving for variable 'qva using equation 'VADEMAND'
+  Backsolving for variable 'pva using equation 'VAPRICE'
+  Backsolving for variable 'qpm using equation 'PHHLDAGRIMP'
+  [CPU for backsolve is 0.00 seconds.]
+  Elapsed time for backsolve is: less than one second.
+ 
+  (Beginning the update after pass 1 of this 1-pass calculation.)
+ Update of "VDPM"
+ Update of "VIPM"
+ Update of "EVFM"
+ Update of "VDFM"
+ Update of "VIFM"
+ Update of "VIMS"
+ Update of "VIWS"
+ Update of "SAVE"
+ Update of "VDEP"
+ Update of "VKB"
+ Update of "POPN"
+ Update of "INCOMEEV"
+ (Opened new header file 'gtapmini-1-1.uc5'.)
+ 
+  (Writing the UC5/6/7 file.)
+  [CPU for update is 0.00 seconds.]
+  [CPU for step 1 is 0.02 seconds.]
+  Elapsed time for update is: less than one second.
+  Elapsed time for step 1 is: less than one second.
+ Elapsed time to do after-first-LU-decomp part
+  of this 1-pass calculation is: less than one second.
+ [CPU for all of this 1-step calculation is 0.02 seconds.]
+ Elapsed time for all this 1-step calculation is: less than one second.
+ 
+  Total memory currently used for all arrays is approximately 0.69 megabytes.
+  [This includes memory relating to current values:    MMNZ=50000, MMNZ1=50000 and MMNZ2=50000.]
+  [Add about 5-10 megabytes for the memory used by the code.]
+  [Total memory currently allocated for Coefficients and Updated
+   Coefficients is about        0.0 and        0.0 MB respectively.]
+  [This is probably the most memory that will be used in this run.]
+  
+ [Deallocated MMNZ memory before TGCMST call (TGGSBS1).]
+   Real matrix with 623 rows and 1 columns written. Header 'CUMS'
+ 
+  (Final cumulative solution written to Solution file.)
+ (Read real array, size 3x3, header "0001".)
+ (Read real array, size 3x3, header "0002".)
+ (Read real array, size 3x4x3, header "0003".)
+ (Read real array, size 3x4x3, header "0004".)
+ (Read real array, size 3x4x3, header "0005".)
+ (Read real array, size 3x3x3, header "0007".)
+ (Read real array, size 3x3x3, header "0008".)
+ (Read real array, size 3, header "0014".)
+ (Read real array, size 3, header "0016".)
+ (Read real array, size 3, header "0018".)
+ (Read real array, size 3, header "0019".)
+ (Read real array, size 3, header "0033".)
+  [Total CPU is 0.05 seconds.]
+ 
+  (Minimum values for successful completion seem to be:
+    MMNZ=3244, MMNZ1=3244, MMNZ2=3244.)
+ 
+  Total memory currently used for all arrays is approximately 0.12 megabytes.
+  [This does NOT include memory related to MMNZ, MMNZ1 and MMNZ2. The
+   associated arrays are not allocated.]
+  [Add about 5-10 megabytes for the memory used by the code.]
+  [Total memory currently allocated for Coefficients and Updated
+   Coefficients is about        0.0 and        0.0 MB respectively.]
+  [The likely maximum memory used in this run has 
+    been reported earlier - search for "most memory".]
+  
+ 
+  Maximum residual ratio across whole simulation is 6.4878556E-08
+  
+ (Solution file is 'C:\runGTAP375\work\gtapmini.sl4'.)
+ (SLC file is 'C:\runGTAP375\work\gtapmini.slc'.)
+ 
+  (Inputs have been taken from the Command file "C:\runGTAP375\work\gtapmini.cmf")
+ 
+  (The program has completed without error.)
+  (The program has completed without warnings.)
+  
+  Total elapsed time is: less than one second.
+
+ This run ended at 17:30:41 on 27-NOV-2026

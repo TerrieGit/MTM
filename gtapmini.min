@@ -1,0 +1,843 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ file with set specification
+GTAPDATA              In     y  HAR
+ file containing all base data
+GTAPPARM              In     n  HAR
+ file containing behavioral parameters
+(Display)             Out    n  DIS
+(Solution)            Out    y  SL4
+(Equations)           Out    y  EQ4
+#TABFILE
+gtapmini.tab
+#TMDATE
+at 13:59:48 on 19-AUG-2025
+#STIFILE
+C:\runGTAP375\MTM\gtapmini.STI
+#SETS
+    8
+    1 REG                 -1  u regions in the model
+    2 TRAD_COMM           -1  u traded commodities
+    3 CGDS_COMM           -1  u capital goods commodities
+    4 ENDW_COMM           -1  u endowment commodities
+    5 PROD_COMM           -1  u produced commodities
+    6 DEMD_COMM           -1  u demanded commodities
+    7 NSAV_COMM           -1  u non-savings commodities
+    8 ENDWC_COMM           1  k capital endowment commodity
+capital     
+#VARIABLES
+        75
+    1 pm                      -1     2 ? market price of commodity i in region r
+    7    1
+    2 qpd                     -1     2 ? private hhld demand for domestic i in region s
+    2    1
+    3 pim                     -1     2 ? market price of composite import i in region r
+    2    1
+    4 qpm                     -1     2 ? private hhld demand for imports of i in region s
+    2    1
+    5 qfe                     -1     3 ? demand for endowment e for use in ind. j in region r
+    4    5    1
+    6 qfd                     -1     3 ? domestic good i demanded by industry j in region r
+    2    5    1
+    7 qfm                     -1     3 ? demand for i by industry j in region r
+    2    5    1
+    8 tms                     -1     3 ? source-spec. change in tax on imports of i from r into s
+    2    1    1
+    9 ams                     -1     3 ? import i from region r augmenting tech change in region s
+    2    1    1
+   10 pms                     -1     3 ? dom. price for good i from r to region s (incl imp duties)
+    2    1    1
+   11 qxs                     -1     3 ? export sales of commodity i from r to region s
+    2    1    1
+   12 pcif                    -1     3 ? FOB and CIF world price of commodity i supplied from r to s
+    2    1    1
+   13 qo                      -1     2 ? ind. output (TRAD_COMM) and factor (ENDW_COMM) i in region r
+    7    1
+   14 psave                   -1     1 ? price of savings in region r
+    1
+   15 qsave                   -1     1 ? regional demand for NET savings
+    1
+   16 pcgds                   -1     1 ? price of investment goods = ps("cgds",r)
+    1
+   17 qcgds                   -1     1 ? output of capital goods sector = qo("cgds",r)
+    1
+   18 kb                      -1     1 ? beginning-of-period capital stock in r
+    1
+   19 pop                     -1     1 ? regional population - exogenous
+    1
+   20 y                       -1     1 ? regional household income in region r
+    1
+   21 yp                      -1     1 ? regional private consumption expenditure in region r
+    1
+   22 ppriv                   -1     1 ? price index for private consumption expenditure in region r
+    1
+   23 pp                      -1     2 ? private consumption price for commodity i in region r
+    2    1
+   24 up                      -1     1 ? per capita utility from private expend. in region r
+    1
+   25 qp                      -1     2 ? private hhld demand for commodity i in region r
+    2    1
+   26 pf                      -1     3 ? firms price for commodity i for use by j in r
+    2    5    1
+   27 qf                      -1     3 ? demand for commodity i for use by j in region r
+    2    5    1
+   28 pva                     -1     2 ? firms price of value added in industry j of region r
+    2    1
+   29 qva                     -1     2 ? value added in industry j of region r
+    2    1
+   30 qim                     -1     2 ? aggregate imports of i in region s, market price weights
+    2    1
+   31 qds                     -1     2 ? domestic sales of commodity i in r
+    2    1
+   32 pcgdswld                 1     0 ? world average price of capital goods (net investment weights)
+   33 globalcgds               1     0 ? global supply of capital goods for NET investment
+   34 walras_dem               1     0 ? demand in the omitted market--global demand for savings
+   35 walras_sup               1     0 ? supply in omitted market--global supply of cgds composite
+   36 walraslack               1     0 ? slack variable in the omitted market
+   37 pfactreal               -1     2 ? ratio of return to primary factor i to CPI in r
+    4    1
+   38 psw                     -1     1 ? index of prices received for tradeables produced in r
+    1
+   39 pdw                     -1     1 ? index of prices paid for tradeables used in region r
+    1
+   40 tot                     -1     1 ? terms of trade for region r: tot(r) = psw(r) - pdw(r)
+    1
+   41 qgdp                    -1     1 ? GDP quantity index
+    1
+   42 qxw                     -1     2 ? aggregate exports of i from region r, FOB weights
+    2    1
+   43 qxwreg                  -1     1 ? volume of merchandise exports, by region
+    1
+   44 qiw                     -1     2 ? aggregate imports of i into region s, CIF weights
+    2    1
+   45 qiwreg                  -1     1 ? volume of merchandise imports, by region
+    1
+   46 DTBAL                   -1     1 ? change in trade balance X - M, $ US million
+    1
+   47 ke                      -1     1 ? end-of-period capital stock in r
+    1
+   48 expand                  -1     2 ? change in investment levels relative to endowment stock
+    8    1
+   49 DTBALR                  -1     1 ? change in ratio of trade balance to regional income
+    1
+   50 p                       -1     1 ? price index for disposition of income by regional household
+    1
+   51 u                       -1     1 ? per capita utility from aggregate hhld expend. in region r
+    1
+   52 yev                     -1     1 ? regional household income in region r, for EV calc.
+    1
+   53 EV                      -1     1 ? equivalent variation, $ US million
+    1
+   54 WEV                      1     0 ? equivalent variation for the world
+   55 EV_ALT                  -1     1 ? regional EV computed in alternative way
+    1
+   56 WEV_ALT                  1     0 ? expression for WEV computed in alternative way
+   57 CNTpopr                 -1     1 ? contribution to EV in region r of change in population
+    1
+   58 CNTalleffr              -1     1 ? total contribution to regional EV of allocative effects
+    1
+   59 CNTalleffir             -1     2 ? total contribution to regional EV of allocative effects
+    2    1
+   60 CNTqimisr               -1     3 ? cont. to EV of changes in imports of i from SRCE s to DEST r
+    2    1    1
+   61 pxwwld                   1     0 ? price index of world trade
+   62 CNTtotr                 -1     1 ? contribution to regional EV of changes in its terms of trade
+    1
+   63 CNTcgdsr                -1     1 ? contribution to regional EV of changes in the price of cgds
+    1
+   64 CNTendwr                -1     1 ? contribution to regional EV of changes in all ENDW_COMM
+    1
+   65 CNTendwir               -1     2 ? contribution to regional EV of changes in ENDW_COMM i
+    4    1
+   66 CNTtechr                -1     1 ? contribution to regional EV of all technical change
+    1
+   67 CNTtech_amsr            -1     1 ? cont. to EV of bilateral import-augmenting tech change
+    1
+   68 CNTtech_amsirs          -1     3 ? cont. to EV of bilateral import augmenting tech change for TRAD_COMM i
+    2    1    1
+   69 px_ir                   -1     2 ? export price index for good i and region r
+    2    1
+   70 pm_ir                   -1     2 ? imports price index for good i and region r
+    2    1
+   71 px_i                    -1     1 ? world export price index for commodity i
+    2
+   72 px_                      1     0 ? world export price index for all commodities
+   73 c1_ir                   -1     2 ? contribution of world price, px_i, to ToT
+    2    1
+   74 c2_ir                   -1     2 ? contribution of regional export price, px_ir, to ToT
+    2    1
+   75 c3_ir                   -1     2 ? contribution of regional import price, pm_ir, to ToT
+    2    1
+#VCSTAT
+cccbcbbccbcbcccccccccccccbbbbccccccccccc
+cccccccccccccccccbcccbcccccbccccccc
+#VCTP
+pppppppppppppppppppppppppppppppppppppppp
+pppppcppcpppccccccccpcccccccppppppp
+#SUBSETS
+    12
+     1     2     5
+     2     3     5
+     3     4     6
+     4     2     6
+     5     6     7
+     6     3     7
+     7     2     7
+     8     4     7
+     9     5     7
+    10     8     4
+    11     8     6
+    12     8     7
+#COEFFICIENTS
+   55
+    1 VDPM            2 r y y  private consumption expenditure on domestic i in r
+    2    1
+    2 VIPM            2 r y y  private consumption expenditure on i in r
+    2    1
+    3 EVFM            3 r y y  producer expenditure on e by j in r valued at mkt prices
+    4    5    1
+    4 VDFM            3 r y y  purchases of domestic i for use by j in region r
+    2    5    1
+    5 VIFM            3 r y y  purchases of imports i for use by j in region r
+    2    5    1
+    6 VFM             3 r n n  producer expenditure on e by j in r valued at mkt prices
+    6    5    1
+    7 VIMS            3 r y y  imports of i from r to s valued at domestic mkt prices
+    2    1    1
+    8 VIWS            3 r y y  imports of i from r to s valued CIF (tradeables only)
+    2    1    1
+    9 VIM             2 r n n  Imports into region s (aggregated by source (exporting) country)
+    2    1
+   10 VIM_ALT         2 r n n  imports into region s (aggregated by agent)
+    2    1
+   11 VOM             2 r n n  value of commodity or endow. i in region r at market prices
+    7    1
+   12 VDM             2 r n n  domestic sales of i in r at mkt prices (tradeables only)
+    2    1
+   13 VOM_ALT         2 r n n  value of commodity or endow. i in region r at market prices
+    2    1
+   14 SAVE            1 r y y  expenditure on NET savings in region r valued at agents prices
+    1
+   15 REGINV          1 r n n  regional GROSS investment in r (value of "cgds" output)
+    1
+   16 VDEP            1 r y y  value of capital depeciation in r (exogenous)
+    1
+   17 NETINV          1 r n n  regional NET investment in region r
+    1
+   18 VKB             1 r y y
+    1
+   19 POPN            1 r y y population fo region r
+    1
+   20 ESUBD           1 r y r  region-generic el. of sub. domestic/imported for all agents
+    2
+   21 ESUBM           1 r y r  region-generic el. of sub. among imports of i in Armington structure
+    2
+   22 ESUBVA          1 r y r  elst. of sub. capital/labor/land, in production of value added in j
+    5
+   23 VPM             2 r n n  private hhld expenditure on i in r valued at agents prices
+    2    1
+   24 PRIVEXP         1 r n n  private consumption expenditure in region r
+    1
+   25 INCOME          1 r n n  level of expenditure, which equals NET income in region r
+    1
+   26 MTAX            3 r n n  tax on imports of good i from source r in destination s
+    2    1    1
+   27 INCOME_ALT      1 r n n  Income measured via income side
+    1
+   28 VVA             2 r n n  value added in activity j in region r
+    2    1
+   29 GLOBINV         0 r n n  global expenditures on net investment
+   30 GLOBINV_ALT     0 r n n  global expenditures on net investment
+   31 GDP             1 r n n  Gross Domestic Product in region r
+    1
+   32 TBAL            1 r n n  trade balance for region r
+    1
+   33 INCOMEEV        1 r n y  regional income, for EV calc.
+    1
+   34 SX_IRS          3 r n n  share of exports of good i from region r to s
+    2    1    1
+   35 SM_IRS          3 r n n  share of imports of good i into s from r at FOB prices
+    2    1    1
+   36 SW_IR           2 r n n  share of region r exports in world total for good i
+    2    1
+   37 SW_I            1 r n n  share of exports of i in world total
+    2
+   38 SX_IR           2 r n n  share of good i in total exports from r
+    2    1
+   39 SM_IR           2 r n n  share of good i in total imports into r
+    2    1
+   40 C00040          2 r n n Introduced during condensation
+    2    1
+   41 C00041          2 r n n Introduced during condensation
+    2    1
+   42 C00042          1 r n n Introduced during condensation
+    1
+   43 C00043          1 r n n Introduced during condensation
+    1
+   44 C00044          2 r n n Introduced during condensation
+    2    1
+   45 C00045          2 r n n Introduced during condensation
+    2    1
+   46 C00046          1 r n n Introduced during condensation
+    1
+   47 C00047          0 r n n Introduced during condensation
+   48 C00048          1 r n n Introduced during condensation
+    1
+   49 C00049          2 r n n Introduced during condensation
+    2    1
+   50 C00050          2 r n n Introduced during condensation
+    2    1
+   51 C00051          3 r n n Introduced during condensation
+    2    5    1
+   52 C00052          2 r n n Introduced during condensation
+    2    1
+   53 C00053          2 r n n Introduced during condensation
+    2    1
+   54 C00054          2 r n n Introduced during condensation
+    2    1
+   55 C00055          2 r n n Introduced during condensation
+    2    1
+#EQUATIONS
+   62
+    1 CAPGOODS                   -1  1 eqn defines a variable for gross investment (HT 54)
+    1
+    2 PRCGOODS                   -1  1 eqn defines the price of cgds (HT 55)
+    1
+    3 KAPSVCES                   -1  1 eqn defines a variable for capital services (HT 52)
+    1
+    4 REGIONALINCOME             -1  1 regional income = sum of primary factor income and indirect tax receipts
+    1
+    5 PRIVCONSEXP                -1  1 private consumption expenditure
+    1
+    6 SAVING                     -1  1 saving
+    1
+    7 PCOMPRICE                  -1  2 private consumption price for composite commodities
+    2    1
+    8 PHHLDINDEX                 -1  1 price index for private consumption expenditure
+    1
+    9 PRIVU                      -1  1 utility from government consumption in r
+    1
+   10 FNLDEM                     -1  2 government consumption demands for composite commodities (HT 41)
+    2    1
+   11 PHHLDDOM                   -1  2 private consumption demand for domestic goods (HT 48)
+    2    1
+   12 ENDWDEMAND                 -1  3 demands for endowment commodities
+    4    2    1
+   13 ENDWDEMAND_CGDS            -1  3 demands for endowment commodities - no endowments used in production of cgds
+    4    3    1
+   14 ZEROPROFITS                -1  2 industry zero pure profits condition
+    5    1
+   15 DPRICEIMP                  -1  2 price for aggregate imports (HT 28)
+    2    1
+   16 MKTCLIMP                   -1  2 eqn assures mkt clearing for imported goods entering each region (HT 2)
+    2    1
+   17 IMPORTDEMAND               -1  3 regional demand for disaggregated imported commodities by source (HT 29)
+    2    1    1
+   18 MKTCLDOM                   -1  2 eqn assures market clearing for domestic sales (HT 3)
+    2    1
+   19 MKTCLTRD_MARG              -1  2 eqn assures market clearing for margins commodities (HT 1)
+    2    1
+   20 MKTCLENDWM                 -1  2 eqn assures mkt clearing for perfectly mobile endowments in each r (HT 4)
+    4    1
+   21 WALRAS_D                    1  0 Extra eqn computes change in demand in the omitted market.
+   22 RORGLOBAL                  -1  1 net investment depends on clobalcgds
+    1
+   23 SAVEPRICE                  -1  1 savings price
+    1
+   24 PRICGDS                     1  0 eqn generates a price index for the aggregate global cgds composite
+   25 WALRAS_S                    1  0 Extra eqn computes change in supply in the omitted market.
+   26 WALRAS                      1  0 Check Walras Law.  Value of "walraslack" should be zero, endogenously.
+   27 REALRETURN                 -1  2 eqn defines the real rate of return to primary factor i in region r
+    4    1
+   28 REGSUPRICE                 -1  1 estimate change in index of prices received for tradeables i produced in r
+    1
+   29 REGDEMPRICE                -1  1 estimate change in index of prices paid for tradeable products used in r
+    1
+   30 TOTeq                      -1  1 terms of trade equation computed as difference in psw and pdw (HT 66)
+    1
+   31 QGDP_r                     -1  1 GDP quantity index
+    1
+   32 QREGEX_ir_MARG             -1  2 change in volume of exports of margin commodity m from r
+    2    1
+   33 QREGEX_r                   -1  1 computes % change in quantity index of exports, by region
+    1
+   34 QREGIM_is                  -1  2 change in volume of imports of commodity i into s
+    2    1
+   35 QREGIM_s                   -1  1 computes % change in quantity index of imports, by region
+    1
+   36 TRADEBALANCE               -1  1 computes change in trade balance (X - M), by region (HT 98)
+    1
+   37 KEND                       -1  1 End cap. stock equals begin. cap. stock plus net invest. (gross less deprec.)
+    1
+   38 BALDWIN                    -1  2 change in investment levels relative to endowment stock
+    8    1
+   39 DTBALRATIO                 -1  1 change in ratio of trade balance to regional income
+    1
+   40 PRICEINDEXREG              -1  1 price index for disposition of income by regional household
+    1
+   41 UTILITY                    -1  1 regional household utility
+    1
+   42 INCOME_EQUIV               -1  1 equivalent income
+    1
+   43 EVREG                      -1  1 regional EV (HT 67)
+    1
+   44 EVWLD                       1  0 EV for the world (HT 68)
+   45 EV_DECOMPOSITION           -1  1 decomposition of Equivalent Variation
+    1
+   46 WORLDEV                     1  0 Equivalent Variation for the world
+   47 CONT_EV_pop                -1  1
+    1
+   48 CONT_EV_alleffir_T         -1  2
+    2    1
+   49 CONT_EV_qimisr             -1  3
+    2    1    1
+   50 PWLDEX                      1  0 computes % change in price index of global exports (HT 87)
+   51 CNT_EV_cgdsr               -1  1
+    1
+   52 CONT_EV_endwr              -1  1
+    1
+   53 CONT_EV_endwir             -1  2
+    4    1
+   54 CONT_EV_techr              -1  1
+    1
+   55 CONT_EV_tech_amsr          -1  1
+    1
+   56 EXPPRICE_NMRG              -1  2 price index for total exports of i from r
+    2    1
+   57 IMPPRICE1_NMRG             -1  2 price index for total imports of i in s -- non-margins commodities
+    2    1
+   58 WRLDPRICEi                 -1  1 world export price index for good i
+    2
+   59 WRLDPRICE                   1  0 world export price index for all goods
+   60 c1_irEQ                    -1  2 contribution of world export price index of good i to ToT for region r
+    2    1
+   61 c2_irEQ                    -1  2 contribution of regional export price of good i for region r
+    2    1
+   62 c3_irEQ                    -1  2 contribution of imports price index of good i for region r
+    2    1
+#READS
+   14
+    1     1 VDPM              2 GTAPDATA             VDPM a h     2
+     2     1
+    2     2 VIPM              2 GTAPDATA             VIPM a h     2
+     2     1
+    3     3 EVFM              2 GTAPDATA             EVFM a h     3
+     4     5     1
+    4     4 VDFM              2 GTAPDATA             VDFM a h     3
+     2     5     1
+    5     5 VIFM              2 GTAPDATA             VIFM a h     3
+     2     5     1
+    6     7 VIMS              2 GTAPDATA             VIMS a h     3
+     2     1     1
+    7     8 VIWS              2 GTAPDATA             VIWS a h     3
+     2     1     1
+    8    14 SAVE              2 GTAPDATA             SAVE a h     1
+     1
+    9    16 VDEP              2 GTAPDATA             VDEP a h     1
+     1
+   10    18 VKB               2 GTAPDATA             VKB  a h     1
+     1
+   11    19 POPN              2 GTAPDATA             POP  a h     1
+     1
+   12    20 ESUBD             3 GTAPPARM             ESBD a h     1
+     2
+   13    21 ESUBM             3 GTAPPARM             ESBM a h     1
+     2
+   14    22 ESUBVA            3 GTAPPARM             ESBV a h     1
+     5
+#READ(EXTRA)
+    4
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ TRAD_COMM    GTAPSETS             H2  
+    3 el
+ CGDS_COMM    GTAPSETS             H9  
+    4 el
+ ENDW_COMM    GTAPSETS             H6  
+#NCVARIABLES
+    0
+#STATEMENTS
+      45   1 fl                                                 46  45    0 n
+      47   1 fl                                                 48  47    0 n
+      49   1 fl                                                 50  55    0 n
+      85   1 st REG                                             87  49    0 n
+      88   1 st TRAD_COMM                                       90  49    0 n
+      91   1 st CGDS_COMM                                       93  49    0 n
+      94   1 st ENDW_COMM                                       96  49    0 n
+      97   1 st PROD_COMM                                       98  67    0 n
+      97   1 ss                                                 98  67    0 n
+      97   1 ss                                                 98  67    0 n
+      99   1 st DEMD_COMM                                      100  67    0 n
+      99   1 ss                                                100  67    0 n
+      99   1 ss                                                100  67    0 n
+     101   1 st NSAV_COMM                                      102  70    0 n
+     101   1 ss                                                102  70    0 n
+     101   1 ss                                                102  70    0 n
+     101   1 ss                                                102  70    0 n
+     101   1 ss                                                102  70    0 n
+     103   1 ss                                                104  37    0 n
+     105   1 st ENDWC_COMM                                     106  57    0 n
+     107   1 ss                                                108  38    0 n
+     107   1 ss                                                108  38    0 n
+     107   1 ss                                                108  38    0 n
+     179   1 vr pm                   1.0                       180  56    0 n
+     181   1 vr qpd                  VDPM                      182  64    0 n
+     184   1 cs VDPM                                           185  69    0 n
+     186   1 ud VDPM                 ap                        187  35    0 n
+     188   1 rd VDPM                 a                         189  42    0 n
+     192   1 vr pim                  1.0                       193  64    0 n
+     194   1 vr qpm                  VIPM                      195  66    0 n
+     197   1 cs VIPM                                           198  60    0 n
+     199   1 ud VIPM                 ap                        200  35    0 n
+     201   1 rd VIPM                 a                         202  42    0 n
+     210   1 vr qfe                  EVFM                      211  73    0 n
+     213   1 cs EVFM                                           214  77    0 n
+     215   1 ud EVFM                 ap                        216  39    0 n
+     217   1 rd EVFM                 a                         218  42    0 n
+     222   1 vr qfd                  VDFM                      223  71    0 n
+     225   1 cs VDFM                                           226  69    0 n
+     227   1 ud VDFM                 ap                        228  39    0 n
+     229   1 rd VDFM                 a                         230  42    0 n
+     233   1 vr qfm                  VIFM                      234  58    0 n
+     236   1 cs VIFM                                           237  68    0 n
+     238   1 ud VIFM                 ap                        239  40    0 n
+     240   1 rd VIFM                 a                         241  42    0 n
+     243   1 cs VFM                                            244  76    0 n
+     245   1 fm                                                246  29    0 n
+     247   1 fm                                                248  43    0 n
+     256   1 vr tms                                            257  76    0 n
+     258   1 vr ams                                            259  77    0 n
+     262   1 vr pms                                            263  78    0 n
+     264   1 vr qxs                  VIWS                      265  66    0 n
+     267   1 cs VIMS                                           268  75    0 n
+     269   1 ud VIMS                 ap                        270  42    0 n
+     271   1 rd VIMS                 a                         272  42    0 n
+     274   1 vr pcif                                           275  80    0 n
+     279   1 cs VIWS                                           280  74    0 n
+     283   1 ud VIWS                 ap                        284  43    0 n
+     285   1 rd VIWS                 a                         286  42    0 n
+     288   1 cs VIM                                            289  82    0 n
+     290   1 fm                                                291  41    0 n
+     297   1 cs VIM_ALT                                        298  65    0 n
+     299   1 fm                                                300  61    0 n
+     307   1 vr qo                   VOM                       308  77    0 n
+     310   1 cs VOM                                            311  77    0 n
+     312   1 fm                                                313  44    0 n
+     314   1 fm                                                316  62    0 n
+     318   1 cs VDM                                            319  74    0 n
+     320   1 fm                                                321  57    0 n
+     324   1 cs VOM_ALT                                        325  81    0 n
+     326   1 fm                                                327  54    0 n
+     334   1 vr psave                                          335  46    0 n
+     336   1 vr qsave                                          337  49    0 n
+     339   1 cs SAVE                                           340  80    0 n
+     341   1 ud SAVE                 ap                        342  34    0 n
+     343   1 rd SAVE                 a                         344  42    0 n
+     352   1 vr pcgds                                          353  58    0 n
+     354   1 vr qcgds                                          355  63    0 n
+     357   1 cs REGINV                                         358  74    0 n
+     359   1 fm                                                360  43    0 n
+     362   1 eq CAPGOODS                                       366  61    0 n
+     368   1 eq PRCGOODS                                       371  66    0 n
+     374   1 vr kb                                             375  53    0 n
+     377   1 cs VDEP                                           378  62    0 n
+     379   1 ud VDEP                 ap                        380  31    0 n
+     381   1 rd VDEP                 a                         382  42    0 n
+     384   1 cs NETINV                                         385  54    0 n
+     386   1 fm                                                387  53    0 n
+     389   1 eq KAPSVCES                                       393  80    0 n
+     396   1 cs VKB                                            397  12    0 n
+     398   1 rd VKB                  a                         398  41    0 n
+     399   1 ud VKB                  ap                        399  47    0 n
+     406   1 vr pop                                            407  47    0 n
+     409   1 cs POPN                                           410  38    0 n
+     411   1 rd POPN                 a                         411  42    0 n
+     412   1 ud POPN                 ap                        412  38    0 n
+     420   1 cs ESUBD                                          422  68    0 n
+     423   1 rd ESUBD                a                         424  43    0 n
+     426   1 cs ESUBM                                          428  77    0 n
+     429   1 rd ESUBM                a                         430  43    0 n
+     433   1 cs ESUBVA                                         435  76    0 n
+     436   1 rd ESUBVA               a                         437  44    0 n
+     469   1 vr y                                              470  51    0 n
+     473   1 cs VPM                                            474  77    0 n
+     475   1 fm                                                476  37    0 n
+     478   1 cs PRIVEXP                                        479  63    0 n
+     480   1 fm                                                481  44    0 n
+     483   1 cs INCOME                                         484  76    0 n
+     485   1 fm                                                486  37    0 n
+     489   1 cs MTAX                                           490  76    0 n
+     491   1 fm                                                492  44    0 n
+     496   1 cs INCOME_ALT                                     497  54    0 n
+     498   1 fm                                                500  63    0 n
+     502   1 eq REGIONALINCOME                                 509  53    0 n
+     516   1 vr yp                                             517  67    0 n
+     519   1 eq PRIVCONSEXP                                    522  18    0 n
+     524   1 eq SAVING                                         527  32    0 n
+     535   1 vr ppriv                                          536  77    0 n
+     537   1 vr pp                                             538  70    0 n
+     539   1 vr up                                             540  66    0 n
+     541   1 vr qp                                             542  64    0 n
+     544   1 eq PCOMPRICE                                      547  68    0 n
+     549   1 eq PHHLDINDEX                                     552  65    0 n
+     553   1 eq PRIVU                                          556  38    0 n
+     558   1 eq FNLDEM                                         561  52    0 n
+     564   1 eq PHHLDDOM                                       567  56    0 n
+     569   1 eq PHHLDAGRIMP                                    572  57    0 n
+     605   1 vr pf                                             606  65    0 n
+     607   1 vr qf                                             608  66    0 n
+     610   1 eq ICOMPRICE                                      613  76    0 n
+     615   1 eq INTDEMAND                                      619  19    0 n
+     622   1 eq INDIMP                                         625  63    0 n
+     627   1 eq INDDOM                                         630  62    0 n
+     633   1 vr pva                                            634  71    0 n
+     635   1 vr qva                                            636  55    0 n
+     638   1 cs VVA                                            639  55    0 n
+     640   1 fm                                                641  44    0 n
+     643   1 eq VAPRICE                                        646  67    0 n
+     648   1 eq VADEMAND                                       651  23    0 n
+     654   1 eq ENDWDEMAND                                     658  43    0 n
+     660   1 eq ENDWDEMAND_CGDS                                663  20    0 n
+     667   1 eq ZEROPROFITS                                    673  53    0 n
+     682   1 eq EXPRICES                                       685  27    0 n
+     689   1 eq MKTPRICES                                      692  42    0 n
+     695   1 vr qim                                            696  74    0 n
+     698   1 eq DPRICEIMP                                      701  78    0 n
+     705   1 eq MKTCLIMP                                       710  31    0 n
+     713   1 eq IMPORTDEMAND                                   718  58    0 n
+     729   1 vr qds                  VDM                       730  52    0 n
+     731   1 eq MKTCLDOM                                       736  31    0 n
+     738   1 eq MKTCLTRD_MARG                                  743  47    0 n
+     746   1 eq MKTCLENDWM                                     749  68    0 n
+     761   1 vr pcgdswld                                       762  79    0 n
+     763   1 vr globalcgds                                     764  69    0 n
+     765   1 vr walras_dem                                     766  75    0 n
+     767   1 vr walras_sup                                     768  77    0 n
+     769   1 vr walraslack                                     770  56    0 n
+     773   1 cs GLOBINV                                        774  54    0 n
+     775   1 fm                                                776  36    0 n
+     780   1 cs GLOBINV_ALT                                    781  58    0 n
+     782   1 fm                                                783  38    0 n
+     785   1 eq WALRAS_D                                       787  71    0 n
+     790   1 eq RORGLOBAL                                      794  22    0 n
+     797   1 eq SAVEPRICE                                      800  25    0 n
+     803   1 eq PRICGDS                                        805  60    0 n
+     808   1 eq WALRAS_S                                       810  39    0 n
+     812   1 eq WALRAS                                         814  41    0 n
+     837   1 vr pfactreal            1.0                       838  71    0 n
+     839   1 eq REALRETURN                                     842  40    0 n
+     845   1 vr psw                  1.0                       846  69    0 n
+     847   1 eq REGSUPRICE                                     851  66    0 n
+     853   1 vr pdw                  1.0                       854  68    0 n
+     855   1 eq REGDEMPRICE                                    859  66    0 n
+     861   1 vr tot                  1.0                       862  69    0 n
+     863   1 eq TOTeq                                          866  29    0 n
+     869   1 cs GDP                                            870  50    0 n
+     871   1 fm                                                876  52    0 n
+     878   1 vr qgdp                 GDP                       879  35    0 n
+     880   1 eq QGDP_r                                         887  65    0 n
+     890   1 vr qxw                                            891  67    0 n
+     892   1 eq QREGEX_ir_MARG                                 896  48    0 n
+     898   1 vr qxwreg                                         899  59    0 n
+     900   1 eq QREGEX_r                                       904  64    0 n
+     907   1 vr qiw                                            908  67    0 n
+     909   1 eq QREGIM_is                                      912  78    0 n
+     914   1 vr qiwreg                                         915  59    0 n
+     916   1 eq QREGIM_s                                       920  61    0 n
+     923   1 vr DTBAL                                          924  61    0 n
+     925   1 eq TRADEBALANCE                                   932  52    0 n
+     940   1 vr ke                                             941  47    0 n
+     944   1 eq KEND                                           948  63    0 n
+     950   1 vr expand                                         951  76    0 n
+     953   1 eq BALDWIN                                        956  37    0 n
+     959   1 cs TBAL                                           960  43    0 n
+     961   1 fm                                                963  56    0 n
+     965   1 vr DTBALR                                         966  70    0 n
+     967   1 eq DTBALRATIO                                     970  66    0 n
+     981   1 vr p                                              982  73    0 n
+     983   1 vr u                                              984  72    0 n
+     986   1 eq PRICEINDEXREG                                  991  29    0 n
+     993   1 eq UTILITY                                        996  35    0 n
+     998   1 vr yev                                            999  67    0 n
+    1000   1 eq INCOME_EQUIV                                  1003  29    0 n
+    1005   1 cs INCOMEEV                                      1006  50    0 n
+    1007   1 fm                                               1008  28    0 n
+    1009   1 ud INCOMEEV             ap                       1010  25    0 n
+    1012   1 vr EV                                            1013  49    0 n
+    1014   1 eq EVREG                                         1017  41    0 n
+    1019   1 vr WEV                                           1020  47    0 n
+    1021   1 eq EVWLD                                         1023  28    0 n
+    1032   1 vr EV_ALT                                        1033  58    0 n
+    1034   1 eq EV_DECOMPOSITION                              1047  38    0 n
+    1049   1 vr WEV_ALT                                       1050  63    0 n
+    1051   1 eq WORLDEV                                       1053  36    0 n
+    1055   1 vr CNTpopr                                       1056  74    0 n
+    1057   1 eq CONT_EV_pop                                   1059  45    0 n
+    1061   1 vr CNTalleffr                                    1062  78    0 n
+    1063   1 eq CONT_EV_alleffr                               1068  55    0 n
+    1070   1 vr CNTalleffir                                   1072  64    0 n
+    1073   1 eq CONT_EV_alleffir_T                            1077  60    0 n
+    1079   1 vr CNTqimisr                                     1081  69    0 n
+    1082   1 eq CONT_EV_qimisr                                1085  81    0 n
+    1087   1 vr pxwwld               1.0                      1088  42    0 n
+    1089   1 eq PWLDEX                                        1092  74    0 n
+    1094   1 vr CNTtotr                                       1096  69    0 n
+    1097   1 eq CONT_EV_totr                                  1102  78    0 n
+    1104   1 vr CNTcgdsr                                      1105  80    0 n
+    1106   1 eq CNT_EV_cgdsr                                  1110  76    0 n
+    1112   1 vr CNTendwr                                      1113  76    0 n
+    1114   1 eq CONT_EV_endwr                                 1119  42    0 n
+    1121   1 vr CNTendwir                                     1122  77    0 n
+    1123   1 eq CONT_EV_endwir                                1126  53    0 n
+    1128   1 vr CNTtechr                                      1129  72    0 n
+    1130   1 eq CONT_EV_techr                                 1134  67    0 n
+    1136   1 vr CNTtech_amsr                                  1137  79    0 n
+    1138   1 eq CONT_EV_tech_amsr                             1142  65    0 n
+    1144   1 vr CNTtech_amsirs                                1146  76    0 n
+    1147   1 eq CONT_EV_tech_amsirs                           1150  53    0 n
+    1161   1 zd                                               1161  36    0 n
+    1162   1 cs SX_IRS                                        1163  68    0 n
+    1164   1 fm                                               1165  60    0 n
+    1166   1 zd                                               1166  30    0 n
+    1168   1 vr px_ir                                         1169  62    0 n
+    1170   1 eq EXPPRICE_NMRG                                 1173  57    0 n
+    1175   1 cs SM_IRS                                        1176  77    0 n
+    1177   1 fm                                               1178  60    0 n
+    1180   1 vr pm_ir                                         1181  63    0 n
+    1182   1 eq IMPPRICE1_NMRG                                1185  57    0 n
+    1187   1 cs SW_IR                                         1188  71    0 n
+    1189   1 fm                                               1191  74    0 n
+    1193   1 vr px_i                                          1194  57    0 n
+    1195   1 eq WRLDPRICEi                                    1198  50    0 n
+    1200   1 cs SW_I                                          1201  53    0 n
+    1202   1 fm                                               1205  68    0 n
+    1207   1 vr px_                                           1208  57    0 n
+    1209   1 eq WRLDPRICE                                     1211  46    0 n
+    1213   1 cs SX_IR                                         1214  59    0 n
+    1215   1 fm                                               1218  56    0 n
+    1220   1 cs SM_IR                                         1221  60    0 n
+    1222   1 fm                                               1224  61    0 n
+    1226   1 vr c1_ir                                         1227  61    0 n
+    1228   1 eq c1_irEQ                                       1231  61    0 n
+    1233   1 vr c2_ir                                         1234  72    0 n
+    1235   1 eq c2_irEQ                                       1238  53    0 n
+    1240   1 vr c3_ir                                         1241  72    0 n
+    1242   1 eq c3_irEQ                                       1245  53    0 n
+      -1   0 cs C00040                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00041                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00042                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00043                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00044                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00045                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00046                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00047                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00048                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00049                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00050                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00051                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00052                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00053                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00054                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 cs C00055                                           0   0    0 n
+      -1   0 fm                                                  0   0    0 n
+      -1   0 en                                                  0   0    0 n
+#GPVER
+  121004
+#PRVER
+    7000
+#FINAL_LEVEL
+ ol c pm              1.0
+ ol c qpd             VDPM
+ ol c pim             1.0
+ ol b qpm             VIPM
+ ol c qfe             EVFM
+ ol b qfd             VDFM
+ ol b qfm             VIFM
+ ln c tms
+ ln c ams
+ ln b pms
+ ol c qxs             VIWS
+ ln b pcif
+ ol c qo              VOM
+ ln c psave
+ ln c qsave
+ ln c pcgds
+ ln c qcgds
+ ln c kb
+ ln c pop
+ ln c y
+ ln c yp
+ ln c ppriv
+ ln c pp
+ ln c up
+ ln c qp
+ ln b pf
+ ln b qf
+ ln b pva
+ ln b qva
+ ln c qim
+ ol c qds             VDM
+ ln c pcgdswld
+ ln c globalcgds
+ ln c walras_dem
+ ln c walras_sup
+ ln c walraslack
+ ol c pfactreal       1.0
+ ol c psw             1.0
+ ol c pdw             1.0
+ ol c tot             1.0
+ ol c qgdp            GDP
+ ln c qxw
+ ln c qxwreg
+ ln c qiw
+ ln c qiwreg
+ ln c DTBAL
+ ln c ke
+ ln c expand
+ ln c DTBALR
+ ln c p
+ ln c u
+ ln c yev
+ ln c EV
+ ln c WEV
+ ln c EV_ALT
+ ln c WEV_ALT
+ ln c CNTpopr
+ ln b CNTalleffr
+ ln c CNTalleffir
+ ln c CNTqimisr
+ ol c pxwwld          1.0
+ ln b CNTtotr
+ ln c CNTcgdsr
+ ln c CNTendwr
+ ln c CNTendwir
+ ln c CNTtechr
+ ln c CNTtech_amsr
+ ln b CNTtech_amsirs
+ ln c px_ir
+ ln c pm_ir
+ ln c px_i
+ ln c px_
+ ln c c1_ir
+ ln c c2_ir
+ ln c c3_ir
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnn

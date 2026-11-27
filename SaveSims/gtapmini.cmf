@@ -1,0 +1,30 @@
+! This Command file
+! C:\runGTAP375\work\gtapmini.cmf
+! was written by RunGTAP (Version 3.75 built 23/May/2022)
+! If a version has no CMFSTART file of its own
+! RunGTAP creates one by copying the supplied file CMFSTART.DEF
+CPU = yes;  ! log show simulation times
+NDS = yes;  ! no displays
+Extrapolation accuracy file = NO ; ! No XAC file
+!servants=1; ! use 2 processors at once, if possible
+
+!@ end of CMFSTART part
+aux files = C:\runGTAP375\MTM\GTAPMINI;
+file gtapSETS = C:\runGTAP375\MTM\sets.har;
+file gtapDATA = C:\runGTAP375\MTM\basedata.har;
+Updated file gtapDATA = gdata.upd;
+Solution file = C:\runGTAP375\work\gtapmini;
+file gtapPARM = C:\runGTAP375\MTM\default.prm;
+Verbal Description =
+Numeraire shock;
+Method = Johansen;
+Steps = 1;
+automatic accuracy = no;
+exogenous
+          pop
+          pcgdswld
+          ams 
+          tms
+          qo(ENDW_COMM,REG)  ;
+Rest Endogenous ;
+shock pcgdswld = uniform 10;

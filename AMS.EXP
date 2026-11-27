@@ -1,0 +1,27 @@
+file gtapPARM = default.prm;
+Verbal Description =
+Reduced trade costs;
+Method = Gragg;
+Steps = 2 4 6;
+automatic accuracy = no;
+subintervals = 1;
+exogenous
+          pop
+          pcgdswld
+          ams 
+          tms
+          qo(ENDW_COMM,REG) ;
+Rest Endogenous ;
+ Shock ams(TRAD_COMM,REG,REG) = uniform 5;
+
+!@ contents of CMFStart when this EXP file was last saved
+!@ below is a record only....not read by RunGTAP
+!@ RunGTAP reads from the actual CMFSTART file
+!@ ! If a version has no CMFSTART file of its own
+!@ ! RunGTAP creates one by copying the supplied file CMFSTART.DEF
+!@ CPU = yes;  ! log show simulation times
+!@ NDS = yes;  ! no displays
+!@ Extrapolation accuracy file = NO ; ! No XAC file
+!@ !servants=1; ! use 2 processors at once, if possible
+!@ 
+!@ end of CMFSTART part

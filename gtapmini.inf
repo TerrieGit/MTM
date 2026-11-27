@@ -1,0 +1,2835 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 7.0   August 2018>                                    
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2018:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+
+ ! This file was created at 13:59:43 on 19-AUG-2025 by the program
+ !  <TABLO  Version 7.0   August 2018>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 12.1.004   January 2020>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Single-user Source-code Licence for GEMPACK on a PC  !               
+ !    !                 Licence No.  GFS-1744                 !               
+ !    !          Licence for Release 12.1 of GEMPACK          !               
+ !    !                  Terrie L. Walmsley                   !               
+ !    !             Named User-Terrie L. Walmsley             !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+
+
+ ==================================================
+ ++> TABLO Input file is 'gtapmini.tab'
+ ++> This Information file is 'gtapmini'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !<
+      2       ==================================
+      3       Mini Trade model
+      4       October 2019
+      5       Terrie L. Walmsley
+      6       Base on GTAP Version 6.2
+      7       ==================================
+      8    
+      9       --------------------
+     10       HISTORY of this file
+     11       --------------------
+     12       version 1 (Oct 2019): GTAP without: taxes, transport margins, sluggish
+     13                             variables or the CDE.
+     14                             Only import duties and iceberg costs are included.
+     15    
+     16       -------------------------
+     17       Overview of the Structure
+     18       -------------------------
+     19       Preliminaries:
+     20           FILES
+     21           SETS
+     22           READ statements of Base Data
+     23    
+     24       Modules:
+     25           1.  Income and allocation across final consmption and savings
+     26           2.  Final onsumption
+     27           3.  Firms
+     28           4.  International Trade
+     29           5.  Equilibrium Conditions
+     30           6.  Investment and Walras Law
+     31    
+     32       Appendices:
+     33           A.  Summary Indices
+     34           B.  Variables included to allows for special closures
+     35           C.  Equivalent Variation
+     36           D.  Welfare Decomposition
+     37   >!
+     38    
+     39   !<
+     40       -----
+     41       FILES
+     42       -----
+     43   >!
+     44    
+     45   File
+     46       GTAPSETS # file with set specification #;
+     47   File
+     48       GTAPDATA # file containing all base data #;
+     49   File
+     50       GTAPPARM # file containing behavioral parameters #;
+     51    
+     52   !<
+     53       ----
+     54       SETS
+     55       ----
+     56    
+     57       Sets define relevant groupings of entities over which we will be
+     58       performing operations in the model.  SUBSETS are defined in order to
+     59       facilitate summation over only a portion of a given group, e.g., tradeable
+     60       commodities.  Users with access to GEMPACK can increase the maximum set
+     61       sizes to permit larger aggregations, provided you have sufficient RAM for
+     62       implementing them The standard model (10x10 aggregation with decomposition
+     63       code) is designed to run with 16 Mb of RAM.
+     64    
+     65       Aide-Memoire for Sets
+     66       ---------------------
+     67    
+     68       |--------------------------------------|
+     69       |         DEMD_COMM                    |
+     70       |----------------------------------------------------|
+     71       | ENDW_COMM |       TRAD_COMM          |  CGDS_COMM  |
+     72       |----------------------------------------------------|
+     73       |        NSAV_COMM                                   |
+     74       |----------------------------------------------------|
+     75                   |                     PROD_COMM          |
+     76                   |----------------------------------------|
+     77    
+     78       For Endowments,
+     79    
+     80       |-------------------------|
+     81       | ENDW_COMM               |
+     82       |-------------------------|
+     83   >!
+     84    
+     85   Set
+     86       REG # regions in the model #
+     87       read elements from file GTAPSETS header "H1";
+     88   Set
+     89       TRAD_COMM # traded commodities #
+     90       read elements from file GTAPSETS header "H2";
+     91   Set
+     92       CGDS_COMM # capital goods commodities #
+     93       read elements from file GTAPSETS header "H9";
+     94   Set
+     95       ENDW_COMM # endowment commodities #
+     96       read elements from file GTAPSETS header "H6";
+     97   Set
+     98       PROD_COMM # produced commodities # = TRAD_COMM union CGDS_COMM;
+     99   Set
+    100       DEMD_COMM # demanded commodities # = ENDW_COMM union TRAD_COMM;
+    101   Set
+    102       NSAV_COMM # non-savings commodities # = DEMD_COMM union CGDS_COMM;
+    103   Subset
+    104       PROD_COMM is subset of NSAV_COMM;
+    105   Set
+    106       ENDWC_COMM # capital endowment commodity # (capital);
+    107   Subset
+    108       ENDWC_COMM is subset of ENDW_COMM;
+    109    
+    110   !<
+    111       ----------------------------
+    112       READ Statements of Base Data
+    113       ----------------------------
+    114    
+    115       We read in here almost all the base data, and define variables and
+    116       coefficients associated with them.
+    117    
+    118       The READ statements are divided into six sections:
+    119    
+    120       Private Consumption
+    121       Saving
+    122       Firms
+    123       International Trade
+    124       Production and Supply of Factor endowments
+    125       Investment
+    126       Population
+    127    
+    128       Since these are invariant for each solution of the model, they are termed
+    129       coefficients.  Coefficients are assigned upper case to distinguish them
+    130       from variables.  (This is purely cosmetic, as GEMPACK is not
+    131       case-sensitive.) Variables in GEMPACK are assigned lower case labels to
+    132       denote the fact that they are percentage changes.  In some cases, original
+    133       levels values for selected variables are defined to permit the user to
+    134       compare post-simulation levels values across several simulations.
+    135    
+    136       The updating command indicates how the new level of the coefficient will
+    137       be computed based on the previous solution of the linearized equations.
+    138       Note that the notation used in the update commands is a shorthand for
+    139       total differentials of these coefficient values.  Thus, w * v indicates
+    140       that we want to take the total differential of W * V, plug in the
+    141       calculated values of w and v, and add this to the base level in order to
+    142       obtain a revised value for this product.
+    143    
+    144   I-O table of basic MTM model (values)
+    145   --------------------------------------------------------------------
+    146                           Commodities   Final consumption   Investment
+    147                                                              ("CGDS")
+    148   --------------------------------------------------------------------
+    149   Domestic Commodities        VDFM            VDPM          VDFM("CGDS")
+    150   Imported commodities        VIFM            VIPM          VIFM("CGDS")
+    151   Value added                 VFM              -              -
+    152   --------------------------------------------------------------------
+    153    
+    154   I-O table of basic MTM model (prices and quantities)
+    155   --------------------------------------------------------------------
+    156                           Commodities   Final consumption   Investment
+    157                                                              ("CGDS")
+    158   --------------------------------------------------------------------
+    159   Domestic Commodities        PM*QFD          PM*QPD        PM*QFD("CGDS")
+    160   Imported commodities        PIM*QFM         PIM*QPM       PIM*QFM("CGDS")
+    161   Value added                 PM*QFE             -              -
+    162   --------------------------------------------------------------------
+    163    
+    164   Included are 4 coefficients (search _ALT) that allow you to check that the data
+    165   do add up appropriately (to 6 or 7 digits accuracy).
+    166       - income (INCOME(r) = INCOME_ALT(r)
+    167       - imports by source (supply) and by agent (demand) VIM(i,r) = VIM_ALT(i,r)
+    168       - domestic sales (demand) and production (supply) VOM(i,r) = VOM_ALT(i,r)
+    169       - global savings and global investment GLOBINV(i,r) = GLOBINV_ALT(i,r)
+    170    
+    171   >!
+    172    
+    173   !<
+    174       Private Consumption
+    175       -------------------
+    176   >!
+    177    
+    178   ! Final consumption - domestic !
+    179   Variable (orig_level=1.0)(all,i,NSAV_COMM)(all,r,REG)
+    180       pm(i,r) # market price of commodity i in region r #;
+    181   Variable (orig_level=VDPM)(all,i,TRAD_COMM)(all,r,REG)
+    182       qpd(i,r) # private hhld demand for domestic i in region s #;
+    183    
+    184   Coefficient (ge 0)(all,i,TRAD_COMM)(all,r,REG)
+    185       VDPM(i,r) # private consumption expenditure on domestic i in r #;
+    186   Update (all,i,TRAD_COMM)(all,r,REG)
+    187       VDPM(i,r) = pm(i,r) * qpd(i,r);
+    188   Read
+    189       VDPM from file GTAPDATA header "VDPM";
+    190    
+    191   ! Final consumption - imports!
+    192   Variable (orig_level=1.0)(all,i,TRAD_COMM)(all,r,REG)
+    193       pim(i,r) # market price of composite import i in region r #;
+    194   Variable (orig_level=VIPM)(all,i,TRAD_COMM)(all,r,REG)
+    195       qpm(i,r) # private hhld demand for imports of i in region s #;
+    196    
+    197   Coefficient (ge 0)(all,i,TRAD_COMM)(all,r,REG)
+    198       VIPM(i,r) # private consumption expenditure on i in r #;
+    199   Update (all,i,TRAD_COMM)(all,r,REG)
+    200       VIPM(i,r)= pim(i,r) * qpm(i,r);
+    201   Read
+    202       VIPM from file GTAPDATA header "VIPM";
+    203    
+    204   !<
+    205       Firms
+    206       -----
+    207   >!
+    208    
+    209   ! Firms use of Factors in production !
+    210   Variable (orig_level=EVFM)(all,e,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    211       qfe(e,j,r)  # demand for endowment e for use in ind. j in region r #;
+    212    
+    213   Coefficient (ge 0)(all,e,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    214       EVFM(e,j,r) # producer expenditure on e by j in r valued at mkt prices #;
+    215   Update (all,e,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    216       EVFM(e,j,r) = pm(e,r) * qfe(e,j,r);
+    217   Read
+    218       EVFM from file GTAPDATA header "EVFM";
+    219   ! EVFM is later replaced by VFM !
+    220    
+    221   ! Firms use of Intermediates - domestic, in producton !
+    222   Variable (orig_level=VDFM)(all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    223       qfd(i,j,r)  # domestic good i demanded by industry j in region r #;
+    224    
+    225   Coefficient (ge 0)(all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    226       VDFM(i,j,r) # purchases of domestic i for use by j in region r #;
+    227   Update (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    228       VDFM(i,j,r) = pm(i,r) * qfd(i,j,r);
+    229   Read
+    230       VDFM from file GTAPDATA header "VDFM";
+    231    
+    232   ! Firms use of Intermediates - imported, in producton !
+    233   Variable (orig_level=VIFM)(all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    234       qfm(i,j,r) # demand for i by industry j in region r #;
+    235    
+    236   Coefficient (ge 0)(all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    237       VIFM(i,j,r) # purchases of imports i for use by j in region r #;
+    238   Update (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    239       VIFM(i,j,r) = pim(i,r) * qfm(i,j,r);
+    240   Read
+    241       VIFM from file GTAPDATA header "VIFM";
+    242    
+    243   Coefficient (ge 0)(all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    244       VFM(i,j,r) # producer expenditure on e by j in r valued at mkt prices #;
+    245   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    246       VFM(i,j,r) = EVFM(i,j,r);
+    247   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    248       VFM(i,j,r) = VDFM(i,j,r) + VIFM(i,j,r);
+    249    
+    250   !<
+    251       International Trade
+    252       --------------------
+    253   >!
+    254    
+    255   ! Policy variables - usually set exogensously !
+    256   Variable (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    257       tms(i,r,s) # source-spec. change in tax on imports of i from r into s #;
+    258   Variable (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    259       ams(i,r,s) # import i from region r augmenting tech change in region s #;
+    260    
+    261   ! Trade !
+    262   Variable (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    263       pms(i,r,s) # dom. price for good i from r to region s (incl imp duties) #;
+    264   Variable (orig_level=VIWS)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    265       qxs(i,r,s) # export sales of commodity i from r to region s #;
+    266    
+    267   Coefficient (ge 0)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    268       VIMS(i,r,s) # imports of i from r to s valued at domestic mkt prices #;
+    269   Update (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    270       VIMS(i,r,s) = pms(i,r,s) * qxs(i,r,s);
+    271   Read
+    272       VIMS from file GTAPDATA header "VIMS";
+    273    
+    274   Variable (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    275       pcif(i,r,s) # FOB and CIF world price of commodity i supplied from r to s #;
+    276   ! market price in exporting country, CIF and FOB prices are all the same in this
+    277   model since there are no export taxes of transportation margins. !
+    278    
+    279   Coefficient (ge 0)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    280       VIWS(i,r,s) # imports of i from r to s valued CIF (tradeables only) #;
+    281   ! Since there are no transport margins - imports are also exports values at fob
+    282   prices (VXWD in GTAP).!
+    283   Update (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    284       VIWS(i,r,s) = pcif(i,r,s) * qxs(i,r,s);
+    285   Read
+    286       VIWS from file GTAPDATA header "VIWS";
+    287    
+    288   Coefficient (all,i,TRAD_COMM)(all,s,REG)
+    289       VIM(i,s) # Imports into region s (aggregated by source (exporting) country) #;
+    290   Formula (all,i,TRAD_COMM)(all,s,REG)
+    291       VIM(i,s) = sum(rr,REG, VIMS(i,rr,s));
+    292    
+    293   ! Demand for imports aggregated by source (VIM) should also equal demand for
+    294   imports aggregated by agents (VIM_ALT). Note that we do not know demand for
+    295   imports by source and agent (supply chain data). The two are aggregated into a
+    296   common form and then equated.  !
+    297   Coefficient (all,i,TRAD_COMM)(all,s,REG)
+    298       VIM_ALT(i,s) # imports into region s (aggregated by agent) #;
+    299   Formula (all,i,TRAD_COMM)(all,s,REG)
+    300       VIM_ALT(i,s) = sum(j,PROD_COMM, VIFM(i,j,s)) + VIPM(i,s);
+    301    
+    302   !<
+    303       Production and Supply of Factor endowments
+    304       ------------------------------------------
+    305   >!
+    306    
+    307   Variable (orig_level=VOM)(all,i,NSAV_COMM)(all,r,REG)
+    308       qo(i,r) # ind. output (TRAD_COMM) and factor (ENDW_COMM) i in region r #;
+    309    
+    310   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    311       VOM(i,r) # value of commodity or endow. i in region r at market prices #;
+    312   Formula (all,e,ENDW_COMM)(all,r,REG)
+    313       VOM(e,r) = sum(j,PROD_COMM, VFM(e,j,r));
+    314   Formula (all,j,PROD_COMM)(all,r,REG)
+    315       VOM(j,r) = sum(e,ENDW_COMM, VFM(e,j,r))
+    316                + sum(i,TRAD_COMM, (VDFM(i,j,r) + VIFM(i,j,r))) ;
+    317    
+    318   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    319       VDM(i,r) # domestic sales of i in r at mkt prices (tradeables only) #;
+    320   Formula (all,i,TRAD_COMM)(all,r,REG)
+    321       VDM(i,r) = VDPM(i,r) + sum(j,PROD_COMM, VDFM(i,j,r));
+    322    
+    323   ! supply of domestic production should equal demand !
+    324   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    325       VOM_ALT(i,r) # value of commodity or endow. i in region r at market prices #;
+    326   Formula (all,j,TRAD_COMM)(all,r,REG)
+    327       VOM_ALT(j,r) = VDM(j,r) + sum(s,REG, VIWS(j,r,s));
+    328    
+    329   !<
+    330       Saving
+    331       ------
+    332   >!
+    333    
+    334   Variable (all,r,REG)
+    335       psave(r) # price of savings in region r #;
+    336   Variable (all,r,REG)
+    337       qsave(r) # regional demand for NET savings #;
+    338    
+    339   Coefficient (all,r,REG)
+    340       SAVE(r) # expenditure on NET savings in region r valued at agent's prices #;
+    341   Update (all,r,REG)
+    342       SAVE(r) = psave(r) * qsave(r);
+    343   Read
+    344       SAVE from file GTAPDATA header "SAVE";
+    345    
+    346   !<
+    347       Investment
+    348       ----------
+    349   >!
+    350    
+    351   ! Gross Investment !
+    352   Variable (all,r,REG)
+    353       pcgds(r) # price of investment goods = ps("cgds",r) #;
+    354   Variable (all,r,REG)
+    355       qcgds(r) # output of capital goods sector = qo("cgds",r) #;
+    356    
+    357   Coefficient (all,r,REG)
+    358       REGINV(r) # regional GROSS investment in r (value of "cgds" output) #;
+    359   Formula (all,r,REG)
+    360       REGINV(r) = sum(h,CGDS_COMM, VOM(h,r));
+    361    
+    362   Equation CAPGOODS
+    363   # eq'n defines a variable for gross investment (HT 54) #
+    364   (all,r,REG)
+    365       qcgds(r)
+    366           = sum(h,CGDS_COMM, [VOM(h,r) / REGINV(r)] * qo(h,r));
+    367    
+    368   Equation PRCGOODS
+    369   # eq'n defines the price of cgds (HT 55) #
+    370   (all,r,REG)
+    371       pcgds(r) = sum(h,CGDS_COMM, [VOM(h,r) / REGINV(r)] * pm(h,r));
+    372    
+    373   ! Net investment !
+    374   Variable (all,r,REG)
+    375       kb(r) # beginning-of-period capital stock in r #;
+    376    
+    377   Coefficient (ge 0)(all,r,REG)
+    378       VDEP(r) # value of capital depeciation in r (exogenous) #;
+    379   Update (all,r,REG)
+    380       VDEP(r) = kb(r) * pcgds(r);
+    381   Read
+    382       VDEP from file GTAPDATA header "VDEP";
+    383    
+    384   Coefficient (all,r,REG)
+    385       NETINV(r) # regional NET investment in region r #;
+    386   Formula (all,r,REG)
+    387       NETINV(r) = sum(h,CGDS_COMM, VOM(h,r)) - VDEP(r);
+    388    
+    389   Equation KAPSVCES
+    390   # eq'n defines a variable for capital services (HT 52) #
+    391   (all,r,REG)
+    392       kb(r)
+    393           = sum(h,ENDWC_COMM, [VOM(h,r) / sum(k,ENDWC_COMM, VOM(k,r))] * qo(h,r));
+    394    
+    395   ! Capital stocks !
+    396   Coefficient (all,r,REG)
+    397       VKB(r) ;
+    398   Read VKB from file GTAPDATA header "VKB";
+    399   Update (all,r,REG)  VKB(r) = pcgds(r) * kb(r) ;
+    400    
+    401   !<
+    402       Population
+    403       ----------
+    404   >!
+    405    
+    406   Variable (all,r,REG)
+    407       pop(r) # regional population - exogenous #;
+    408    
+    409   Coefficient (all,r,REG)
+    410       POPN(r) #population fo region r# ;
+    411   Read POPN from file GTAPDATA header "POP";
+    412   Update (all,r,REG)  POPN(r) = pop(r) ;
+    413    
+    414   !<
+    415       Elasticities
+    416       ------------
+    417   >!
+    418    
+    419   ! Arminigton elasticities !
+    420   Coefficient (parameter)(all,i,TRAD_COMM)
+    421       ESUBD(i)
+    422       # region-generic el. of sub. domestic/imported for all agents #;
+    423   Read
+    424       ESUBD from file GTAPPARM header "ESBD";
+    425    
+    426   Coefficient (parameter)(all,i,TRAD_COMM)
+    427       ESUBM(i)
+    428       # region-generic el. of sub. among imports of i in Armington structure #;
+    429   Read
+    430       ESUBM from file GTAPPARM header "ESBM";
+    431    
+    432   ! Elasticities used from Firms demand for value added and intermediates !
+    433   Coefficient (parameter)(all,j,PROD_COMM)
+    434       ESUBVA(j)
+    435       # elst. of sub. capital/labor/land, in production of value added in j #;
+    436   Read
+    437       ESUBVA from file GTAPPARM header "ESBV";
+    438    
+    439   !<
+    440       =======
+    441       Modules
+    442       =======
+    443    
+    444       1. Income
+    445       2. Private Consumption
+    446       3. Firms
+    447       4. International Trade
+    448       5. Equilibrium Conditions
+    449       6. Investment
+    450   >!
+    451    
+    452   !<
+    453       ----------
+    454       1. Income
+    455       ----------
+    456    
+    457       This is done more simply here than in the GTAP model.
+    458    
+    459       Income = Primary factor income
+    460              - depreciation
+    461              + tax revenue (import taxes)
+    462    
+    463       And since Income = Expenditure
+    464    
+    465       Income = private expenditure + savings
+    466    
+    467   >!
+    468    
+    469   Variable (all,r,REG)
+    470       y(r) # regional household income in region r #;
+    471    
+    472   ! income from expenditure side !
+    473   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    474       VPM(i,r) # private hhld expenditure on i in r valued at agent's prices #;
+    475   Formula (all,i,TRAD_COMM)(all,r,REG)
+    476       VPM(i,r) = VDPM(i,r) + VIPM(i,r);
+    477    
+    478   Coefficient (all,r,REG)
+    479       PRIVEXP(r) # private consumption expenditure in region r #;
+    480   Formula (all,r,REG)
+    481       PRIVEXP(r) = sum(i,TRAD_COMM, VPM(i,r));
+    482    
+    483   Coefficient (all,r,REG)
+    484       INCOME(r) # level of expenditure, which equals NET income in region r #;
+    485   Formula (all,r,REG)
+    486       INCOME(r) = PRIVEXP(r) + SAVE(r);
+    487    
+    488   ! income from income side = income from expenditure side !
+    489   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    490       MTAX(i,r,s) # tax on imports of good i from source r in destination s #;
+    491   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    492       MTAX(i,r,s) = VIMS(i,r,s) - VIWS(i,r,s);
+    493    
+    494   ! check income from expenditure side (INCOME) equals income from income side
+    495   (INCOME_ALT)!
+    496   Coefficient (all,s,REG)
+    497       INCOME_ALT(s) # Income measured via income side #;
+    498   Formula (all,s,REG)
+    499       INCOME_ALT(s) = sum(i,ENDW_COMM, VOM(i,s)) - VDEP(s)
+    500                     + sum(i,TRAD_COMM, sum(r,REG, MTAX(i,r,s))) ;
+    501    
+    502   Equation REGIONALINCOME
+    503   # regional income = sum of primary factor income and indirect tax receipts #
+    504   (all,s,REG)
+    505       INCOME(s) * y(s)
+    506           = sum(i,ENDW_COMM, VOM(i,s) * [pm(i,s) + qo(i,s)])
+    507           - VDEP(s)  * [pcgds(s) + kb(s)]
+    508           + sum(i,TRAD_COMM, sum(r,REG, VIMS(i,r,s) * [tms(i,r,s)]
+    509           + MTAX(i,r,s) * [pcif(i,r,s) + qxs(i,r,s)]));
+    510    
+    511   ! Allocation across consumption and saving!
+    512    
+    513   ! Regional Income is then allocated to final consumption and savings using
+    514   Cobb Douglas function !
+    515    
+    516   Variable (all,r,REG)
+    517       yp(r) # regional private consumption expenditure in region r #;
+    518    
+    519   Equation PRIVCONSEXP
+    520   # private consumption expenditure #
+    521   (all,r,REG)
+    522       yp(r) = y(r) ;
+    523    
+    524   Equation SAVING
+    525   # saving #
+    526   (all,r,REG)
+    527       psave(r) + qsave(r) = y(r) ;
+    528    
+    529   !<
+    530       -----------------------------
+    531       2. Private Consumption Module
+    532       -----------------------------
+    533   >!
+    534    
+    535   Variable (all,r,REG)
+    536       ppriv(r) # price index for private consumption expenditure in region r #;
+    537   Variable (all,i,TRAD_COMM)(all,r,REG)
+    538       pp(i,r) # private consumption price for commodity i in region r #;
+    539   Variable (all,r,REG)
+    540       up(r) # per capita utility from private expend. in region r #;
+    541   Variable (all,i,TRAD_COMM)(all,r,REG)
+    542       qp(i,r) # private hhld demand for commodity i in region r #;
+    543    
+    544   Equation PCOMPRICE
+    545   # private consumption price for composite commodities #
+    546   (all,i,TRAD_COMM)(all,r,REG)
+    547       VPM(i,r) * pp(i,r) = VIPM(i,r) * pim(i,r) + VDPM(i,r) * pm(i,r);
+    548    
+    549   Equation PHHLDINDEX
+    550   # price index for private consumption expenditure #
+    551   (all,r,REG)
+    552       PRIVEXP(r) * ppriv(r) = sum(i,TRAD_COMM, VPM(i,r) * pp(i,r));
+    553   Equation PRIVU
+    554   # utility from government consumption in r #
+    555   (all,r,REG)
+    556       yp(r) - pop(r) = ppriv(r) + up(r);
+    557    
+    558   Equation FNLDEM
+    559   # government consumption demands for composite commodities (HT 41) #
+    560   (all,i,TRAD_COMM)(all,r,REG)
+    561       qp(i,r) - pop(r) = up(r) - [pp(i,r) - ppriv(r)];
+    562    
+    563   ! Domestic v imported demand Nest !
+    564   Equation PHHLDDOM
+    565   # private consumption demand for domestic goods (HT 48) #
+    566   (all,i,TRAD_COMM)(all,r,REG)
+    567       qpd(i,r) = qp(i,r) + ESUBD(i) * [pp(i,r) - pm(i,r)];
+    568    
+    569   Equation PHHLDAGRIMP
+    570   # private consumption demand for aggregate imports (HT 49) #
+    571   (all,i,TRAD_COMM)(all,r,REG)
+    572       qpm(i,r) = qp(i,r) + ESUBD(i) * [pp(i,r) - pim(i,r)];
+    573    
+    574   !<
+    575       ---------
+    576       3. Firms
+    577       ---------
+    578    
+    579       Production structure
+    580       --------------------
+    581    
+    582                                qo(j,r)
+    583                                /\
+    584                               /  \  <----- Leontieff
+    585                              /    \
+    586                             /      \
+    587                            /        \
+    588                    qva(j,r)          qf(i,j,r)
+    589                     /|\                    /\
+    590    CES ----->      / | \                  /  \  <------ CES
+    591                   /  |  \                /    \
+    592                  /   |   \              /      \
+    593                 /    |    \            /        \
+    594             Land   Labor  Capital  Domestic     Foreign
+    595                  qfe(i,j,r)         qfd(i,j,r)  qfm(i,j,r)
+    596                [afe(i,j,r)]
+    597    
+    598   N.B., investment goods are also "produced" by the cgds sector.
+    599    
+    600   >!
+    601    
+    602   ! Top level: intermediate demand and Value added !
+    603    
+    604   ! Intermediate goods !
+    605   Variable (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    606       pf(i,j,r) # firms' price for commodity i for use by j in r #;
+    607   Variable (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    608       qf(i,j,r) # demand for commodity i for use by j in region r #;
+    609    
+    610   Equation ICOMPRICE
+    611   # industry price for composite commodities (HT 30) #
+    612   (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    613       VFM(i,j,r) * pf(i,j,r) = VIFM(i,j,r) * pim(i,r) + VDFM(i,j,r) * pm(i,r);
+    614    
+    615   Equation INTDEMAND
+    616   # industry demands for intermediate inputs, including cgds #
+    617   (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    618       qf(i,j,r)
+    619           = qo(j,r) ;
+    620    
+    621   ! Domestic v imported demand Nest !
+    622   Equation INDIMP
+    623   # industry j demands for composite import i (HT 31) #
+    624   (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    625       qfm(i,j,r) = qf(i,j,r) - ESUBD(i) * [pim(i,r) - pf(i,j,r)];
+    626    
+    627   Equation INDDOM
+    628   # industry j demands for domestic good i (HT 32) #
+    629   (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    630       qfd(i,j,r) = qf(i,j,r) - ESUBD(i) * [pm(i,r) - pf(i,j,r)];
+    631    
+    632   ! Value added !
+    633   Variable (all,j,TRAD_COMM)(all,r,REG)
+    634       pva(j,r) # firms' price of value added in industry j of region r #;
+    635   Variable (all,j,TRAD_COMM)(all,r,REG)
+    636       qva(j,r) # value added in industry j of region r #;
+    637    
+    638   Coefficient (all,j,TRAD_COMM)(all,r,REG)
+    639       VVA(j,r) # value added in activity j in region r #;
+    640   Formula (all,j,TRAD_COMM)(all,r,REG)
+    641       VVA(j,r) = sum(e,ENDW_COMM, VFM(e,j,r));
+    642    
+    643   Equation VAPRICE
+    644   # effective price of primary factor composite in each sector/region (HT 33) #
+    645   (all,j,TRAD_COMM)(all,r,REG)
+    646       VVA(j,r) * pva(j,r) = sum(e,ENDW_COMM, VFM(e,j,r) * [pm(e,r)]);
+    647    
+    648   Equation VADEMAND
+    649   # sector demands for primary factor composite #
+    650   (all,j,TRAD_COMM)(all,r,REG)
+    651       qva(j,r) = qo(j,r);
+    652    
+    653   ! Demand for factors !
+    654   Equation ENDWDEMAND
+    655   # demands for endowment commodities #
+    656   (all,e,ENDW_COMM)(all,j,TRAD_COMM)(all,r,REG)
+    657       qfe(e,j,r) = qva(j,r)
+    658           - ESUBVA(j) * [pm(e,r) - pva(j,r)];
+    659    
+    660   Equation ENDWDEMAND_CGDS
+    661   # demands for endowment commodities - no endowments used in production of cgds #
+    662   (all,i,ENDW_COMM)(all,j,CGDS_COMM)(all,r,REG)
+    663       qfe(i,j,r) = 0 ;
+    664    
+    665   ! Zero Profits Equations: Price (market) of good depends on cost of producing
+    666   the good. !
+    667   Equation ZEROPROFITS
+    668   # industry zero pure profits condition #
+    669   (all,j,PROD_COMM)(all,r,REG)
+    670       VOM(j,r) * pm(j,r)
+    671           = sum(e,ENDW_COMM, VFM(e,j,r) * [pm(e,r)])
+    672           + sum(i,TRAD_COMM, VDFM(i,j,r) * [pm(i,r)])
+    673           + sum(i,TRAD_COMM, VIFM(i,j,r) * [pim(i,r)]);
+    674    
+    675   !<
+    676       ----------------------
+    677       4. International Trade
+    678       ----------------------
+    679   >!
+    680    
+    681   ! Price linkages !
+    682   Equation EXPRICES
+    683   # eq'n links agent's and world prices #
+    684   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    685       pcif(i,r,s) = pm(i,r) ;
+    686   ! No export taxes or transporation margins, so CIF price is the market price of
+    687   the good !
+    688    
+    689   Equation MKTPRICES
+    690   # eq'n links price of imports to world price via tariff #
+    691   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    692       pms(i,r,s) = tms(i,r,s) + pcif(i,r,s);
+    693    
+    694   ! Demand for imports !
+    695   Variable (all,i,TRAD_COMM)(all,s,REG)
+    696       qim(i,s) # aggregate imports of i in region s, market price weights #;
+    697    
+    698   Equation DPRICEIMP
+    699   # price for aggregate imports (HT 28) #
+    700   (all,i,TRAD_COMM)(all,s,REG)
+    701       VIM(i,s) * pim(i,s) = sum(r,REG, VIMS(i,r,s) * [pms(i,r,s) - ams(i,r,s)]);
+    702    
+    703   ! Demand for imports equal demand for imports for final consumption and by firms
+    704   (and investment) for intermediate inputs !
+    705   Equation MKTCLIMP
+    706   # eq'n assures mkt clearing for imported goods entering each region (HT 2) #
+    707   (all,i,TRAD_COMM)(all,r,REG)
+    708       VIM(i,r) * qim(i,r)
+    709           = sum(j,PROD_COMM, VIFM(i,j,r) * qfm(i,j,r))
+    710           + VIPM(i,r) * qpm(i,r);
+    711    
+    712   ! Demand for imports by source country !
+    713   Equation IMPORTDEMAND
+    714   # regional demand for disaggregated imported commodities by source (HT 29)  #
+    715   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    716       qxs(i,r,s)
+    717           = -ams(i,r,s) + qim(i,s)
+    718           - ESUBM(i) * [pms(i,r,s) - ams(i,r,s) - pim(i,s)];
+    719    
+    720   !<
+    721       -------------------------
+    722       5. Equilibrium Conditions
+    723       -------------------------
+    724   >!
+    725    
+    726   ! Market Clearing Conditions !
+    727    
+    728   ! Production = Demand for domestic goods plus exports !
+    729   Variable (orig_level=VDM)(all,i,TRAD_COMM)(all,r,REG)
+    730       qds(i,r) # domestic sales of commodity i in r #;
+    731   Equation MKTCLDOM
+    732   # eq'n assures market clearing for domestic sales (HT 3) #
+    733   (all,i,TRAD_COMM)(all,r,REG)
+    734       VDM(i,r) * qds(i,r)
+    735           = sum(j,PROD_COMM, VDFM(i,j,r) * qfd(i,j,r))
+    736           + VDPM(i,r) * qpd(i,r);
+    737    
+    738   Equation MKTCLTRD_MARG
+    739   # eq'n assures market clearing for margins commodities (HT 1) #
+    740   (all,i,TRAD_COMM)(all,r,REG)
+    741       VOM(i,r) * qo(i,r)
+    742           = VDM(i,r) * qds(i,r)
+    743           + sum(s,REG, VIWS(i,r,s) * qxs(i,r,s));
+    744    
+    745   ! Demand for Endowments/factors by firms must equal supply of endowments (qo) !
+    746   Equation MKTCLENDWM
+    747   # eq'n assures mkt clearing for perfectly mobile endowments in each r (HT 4) #
+    748   (all,e,ENDW_COMM)(all,r,REG)
+    749       VOM(e,r) * qo(e,r) = sum(j,PROD_COMM, VFM(e,j,r) * qfe(e,j,r)) ;
+    750    
+    751   !<
+    752       ----------------------------
+    753       6. Investment and Walras Law
+    754       ----------------------------
+    755    
+    756       Simplified version of GTAP - all regional savings is aggregated into a global
+    757       pool. Savings is then allocated across regions for investment purposes in the
+    758       same proportions.
+    759   >!
+    760    
+    761   Variable
+    762       pcgdswld # world average price of capital goods (net investment weights) #;
+    763   Variable
+    764       globalcgds # global supply of capital goods for NET investment #;
+    765   Variable
+    766       walras_dem # demand in the omitted market--global demand for savings #;
+    767   Variable
+    768       walras_sup # supply in omitted market--global supply of cgds composite #;
+    769   Variable
+    770       walraslack # slack variable in the omitted market #;
+    771    
+    772   ! Global savings !
+    773   Coefficient
+    774       GLOBINV # global expenditures on net investment #;
+    775   Formula
+    776       GLOBINV = sum(r,REG, NETINV(r));
+    777    
+    778   ! Total global (net) investment (GLOBINV) should equal total global savings
+    779   (GLOBINV_ALT) !
+    780   Coefficient
+    781       GLOBINV_ALT # global expenditures on net investment #;
+    782   Formula
+    783       GLOBINV_ALT = sum(r,REG, SAVE(r));
+    784    
+    785   Equation WALRAS_D
+    786   # Extra eq'n computes change in demand in the omitted market. #
+    787       GLOBINV * walras_dem = sum(r,REG, SAVE(r) * [psave(r) + qsave(r)]);
+    788    
+    789   ! Net Investment in each region rises by the same amount - globalcgds !
+    790   Equation RORGLOBAL
+    791   # net investment depends on clobalcgds  #
+    792   (all,r,REG)
+    793       [REGINV(r) / NETINV(r)] * qcgds(r) - [VDEP(r) / NETINV(r)] * kb(r)
+    794           = globalcgds ;
+    795    
+    796   ! price of savings !
+    797   Equation SAVEPRICE
+    798   # savings price #
+    799   (all,r,REG)
+    800       psave(r) = pcgdswld ;
+    801    
+    802   ! global price of savings!
+    803   Equation PRICGDS
+    804   # eq'n generates a price index for the aggregate global cgds composite #
+    805       pcgdswld = sum(r,REG, [NETINV(r) / GLOBINV] * pcgds(r));
+    806    
+    807   ! check on walras law!
+    808   Equation WALRAS_S
+    809   # Extra eq'n computes change in supply in the omitted market. #
+    810       walras_sup = pcgdswld + globalcgds;
+    811    
+    812   Equation WALRAS
+    813   # Check Walras' Law.  Value of "walraslack" should be zero, endogenously. #
+    814       walras_sup = walras_dem + walraslack;
+    815    
+    816   !<
+    817       ==========
+    818       Appendices
+    819       ==========
+    820    
+    821           A.  Summary Indices
+    822           B.  Variables included to allows for special closures
+    823           C.  Equivalent Variation
+    824           D.  Welfare Decomposition
+    825   >!
+    826    
+    827   !<
+    828       ------------------
+    829       A. Summary Indices
+    830       ------------------
+    831    
+    832       The following equations calculate many useful summary statistics.  They do
+    833       not generally affect the equilibrium structure of the model
+    834   >!
+    835    
+    836   ! Real factor prices !
+    837   Variable (orig_level=1.0)(all,e,ENDW_COMM)(all,r,REG)
+    838       pfactreal(e,r) # ratio of return to primary factor i to CPI in r #;
+    839   Equation REALRETURN
+    840   # eq'n defines the real rate of return to primary factor i in region r #
+    841   (all,e,ENDW_COMM)(all,r,REG)
+    842       pfactreal(e,r) = pm(e,r) - ppriv(r);
+    843    
+    844   ! Terms of trade !
+    845   Variable (orig_level=1.0)(all,r,REG)
+    846       psw(r) # index of prices received for tradeables produced in r #;
+    847   Equation REGSUPRICE
+    848   # estimate change in index of prices received for tradeables i produced in r #
+    849   (all,r,REG)
+    850       sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s))) * psw(r)
+    851           = sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s) * pcif(i,r,s)));
+    852    
+    853   Variable (orig_level=1.0)(all,s,REG)
+    854       pdw(s) # index of prices paid for tradeables used in region r #;
+    855   Equation REGDEMPRICE
+    856   # estimate change in index of prices paid for tradeable products used in r #
+    857   (all,s,REG)
+    858       sum(i,TRAD_COMM, sum(r,REG, VIWS(i,r,s))) * pdw(s)
+    859           = sum(i,TRAD_COMM, sum(r,REG, VIWS(i,r,s) * pcif(i,r,s)));
+    860    
+    861   Variable (orig_level=1.0)(all,r,REG)
+    862       tot(r) # terms of trade for region r: tot(r) = psw(r) - pdw(r) #;
+    863   Equation TOTeq
+    864   # terms of trade equation computed as difference in psw and pdw (HT 66) #
+    865   (all,r,REG)
+    866       tot(r) = psw(r) - pdw(r);
+    867    
+    868   ! GDP !
+    869   Coefficient (all,r,REG)
+    870       GDP(r) # Gross Domestic Product in region r #;
+    871   Formula (all,r,REG)
+    872       GDP(r)
+    873           = sum(i,TRAD_COMM, VPM(i,r))
+    874           + sum(k,CGDS_COMM, VOM(k,r))
+    875           + sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s)))
+    876           - sum(i,TRAD_COMM, sum(s,REG, VIWS(i,s,r)));
+    877    
+    878   Variable (orig_level=GDP)(all,r,REG)
+    879       qgdp(r) # GDP quantity index #;
+    880   Equation QGDP_r
+    881   # GDP quantity index #
+    882   (all,r,REG)
+    883       GDP(r) * qgdp(r)
+    884           = sum(i,TRAD_COMM, VPM(i,r) * qp(i,r))
+    885           + REGINV(r) * qcgds(r)
+    886           + sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s) * qxs(i,r,s)))
+    887           - sum(i,TRAD_COMM, sum(s,REG, VIWS(i,s,r) * qxs(i,s,r)));
+    888    
+    889   ! exports !
+    890   Variable (all,i,TRAD_COMM)(all,r,REG)
+    891       qxw(i,r) # aggregate exports of i from region r, FOB weights #;
+    892   Equation QREGEX_ir_MARG
+    893   # change in volume of exports of margin commodity m from r #
+    894   (all,i,TRAD_COMM)(all,r,REG)
+    895       sum(s,REG, VIWS(i,r,s)) * qxw(i,r)
+    896           = sum(s,REG, VIWS(i,r,s) * qxs(i,r,s)) ;
+    897    
+    898   Variable (all,r,REG)
+    899       qxwreg(r) # volume of merchandise exports, by region #;
+    900   Equation QREGEX_r
+    901   # computes % change in quantity index of exports, by region #
+    902   (all,r,REG)
+    903       sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s))) * qxwreg(r)
+    904            = sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s)) * qxw(i,r));
+    905    
+    906   ! imports !
+    907   Variable (all,i,TRAD_COMM)(all,s,REG)
+    908       qiw(i,s) # aggregate imports of i into region s, CIF weights #;
+    909   Equation QREGIM_is
+    910   # change in volume of imports of commodity i into s #
+    911   (all,i,TRAD_COMM)(all,s,REG)
+    912       sum(r,REG, VIWS(i,r,s)) * qiw(i,s) = sum(r,REG, VIWS(i,r,s) * qxs(i,r,s));
+    913    
+    914   Variable (all,r,REG)
+    915       qiwreg(r) # volume of merchandise imports, by region #;
+    916   Equation QREGIM_s
+    917   # computes % change in quantity index of imports, by region #
+    918   (all,s,REG)
+    919       sum(i,TRAD_COMM, sum(r,REG, VIWS(i,r,s))) * qiwreg(s)
+    920         = sum(i,TRAD_COMM, sum(r,REG, VIWS(i,r,s)) * qiw(i,s));
+    921    
+    922   ! Trade balance !
+    923   Variable (change)(all,r,REG)
+    924       DTBAL(r) # change in trade balance X - M, $ US million #;
+    925   Equation TRADEBALANCE
+    926   # computes change in trade balance (X - M), by region (HT 98) #
+    927   (all,r,REG)
+    928       DTBAL(r)
+    929           = (sum(s,REG, sum(i,TRAD_COMM, VIWS(i,r,s) /100
+    930                      * (qxs(i,r,s) + pcif(i,r,s))))
+    931           - sum(s,REG, sum(i,TRAD_COMM, VIWS(i,s,r) /100
+    932                      * (qxs(i,s,r) + pcif(i,s,r))))) ;
+    933    
+    934   !<
+    935       -----------------------------------------------------
+    936       B.  Variables included to allows for special closures
+    937       -----------------------------------------------------
+    938   >!
+    939    
+    940   Variable (all,r,REG)
+    941       ke(r) # end-of-period capital stock in r #;
+    942    
+    943   ! Long run closure where investment adds to capital stocks !
+    944   Equation KEND
+    945   # End cap. stock equals begin. cap. stock plus net invest. (gross less deprec.) #
+    946   (all,r,REG)
+    947       [VKB(r) + NETINV(r)] * ke(r) = REGINV(r) * qcgds(r)
+    948                                    + [VKB(r) - VDEP(r)] * kb(r) ;
+    949    
+    950   Variable (all,i,ENDWC_COMM)(all,r,REG)
+    951       expand(i,r) # change in investment levels relative to endowment stock #;
+    952   ! Used to implement a long run closure !
+    953   Equation BALDWIN
+    954   # change in investment levels relative to endowment stock #
+    955   (all,i,ENDWC_COMM)(all,r,REG)
+    956       expand(i,r) = qcgds(r) - qo(i,r);
+    957    
+    958   ! Fix trade Balance by endoegnising investment !
+    959   Coefficient (all,r,REG)
+    960       TBAL(r) # trade balance for region r #;
+    961   Formula (all,r,REG)
+    962       TBAL(r) = sum(s,REG, sum(i,TRAD_COMM, VIWS(i,r,s)))
+    963               - sum(s,REG, sum(i,TRAD_COMM, VIWS(i,s,r)));
+    964    
+    965   Variable (change)(all,r,REG)
+    966       DTBALR(r) # change in ratio of trade balance to regional income #;
+    967   Equation DTBALRATIO
+    968   # change in ratio of trade balance to regional income #
+    969   (all,r,REG)
+    970       100 * INCOME(r) * DTBALR(r) = 100 * DTBAL(r) - TBAL(r) * y(r);
+    971    
+    972   !<
+    973       -----------------------
+    974       C. Equivalent Variation
+    975       -----------------------
+    976    
+    977   >!
+    978    
+    979   ! aggregate utility !
+    980    
+    981   Variable (all,r,REG)
+    982       p(r) # price index for disposition of income by regional household #;
+    983   Variable (all,r,REG)
+    984       u(r) # per capita utility from aggregate hhld expend. in region r #;
+    985    
+    986   Equation PRICEINDEXREG
+    987       # price index for disposition of income by regional household #
+    988       (all,r,REG)
+    989       INCOME(r) * p(r)
+    990           = PRIVEXP(r) * ppriv(r)
+    991           + SAVE(r) * psave(r);
+    992    
+    993   Equation UTILITY
+    994   # regional household utility #
+    995   (all,r,REG)
+    996       u(r) = [y(r) - pop(r) - p(r)] ;
+    997    
+    998   Variable (all,r,REG)
+    999       yev(r) # regional household income in region r, for EV calc. #;
+   1000   Equation INCOME_EQUIV
+   1001   # equivalent income #
+   1002   (all,r,REG)
+   1003       u(r) = [yev(r) - pop(r)];
+   1004    
+   1005   Coefficient (all,r,REG)
+   1006       INCOMEEV(r) # regional income, for EV calc. #;
+   1007   Formula (initial) (all,r,REG)
+   1008       INCOMEEV(r) = INCOME(r);
+   1009   Update (all,r,REG)
+   1010       INCOMEEV(r) = yev(r);
+   1011    
+   1012   Variable (change)(all,r,REG)
+   1013       EV(r) # equivalent variation, $ US million #;
+   1014   Equation EVREG
+   1015   # regional EV (HT 67) #
+   1016   (all,r,REG)
+   1017       EV(r) = [INCOMEEV(r) / 100] * yev(r);
+   1018    
+   1019   Variable (change)
+   1020       WEV # equivalent variation for the world #;
+   1021   Equation EVWLD
+   1022   # EV for the world (HT 68) #
+   1023       WEV = sum(r,REG, EV(r));
+   1024    
+   1025   !<
+   1026       ------------------------
+   1027       D. Welfare Decomposition
+   1028       ------------------------
+   1029       See GTAP Technical Paper No. 5 for derivation and interpretation.
+   1030   >!
+   1031    
+   1032   Variable (linear,change)(all,r,REG)
+   1033       EV_ALT(r) # regional EV computed in alternative way #;
+   1034   Equation EV_DECOMPOSITION
+   1035   # decomposition of Equivalent Variation #
+   1036   (all,r,REG)
+   1037       EV_ALT(r)
+   1038           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1039               * [sum(i,TRAD_COMM, sum(s,REG, MTAX(i,s,r) * [qxs(i,s,r) - pop(r)]))
+   1040               + sum(i,ENDW_COMM, VOM(i,r) * [qo(i,r) - pop(r)])
+   1041               - VDEP(r) * [kb(r) - pop(r)]
+   1042               + sum(i,TRAD_COMM, sum(s,REG, VIMS(i,s,r) * ams(i,s,r)))
+   1043               + sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s) * pcif(i,r,s)))
+   1044               + NETINV(r) * pcgds(r)
+   1045               - sum(i,TRAD_COMM, sum(s,REG, VIWS(i,s,r) * pcif(i,s,r)))
+   1046               - SAVE(r) * psave(r)]
+   1047           + 0.01 * INCOMEEV(r) * pop(r);
+   1048    
+   1049   Variable (linear,change)
+   1050       WEV_ALT # expression for WEV computed in alternative way #;
+   1051   Equation WORLDEV
+   1052   # Equivalent Variation for the world #
+   1053       WEV_ALT = sum(r,REG, EV_ALT(r));
+   1054    
+   1055   Variable (linear,change) (all,r,REG)
+   1056       CNTpopr(r) # contribution to EV in region r of change in population #;
+   1057   Equation CONT_EV_pop
+   1058   (all,r,REG)
+   1059       CNTpopr(r) = 0.01 * INCOMEEV(r) * pop(r);
+   1060    
+   1061   Variable (linear,change) (all,r,REG)
+   1062       CNTalleffr(r) # total contribution to regional EV of allocative effects #;
+   1063   Equation CONT_EV_alleffr
+   1064   (all,r,REG)
+   1065       CNTalleffr(r)
+   1066           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1067           * [sum(i,TRAD_COMM, sum(s,REG,
+   1068                   MTAX(i,s,r) * [qxs(i,s,r) - pop(r)]))];
+   1069    
+   1070   Variable (linear,change) (all,i,TRAD_COMM)(all,r,REG)
+   1071       CNTalleffir(i,r)
+   1072       # total contribution to regional EV of allocative effects #;
+   1073   Equation CONT_EV_alleffir_T
+   1074   (all,i,TRAD_COMM)(all,r,REG)
+   1075       CNTalleffir(i,r)
+   1076           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1077           * [sum(s,REG, MTAX(i,s,r) * [qxs(i,s,r) - pop(r)])];
+   1078    
+   1079   Variable (linear,change) (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1080       CNTqimisr(i,r,s)
+   1081       # cont. to EV of changes in imports of i from SRCE s to DEST r #;
+   1082   Equation CONT_EV_qimisr
+   1083   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1084       CNTqimisr(i,r,s)
+   1085           = [0.01 * INCOMEEV(s) / INCOME(s)] * MTAX(i,r,s) * [qxs(i,r,s) - pop(s)];
+   1086    
+   1087   Variable (orig_level=1.0)
+   1088       pxwwld # price index of world trade #;
+   1089   Equation PWLDEX
+   1090   # computes % change in price index of global exports (HT 87) #
+   1091       sum(i,TRAD_COMM, sum(r,REG, sum(s,REG, VIWS(i,r,s)))) * pxwwld
+   1092       = sum(i,TRAD_COMM, sum(r,REG, sum(s,REG, VIWS(i,r,s) * pcif(i,r,s))));
+   1093    
+   1094   Variable (linear,change) (all,r,REG)
+   1095       CNTtotr(r)
+   1096       # contribution to regional EV of changes in its terms of trade #;
+   1097   Equation CONT_EV_totr
+   1098   (all,r,REG)
+   1099       CNTtotr(r)
+   1100           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1101           * [sum(i,TRAD_COMM, sum(s,REG, VIWS(i,r,s) * [pcif(i,r,s) - pxwwld]))
+   1102           - sum(i,TRAD_COMM, sum(s,REG, VIWS(i,s,r) * [pcif(i,s,r) - pxwwld]))];
+   1103    
+   1104   Variable (linear,change) (all,r,REG)
+   1105       CNTcgdsr(r) # contribution to regional EV of changes in the price of cgds #;
+   1106   Equation CNT_EV_cgdsr
+   1107   (all,r,REG)
+   1108       CNTcgdsr(r)
+   1109           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1110           * [NETINV(r) * [pcgds(r) - pxwwld] - SAVE(r) * [psave(r) - pxwwld]];
+   1111    
+   1112   Variable (linear,change) (all,r,REG)
+   1113       CNTendwr(r) # contribution to regional EV of changes in all ENDW_COMM #;
+   1114   Equation CONT_EV_endwr
+   1115   (all,r,REG)
+   1116       CNTendwr(r)
+   1117           = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1118           * [sum(i,ENDW_COMM, VOM(i,r) * [qo(i,r) - pop(r)])
+   1119               - VDEP(r) * [kb(r) - pop(r)]];
+   1120    
+   1121   Variable (linear,change) (all,i,ENDW_COMM)(all,r,REG)
+   1122       CNTendwir(i,r) # contribution to regional EV of changes in ENDW_COMM i #;
+   1123   Equation CONT_EV_endwir
+   1124   (all,i,ENDW_COMM)(all,r,REG)
+   1125       CNTendwir(i,r) = [0.01 * INCOMEEV(r) / INCOME(r)]
+   1126                      * [VOM(i,r) * [qo(i,r) - pop(r)]];
+   1127    
+   1128   Variable (linear,change) (all,s,REG)
+   1129       CNTtechr(s) # contribution to regional EV of all technical change #;
+   1130   Equation CONT_EV_techr
+   1131   (all,s,REG)
+   1132       CNTtechr(s)
+   1133           = [0.01 * INCOMEEV(s) / INCOME(s)]
+   1134           * [sum(i,TRAD_COMM, sum(r,REG, VIMS(i,r,s) * ams(i,r,s)))];
+   1135    
+   1136   Variable (linear,change)(all,s,REG)
+   1137       CNTtech_amsr(s) # cont. to EV of bilateral import-augmenting tech change #;
+   1138   Equation CONT_EV_tech_amsr
+   1139   (all,s,REG)
+   1140       CNTtech_amsr(s)
+   1141           = [0.01 * INCOMEEV(s) / INCOME(s)]
+   1142           * sum(i,TRAD_COMM, sum(r,REG, VIMS(i,r,s) * ams(i,r,s)));
+   1143    
+   1144   Variable (linear,change) (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1145       CNTtech_amsirs(i,r,s)
+   1146    # cont. to EV of bilateral import augmenting tech change for TRAD_COMM i #;
+   1147   Equation CONT_EV_tech_amsirs
+   1148   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1149       CNTtech_amsirs(i,r,s) = [0.01 * INCOMEEV(s) / INCOME(s)]
+   1150                             * VIMS(i,r,s) * ams(i,r,s);
+   1151    
+   1152   !<
+   1153       -------------------------------
+   1154       D. Terms of Trade Decomposition
+   1155       -------------------------------
+   1156    
+   1157       Computations for decomposition the terms-of-trade effect
+   1158       Reference: Robert McDougall, SALTER No. 12 Working Paper
+   1159   >!
+   1160    
+   1161   Zerodivide (zero_by_zero) default 0;
+   1162   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1163       SX_IRS(i,r,s) # share of exports of good i from region r to s #;
+   1164   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1165       SX_IRS(i,r,s) = VIWS(i,r,s) / sum(ss,REG, VIWS(i,r,ss));
+   1166   Zerodivide (zero_by_zero) off;
+   1167    
+   1168   Variable (all,i,TRAD_COMM)(all,r,REG)
+   1169       px_ir(i,r) # export price index for good i and region r #;
+   1170   Equation EXPPRICE_NMRG
+   1171   # price index for total exports of i from r #
+   1172   (all,i,TRAD_COMM)(all,r,REG)
+   1173       px_ir(i,r) = sum(s,REG, SX_IRS(i,r,s) * pcif(i,r,s));
+   1174    
+   1175   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1176       SM_IRS(i,r,s) # share of imports of good i into s from r at FOB prices #;
+   1177   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1178       SM_IRS(i,r,s) = VIWS(i,r,s) / sum(rr,REG, VIWS(i,rr,s));
+   1179    
+   1180   Variable (all,i,TRAD_COMM)(all,r,REG)
+   1181       pm_ir(i,r) # imports price index for good i and region r #;
+   1182   Equation IMPPRICE1_NMRG
+   1183   # price index for total imports of i in s -- non-margins commodities #
+   1184   (all,i,TRAD_COMM)(all,s,REG)
+   1185       pm_ir(i,s) = sum(r,REG, SM_IRS(i,r,s) * pcif(i,r,s));
+   1186    
+   1187   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1188       SW_IR(i,r) # share of region r exports in world total for good i #;
+   1189   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1190       SW_IR(i,r)
+   1191           = sum(s,REG, VIWS(i,r,s)) / sum(rr,REG, sum(s,REG, VIWS(i,rr,s)));
+   1192    
+   1193   Variable (all,i,TRAD_COMM)
+   1194       px_i(i) # world export price index for commodity i #;
+   1195   Equation WRLDPRICEi
+   1196   # world export price index for good i #
+   1197   (all,i,TRAD_COMM)
+   1198       px_i(i) = sum(r,REG, SW_IR(i,r) * px_ir(i,r));
+   1199    
+   1200   Coefficient (all,i,TRAD_COMM)
+   1201       SW_I(i) # share of exports of i in world total #;
+   1202   Formula (all,i,TRAD_COMM)
+   1203       SW_I(i)
+   1204           = sum(r,REG, sum(s,REG, VIWS(i,r,s)))
+   1205           / [sum(ii,TRAD_COMM, sum(r,REG, sum(s,REG, VIWS(ii,r,s))))];
+   1206    
+   1207   Variable
+   1208       px_ # world export price index for all commodities #;
+   1209   Equation WRLDPRICE
+   1210   # world export price index for all goods #
+   1211       px_ = sum(i,TRAD_COMM, SW_I(i) * px_i(i));
+   1212    
+   1213   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1214       SX_IR(i,r) # share of good i in total exports from r #;
+   1215   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1216       SX_IR(i,r)
+   1217           = sum(s,REG, VIWS(i,r,s))
+   1218           / [sum(ii,TRAD_COMM, sum(s,REG, VIWS(ii,r,s)))];
+   1219    
+   1220   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1221       SM_IR(i,r)  # share of good i in total imports into r #;
+   1222   Formula (all,i,TRAD_COMM)(all,s,REG)
+   1223       SM_IR(i,s) =  sum(r,REG, VIWS(i,r,s))
+   1224                  / sum(ii,TRAD_COMM, sum(r,REG, VIWS(ii,r,s)));
+   1225    
+   1226   Variable (all,i,TRAD_COMM)(all,r,REG)
+   1227       c1_ir(i,r) # contribution of world price, px_i, to ToT #;
+   1228   Equation c1_irEQ
+   1229   # contribution of world export price index of good i to ToT for region r #
+   1230   (all,i,TRAD_COMM)(all,r,REG)
+   1231       c1_ir(i,r) = [SX_IR(i,r) - SM_IR(i,r)] * [px_i(i) - px_];
+   1232    
+   1233   Variable (all,i,TRAD_COMM)(all,r,REG)
+   1234       c2_ir(i,r) # contribution of regional export price, px_ir, to ToT #;
+   1235   Equation c2_irEQ
+   1236   # contribution of regional export price of good i for region r #
+   1237   (all,i,TRAD_COMM)(all,r,REG)
+   1238       c2_ir(i,r) = SX_IR(i,r) * [px_ir(i,r) - px_i(i)];
+   1239    
+   1240   Variable (all,i,TRAD_COMM)(all,r,REG)
+   1241       c3_ir(i,r) # contribution of regional import price, pm_ir, to ToT #;
+   1242   Equation c3_irEQ
+   1243   # contribution of imports price index of good i for region r #
+   1244   (all,i,TRAD_COMM)(all,r,REG)
+   1245       c3_ir(i,r) = SM_IR(i,r) * [pm_ir(i,r) - px_i(i)];
+   1246    
+   1247   !<
+   1248       ====================
+   1249       END OF MTM.TAB FILE
+   1250       ====================
+   1251   >!
+   1252    
+
+
+MESSAGE(S) ABOUT APPARENTLY REDUNDANT STATEMENTS
+------------------------------------------------
+
+ FORMULA for 'VIM_ALT' starting at line 299.
+
+ %%WARNING.  This formula appears to be redundant because
+    the coefficient 'VIM_ALT' affected by it occurs in no equation
+    update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+    subsequent formula, nor in any subsequent DISPLAY,
+    ZERODIVIDE, WRITE or SET statement.
+
+ FORMULA for 'VOM_ALT' starting at line 326.
+
+ %%WARNING.  This formula appears to be redundant because
+    the coefficient 'VOM_ALT' affected by it occurs in no equation
+    update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+    subsequent formula, nor in any subsequent DISPLAY,
+    ZERODIVIDE, WRITE or SET statement.
+
+ FORMULA for 'INCOME_ALT' starting at line 498.
+
+ %%WARNING.  This formula appears to be redundant because
+    the coefficient 'INCOME_ALT' affected by it occurs in no equation
+    update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+    subsequent formula, nor in any subsequent DISPLAY,
+    ZERODIVIDE, WRITE or SET statement.
+
+ FORMULA for 'GLOBINV_ALT' starting at line 782.
+
+ %%WARNING.  This formula appears to be redundant because
+    the coefficient 'GLOBINV_ALT' affected by it occurs in no equation
+    update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+    subsequent formula, nor in any subsequent DISPLAY,
+    ZERODIVIDE, WRITE or SET statement.
+
+COEFFICIENT INITIALIZATION SUMMARY
+----------------------------------
+
+ %% NOTE the 4 WARNING(s) above about coefficients.
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        45     no       no      FILE 'GTAPSETS'                         
+     2        47     no       no      FILE 'GTAPDATA'                         
+     3        49     no       no      FILE 'GTAPPARM'                         
+     4        85     no       no      SET 'REG'                               
+     5        88     no       no      SET 'TRAD_COMM'                         
+     6        91     no       no      SET 'CGDS_COMM'                         
+     7        94     no       no      SET 'ENDW_COMM'                         
+     8        97     no       no      SET 'PROD_COMM'                         
+     9        97     no       no      SUBSET 1 'TRAD_COMM' of 'PROD_COMM'     
+    10        97     no       no      SUBSET 2 'CGDS_COMM' of 'PROD_COMM'     
+    11        99     no       no      SET 'DEMD_COMM'                         
+    12        99     no       no      SUBSET 3 'ENDW_COMM' of 'DEMD_COMM'     
+    13        99     no       no      SUBSET 4 'TRAD_COMM' of 'DEMD_COMM'     
+    14       101     no       no      SET 'NSAV_COMM'                         
+    15       101     no       no      SUBSET 5 'DEMD_COMM' of 'NSAV_COMM'     
+    16       101     no       no      SUBSET 6 'CGDS_COMM' of 'NSAV_COMM'     
+    17       101     no       no      SUBSET 7 'TRAD_COMM' of 'NSAV_COMM'     
+    18       101     no       no      SUBSET 8 'ENDW_COMM' of 'NSAV_COMM'     
+    19       103     no       no      SUBSET 9 'PROD_COMM' of 'NSAV_COMM'     
+    20       105     no       no      SET 'ENDWC_COMM'                        
+    21       107     no       no      SUBSET 10 'ENDWC_COMM' of 'ENDW_COMM'   
+    22       107     no       no      SUBSET 11 'ENDWC_COMM' of 'DEMD_COMM'   
+    23       107     no       no      SUBSET 12 'ENDWC_COMM' of 'NSAV_COMM'   
+    24       179     no       no      VARIABLE 'pm'                           
+    25       181     no       no      VARIABLE 'qpd'                          
+    26       184     no       no      COEFFICIENT 'VDPM'                      
+    27       186     no       no      UPDATE of 'VDPM'                        
+    28       188     no       no      READ into 'VDPM'                        
+    29       192     no       no      VARIABLE 'pim'                          
+    30       194     no       no      VARIABLE 'qpm'                          
+    31       197     no       no      COEFFICIENT 'VIPM'                      
+    32       199     no       no      UPDATE of 'VIPM'                        
+    33       201     no       no      READ into 'VIPM'                        
+    34       210     no       no      VARIABLE 'qfe'                          
+    35       213     no       no      COEFFICIENT 'EVFM'                      
+    36       215     no       no      UPDATE of 'EVFM'                        
+    37       217     no       no      READ into 'EVFM'                        
+    38       222     no       no      VARIABLE 'qfd'                          
+    39       225     no       no      COEFFICIENT 'VDFM'                      
+    40       227     no       no      UPDATE of 'VDFM'                        
+    41       229     no       no      READ into 'VDFM'                        
+    42       233     no       no      VARIABLE 'qfm'                          
+    43       236     no       no      COEFFICIENT 'VIFM'                      
+    44       238     no       no      UPDATE of 'VIFM'                        
+    45       240     no       no      READ into 'VIFM'                        
+    46       243     no       no      COEFFICIENT 'VFM'                       
+    47       245     no       no      Formula for 'VFM'                       
+    48       247     no       no      Formula for 'VFM'                       
+    49       256     no       no      VARIABLE 'tms'                          
+    50       258     no       no      VARIABLE 'ams'                          
+    51       262     no       no      VARIABLE 'pms'                          
+    52       264     no       no      VARIABLE 'qxs'                          
+    53       267     no       no      COEFFICIENT 'VIMS'                      
+    54       269     no       no      UPDATE of 'VIMS'                        
+    55       271     no       no      READ into 'VIMS'                        
+    56       274     no       no      VARIABLE 'pcif'                         
+    57       279     no       no      COEFFICIENT 'VIWS'                      
+    58       283     no       no      UPDATE of 'VIWS'                        
+    59       285     no       no      READ into 'VIWS'                        
+    60       288     no       no      COEFFICIENT 'VIM'                       
+    61       290     no       no      Formula for 'VIM'                       
+    62       297     no       no      COEFFICIENT 'VIM_ALT'                   
+    63       299     no       no      Formula for 'VIM_ALT'                   
+    64       307     no       no      VARIABLE 'qo'                           
+    65       310     no       no      COEFFICIENT 'VOM'                       
+    66       312     no       no      Formula for 'VOM'                       
+    67       314     no       no      Formula for 'VOM'                       
+    68       318     no       no      COEFFICIENT 'VDM'                       
+    69       320     no       no      Formula for 'VDM'                       
+    70       324     no       no      COEFFICIENT 'VOM_ALT'                   
+    71       326     no       no      Formula for 'VOM_ALT'                   
+    72       334     no       no      VARIABLE 'psave'                        
+    73       336     no       no      VARIABLE 'qsave'                        
+    74       339     no       no      COEFFICIENT 'SAVE'                      
+    75       341     no       no      UPDATE of 'SAVE'                        
+    76       343     no       no      READ into 'SAVE'                        
+    77       352     no       no      VARIABLE 'pcgds'                        
+    78       354     no       no      VARIABLE 'qcgds'                        
+    79       357     no       no      COEFFICIENT 'REGINV'                    
+    80       359     no       no      Formula for 'REGINV'                    
+    81       362     no       no      EQUATION 'CAPGOODS'                     
+    82       368     no       no      EQUATION 'PRCGOODS'                     
+    83       374     no       no      VARIABLE 'kb'                           
+    84       377     no       no      COEFFICIENT 'VDEP'                      
+    85       379     no       no      UPDATE of 'VDEP'                        
+    86       381     no       no      READ into 'VDEP'                        
+    87       384     no       no      COEFFICIENT 'NETINV'                    
+    88       386     no       no      Formula for 'NETINV'                    
+    89       389     no       no      EQUATION 'KAPSVCES'                     
+    90       396     no       no      COEFFICIENT 'VKB'                       
+    91       398     no       no      READ into 'VKB'                         
+    92       399     no       no      UPDATE of 'VKB'                         
+    93       406     no       no      VARIABLE 'pop'                          
+    94       409     no       no      COEFFICIENT 'POPN'                      
+    95       411     no       no      READ into 'POPN'                        
+    96       412     no       no      UPDATE of 'POPN'                        
+    97       420     no       no      COEFFICIENT 'ESUBD'                     
+    98       423     no       no      READ into 'ESUBD'                       
+    99       426     no       no      COEFFICIENT 'ESUBM'                     
+   100       429     no       no      READ into 'ESUBM'                       
+   101       433     no       no      COEFFICIENT 'ESUBVA'                    
+   102       436     no       no      READ into 'ESUBVA'                      
+   103       469     no       no      VARIABLE 'y'                            
+   104       473     no       no      COEFFICIENT 'VPM'                       
+   105       475     no       no      Formula for 'VPM'                       
+   106       478     no       no      COEFFICIENT 'PRIVEXP'                   
+   107       480     no       no      Formula for 'PRIVEXP'                   
+   108       483     no       no      COEFFICIENT 'INCOME'                    
+   109       485     no       no      Formula for 'INCOME'                    
+   110       489     no       no      COEFFICIENT 'MTAX'                      
+   111       491     no       no      Formula for 'MTAX'                      
+   112       496     no       no      COEFFICIENT 'INCOME_ALT'                
+   113       498     no       no      Formula for 'INCOME_ALT'                
+   114       502     no       no      EQUATION 'REGIONALINCOME'               
+   115       516     no       no      VARIABLE 'yp'                           
+   116       519     no       no      EQUATION 'PRIVCONSEXP'                  
+   117       524     no       no      EQUATION 'SAVING'                       
+   118       535     no       no      VARIABLE 'ppriv'                        
+   119       537     no       no      VARIABLE 'pp'                           
+   120       539     no       no      VARIABLE 'up'                           
+   121       541     no       no      VARIABLE 'qp'                           
+   122       544     no       no      EQUATION 'PCOMPRICE'                    
+   123       549     no       no      EQUATION 'PHHLDINDEX'                   
+   124       553     no       no      EQUATION 'PRIVU'                        
+   125       558     no       no      EQUATION 'FNLDEM'                       
+   126       564     no       no      EQUATION 'PHHLDDOM'                     
+   127       569     no       no      EQUATION 'PHHLDAGRIMP'                  
+   128       605     no       no      VARIABLE 'pf'                           
+   129       607     no       no      VARIABLE 'qf'                           
+   130       610     no       no      EQUATION 'ICOMPRICE'                    
+   131       615     no       no      EQUATION 'INTDEMAND'                    
+   132       622     no       no      EQUATION 'INDIMP'                       
+   133       627     no       no      EQUATION 'INDDOM'                       
+   134       633     no       no      VARIABLE 'pva'                          
+   135       635     no       no      VARIABLE 'qva'                          
+   136       638     no       no      COEFFICIENT 'VVA'                       
+   137       640     no       no      Formula for 'VVA'                       
+   138       643     no       no      EQUATION 'VAPRICE'                      
+   139       648     no       no      EQUATION 'VADEMAND'                     
+   140       654     no       no      EQUATION 'ENDWDEMAND'                   
+   141       660     no       no      EQUATION 'ENDWDEMAND_CGDS'              
+   142       667     no       no      EQUATION 'ZEROPROFITS'                  
+   143       682     no       no      EQUATION 'EXPRICES'                     
+   144       689     no       no      EQUATION 'MKTPRICES'                    
+   145       695     no       no      VARIABLE 'qim'                          
+   146       698     no       no      EQUATION 'DPRICEIMP'                    
+   147       705     no       no      EQUATION 'MKTCLIMP'                     
+   148       713     no       no      EQUATION 'IMPORTDEMAND'                 
+   149       729     no       no      VARIABLE 'qds'                          
+   150       731     no       no      EQUATION 'MKTCLDOM'                     
+   151       738     no       no      EQUATION 'MKTCLTRD_MARG'                
+   152       746     no       no      EQUATION 'MKTCLENDWM'                   
+   153       761     no       no      VARIABLE 'pcgdswld'                     
+   154       763     no       no      VARIABLE 'globalcgds'                   
+   155       765     no       no      VARIABLE 'walras_dem'                   
+   156       767     no       no      VARIABLE 'walras_sup'                   
+   157       769     no       no      VARIABLE 'walraslack'                   
+   158       773     no       no      COEFFICIENT 'GLOBINV'                   
+   159       775     no       no      Formula for 'GLOBINV'                   
+   160       780     no       no      COEFFICIENT 'GLOBINV_ALT'               
+   161       782     no       no      Formula for 'GLOBINV_ALT'               
+   162       785     no       no      EQUATION 'WALRAS_D'                     
+   163       790     no       no      EQUATION 'RORGLOBAL'                    
+   164       797     no       no      EQUATION 'SAVEPRICE'                    
+   165       803     no       no      EQUATION 'PRICGDS'                      
+   166       808     no       no      EQUATION 'WALRAS_S'                     
+   167       812     no       no      EQUATION 'WALRAS'                       
+   168       837     no       no      VARIABLE 'pfactreal'                    
+   169       839     no       no      EQUATION 'REALRETURN'                   
+   170       845     no       no      VARIABLE 'psw'                          
+   171       847     no       no      EQUATION 'REGSUPRICE'                   
+   172       853     no       no      VARIABLE 'pdw'                          
+   173       855     no       no      EQUATION 'REGDEMPRICE'                  
+   174       861     no       no      VARIABLE 'tot'                          
+   175       863     no       no      EQUATION 'TOTeq'                        
+   176       869     no       no      COEFFICIENT 'GDP'                       
+   177       871     no       no      Formula for 'GDP'                       
+   178       878     no       no      VARIABLE 'qgdp'                         
+   179       880     no       no      EQUATION 'QGDP_r'                       
+   180       890     no       no      VARIABLE 'qxw'                          
+   181       892     no       no      EQUATION 'QREGEX_ir_MARG'               
+   182       898     no       no      VARIABLE 'qxwreg'                       
+   183       900     no       no      EQUATION 'QREGEX_r'                     
+   184       907     no       no      VARIABLE 'qiw'                          
+   185       909     no       no      EQUATION 'QREGIM_is'                    
+   186       914     no       no      VARIABLE 'qiwreg'                       
+   187       916     no       no      EQUATION 'QREGIM_s'                     
+   188       923     no       no      VARIABLE 'DTBAL'                        
+   189       925     no       no      EQUATION 'TRADEBALANCE'                 
+   190       940     no       no      VARIABLE 'ke'                           
+   191       944     no       no      EQUATION 'KEND'                         
+   192       950     no       no      VARIABLE 'expand'                       
+   193       953     no       no      EQUATION 'BALDWIN'                      
+   194       959     no       no      COEFFICIENT 'TBAL'                      
+   195       961     no       no      Formula for 'TBAL'                      
+   196       965     no       no      VARIABLE 'DTBALR'                       
+   197       967     no       no      EQUATION 'DTBALRATIO'                   
+   198       981     no       no      VARIABLE 'p'                            
+   199       983     no       no      VARIABLE 'u'                            
+   200       986     no       no      EQUATION 'PRICEINDEXREG'                
+   201       993     no       no      EQUATION 'UTILITY'                      
+   202       998     no       no      VARIABLE 'yev'                          
+   203      1000     no       no      EQUATION 'INCOME_EQUIV'                 
+   204      1005     no       no      COEFFICIENT 'INCOMEEV'                  
+   205      1007     no       no      Formula for 'INCOMEEV'                  
+   206      1009     no       no      UPDATE of 'INCOMEEV'                    
+   207      1012     no       no      VARIABLE 'EV'                           
+   208      1014     no       no      EQUATION 'EVREG'                        
+   209      1019     no       no      VARIABLE 'WEV'                          
+   210      1021     no       no      EQUATION 'EVWLD'                        
+   211      1032     no       no      VARIABLE 'EV_ALT'                       
+   212      1034     no       no      EQUATION 'EV_DECOMPOSITION'             
+   213      1049     no       no      VARIABLE 'WEV_ALT'                      
+   214      1051     no       no      EQUATION 'WORLDEV'                      
+   215      1055     no       no      VARIABLE 'CNTpopr'                      
+   216      1057     no       no      EQUATION 'CONT_EV_pop'                  
+   217      1061     no       no      VARIABLE 'CNTalleffr'                   
+   218      1063     no       no      EQUATION 'CONT_EV_alleffr'              
+   219      1070     no       no      VARIABLE 'CNTalleffir'                  
+   220      1073     no       no      EQUATION 'CONT_EV_alleffir_T'           
+   221      1079     no       no      VARIABLE 'CNTqimisr'                    
+   222      1082     no       no      EQUATION 'CONT_EV_qimisr'               
+   223      1087     no       no      VARIABLE 'pxwwld'                       
+   224      1089     no       no      EQUATION 'PWLDEX'                       
+   225      1094     no       no      VARIABLE 'CNTtotr'                      
+   226      1097     no       no      EQUATION 'CONT_EV_totr'                 
+   227      1104     no       no      VARIABLE 'CNTcgdsr'                     
+   228      1106     no       no      EQUATION 'CNT_EV_cgdsr'                 
+   229      1112     no       no      VARIABLE 'CNTendwr'                     
+   230      1114     no       no      EQUATION 'CONT_EV_endwr'                
+   231      1121     no       no      VARIABLE 'CNTendwir'                    
+   232      1123     no       no      EQUATION 'CONT_EV_endwir'               
+   233      1128     no       no      VARIABLE 'CNTtechr'                     
+   234      1130     no       no      EQUATION 'CONT_EV_techr'                
+   235      1136     no       no      VARIABLE 'CNTtech_amsr'                 
+   236      1138     no       no      EQUATION 'CONT_EV_tech_amsr'            
+   237      1144     no       no      VARIABLE 'CNTtech_amsirs'               
+   238      1147     no       no      EQUATION 'CONT_EV_tech_amsirs'          
+   239      1161     no       no      ZERODIVIDE instruction                  
+   240      1162     no       no      COEFFICIENT 'SX_IRS'                    
+   241      1164     no       no      Formula for 'SX_IRS'                    
+   242      1166     no       no      ZERODIVIDE instruction                  
+   243      1168     no       no      VARIABLE 'px_ir'                        
+   244      1170     no       no      EQUATION 'EXPPRICE_NMRG'                
+   245      1175     no       no      COEFFICIENT 'SM_IRS'                    
+   246      1177     no       no      Formula for 'SM_IRS'                    
+   247      1180     no       no      VARIABLE 'pm_ir'                        
+   248      1182     no       no      EQUATION 'IMPPRICE1_NMRG'               
+   249      1187     no       no      COEFFICIENT 'SW_IR'                     
+   250      1189     no       no      Formula for 'SW_IR'                     
+   251      1193     no       no      VARIABLE 'px_i'                         
+   252      1195     no       no      EQUATION 'WRLDPRICEi'                   
+   253      1200     no       no      COEFFICIENT 'SW_I'                      
+   254      1202     no       no      Formula for 'SW_I'                      
+   255      1207     no       no      VARIABLE 'px_'                          
+   256      1209     no       no      EQUATION 'WRLDPRICE'                    
+   257      1213     no       no      COEFFICIENT 'SX_IR'                     
+   258      1215     no       no      Formula for 'SX_IR'                     
+   259      1220     no       no      COEFFICIENT 'SM_IR'                     
+   260      1222     no       no      Formula for 'SM_IR'                     
+   261      1226     no       no      VARIABLE 'c1_ir'                        
+   262      1228     no       no      EQUATION 'c1_irEQ'                      
+   263      1233     no       no      VARIABLE 'c2_ir'                        
+   264      1235     no       no      EQUATION 'c2_irEQ'                      
+   265      1240     no       no      VARIABLE 'c3_ir'                        
+   266      1242     no       no      EQUATION 'c3_irEQ'                      
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            85 [       0]  no   read 
+     2  TRAD_COMM      88 [       0]  no   read      5     6     7
+     3  CGDS_COMM      91 [       0]  no   read      5     7
+     4  ENDW_COMM      94 [       0]  no   read      6     7
+     5  PROD_COMM      97 [       0]  no   other     7
+     6  DEMD_COMM      99 [       0]  no   other     7
+     7  NSAV_COMM     101 [       0]  no   other
+     8  ENDWC_COMM    105         1   no   fixed     4     6     7
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+
+  Number  Lt Set  Lt Set        Big set  Big set
+          number  name          number   name   
+  ---------------------------------------------------
+       1       2  TRAD_COMM           5  PROD_COMM   
+       2       3  CGDS_COMM           5  PROD_COMM   
+       3       4  ENDW_COMM           6  DEMD_COMM   
+       4       2  TRAD_COMM           6  DEMD_COMM   
+       5       6  DEMD_COMM           7  NSAV_COMM   
+       6       3  CGDS_COMM           7  NSAV_COMM   
+       7       2  TRAD_COMM           7  NSAV_COMM   
+       8       4  ENDW_COMM           7  NSAV_COMM   
+       9       5  PROD_COMM           7  NSAV_COMM   
+      10       8  ENDWC_COMM          4  ENDW_COMM   
+      11       8  ENDWC_COMM          6  DEMD_COMM   
+      12       8  ENDWC_COMM          7  NSAV_COMM   
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPSETS                45    old  head
+     2  GTAPDATA                47    old  head
+     3  GTAPPARM                49    old  head
+
+
+
+
+ =================
+ ++ VARIABLE TABLE
+ =================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1   pm                179     2  perc       7     1
+     2   qpd               181     2  perc       2     1
+     3   pim               192     2  perc       2     1
+     4   qpm               194     2  perc       2     1
+     5   qfe               210     3  perc       4     5     1
+     6   qfd               222     3  perc       2     5     1
+     7   qfm               233     3  perc       2     5     1
+     8   tms               256     3  perc       2     1     1
+     9   ams               258     3  perc       2     1     1
+    10   pms               262     3  perc       2     1     1
+    11   qxs               264     3  perc       2     1     1
+    12   pcif              274     3  perc       2     1     1
+    13   qo                307     2  perc       7     1
+    14   psave             334     1  perc       1
+    15   qsave             336     1  perc       1
+    16   pcgds             352     1  perc       1
+    17   qcgds             354     1  perc       1
+    18   kb                374     1  perc       1
+    19   pop               406     1  perc       1
+    20   y                 469     1  perc       1
+    21   yp                516     1  perc       1
+    22   ppriv             535     1  perc       1
+    23   pp                537     2  perc       2     1
+    24   up                539     1  perc       1
+    25   qp                541     2  perc       2     1
+    26   pf                605     3  perc       2     5     1
+    27   qf                607     3  perc       2     5     1
+    28   pva               633     2  perc       2     1
+    29   qva               635     2  perc       2     1
+    30   qim               695     2  perc       2     1
+    31   qds               729     2  perc       2     1
+    32   pcgdswld          761     0  perc
+    33   globalcgds        763     0  perc
+    34   walras_dem        765     0  perc
+    35   walras_sup        767     0  perc
+    36   walraslack        769     0  perc
+    37   pfactreal         837     2  perc       4     1
+    38   psw               845     1  perc       1
+    39   pdw               853     1  perc       1
+    40   tot               861     1  perc       1
+    41   qgdp              878     1  perc       1
+    42   qxw               890     2  perc       2     1
+    43   qxwreg            898     1  perc       1
+    44   qiw               907     2  perc       2     1
+    45   qiwreg            914     1  perc       1
+    46   DTBAL             923     1  chng       1
+    47   ke                940     1  perc       1
+    48   expand            950     2  perc       8     1
+    49   DTBALR            965     1  chng       1
+    50   p                 981     1  perc       1
+    51   u                 983     1  perc       1
+    52   yev               998     1  perc       1
+    53   EV               1012     1  chng       1
+    54   WEV              1019     0  chng
+    55   EV_ALT           1032     1  chng       1
+    56   WEV_ALT          1049     0  chng
+    57   CNTpopr          1055     1  chng       1
+    58   CNTalleffr       1061     1  chng       1
+    59   CNTalleffir      1070     2  chng       2     1
+    60   CNTqimisr        1079     3  chng       2     1     1
+    61   pxwwld           1087     0  perc
+    62   CNTtotr          1094     1  chng       1
+    63   CNTcgdsr         1104     1  chng       1
+    64   CNTendwr         1112     1  chng       1
+    65   CNTendwir        1121     2  chng       4     1
+    66   CNTtechr         1128     1  chng       1
+    67   CNTtech_amsr     1136     1  chng       1
+    68   CNTtech_amsirs   1144     3  chng       2     1     1
+    69   px_ir            1168     2  perc       2     1
+    70   pm_ir            1180     2  perc       2     1
+    71   px_i             1193     1  perc       2
+    72   px_              1207     0  perc
+    73   c1_ir            1226     2  perc       2     1
+    74   c2_ir            1233     2  perc       2     1
+    75   c3_ir            1240     2  perc       2     1
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    VDPM             184     2  real       2     1
+     2    VIPM             197     2  real       2     1
+     3    EVFM             213     3  real       4     5     1
+     4    VDFM             225     3  real       2     5     1
+     5    VIFM             236     3  real       2     5     1
+     6    VFM              243     3  real       6     5     1
+     7    VIMS             267     3  real       2     1     1
+     8    VIWS             279     3  real       2     1     1
+     9    VIM              288     2  real       2     1
+    10    VIM_ALT          297     2  real       2     1
+    11    VOM              310     2  real       7     1
+    12    VDM              318     2  real       2     1
+    13    VOM_ALT          324     2  real       2     1
+    14    SAVE             339     1  real       1
+    15    REGINV           357     1  real       1
+    16    VDEP             377     1  real       1
+    17    NETINV           384     1  real       1
+    18    VKB              396     1  real       1
+    19    POPN             409     1  real       1
+    20    ESUBD            420     1  real       2
+    21    ESUBM            426     1  real       2
+    22    ESUBVA           433     1  real       5
+    23    VPM              473     2  real       2     1
+    24    PRIVEXP          478     1  real       1
+    25    INCOME           483     1  real       1
+    26    MTAX             489     3  real       2     1     1
+    27    INCOME_ALT       496     1  real       1
+    28    VVA              638     2  real       2     1
+    29    GLOBINV          773     0  real
+    30    GLOBINV_ALT      780     0  real
+    31    GDP              869     1  real       1
+    32    TBAL             959     1  real       1
+    33    INCOMEEV        1005     1  real       1
+    34    SX_IRS          1162     3  real       2     1     1
+    35    SM_IRS          1175     3  real       2     1     1
+    36    SW_IR           1187     2  real       2     1
+    37    SW_I            1200     1  real       2
+    38    SX_IR           1213     2  real       2     1
+    39    SM_IR           1220     2  real       2     1
+
+
+
+
+ =================
+ ++ EQUATION TABLE
+ =================
+
+           Defined     Semantic                        ALL quantifiers range
+  Number   at line      Error?   Equation name         over sets numbered
+  --------------------------------------------------------------------------
+     1         362       no      CAPGOODS                   1
+     2         368       no      PRCGOODS                   1
+     3         389       no      KAPSVCES                   1
+     4         502       no      REGIONALINCOME             1
+     5         519       no      PRIVCONSEXP                1
+     6         524       no      SAVING                     1
+     7         544       no      PCOMPRICE                  2     1
+     8         549       no      PHHLDINDEX                 1
+     9         553       no      PRIVU                      1
+    10         558       no      FNLDEM                     2     1
+    11         564       no      PHHLDDOM                   2     1
+    12         569       no      PHHLDAGRIMP                2     1
+    13         610       no      ICOMPRICE                  2     5     1
+    14         615       no      INTDEMAND                  2     5     1
+    15         622       no      INDIMP                     2     5     1
+    16         627       no      INDDOM                     2     5     1
+    17         643       no      VAPRICE                    2     1
+    18         648       no      VADEMAND                   2     1
+    19         654       no      ENDWDEMAND                 4     2     1
+    20         660       no      ENDWDEMAND_CGDS            4     3     1
+    21         667       no      ZEROPROFITS                5     1
+    22         682       no      EXPRICES                   2     1     1
+    23         689       no      MKTPRICES                  2     1     1
+    24         698       no      DPRICEIMP                  2     1
+    25         705       no      MKTCLIMP                   2     1
+    26         713       no      IMPORTDEMAND               2     1     1
+    27         731       no      MKTCLDOM                   2     1
+    28         738       no      MKTCLTRD_MARG              2     1
+    29         746       no      MKTCLENDWM                 4     1
+    30         785       no      WALRAS_D            
+    31         790       no      RORGLOBAL                  1
+    32         797       no      SAVEPRICE                  1
+    33         803       no      PRICGDS             
+    34         808       no      WALRAS_S            
+    35         812       no      WALRAS              
+    36         839       no      REALRETURN                 4     1
+    37         847       no      REGSUPRICE                 1
+    38         855       no      REGDEMPRICE                1
+    39         863       no      TOTeq                      1
+    40         880       no      QGDP_r                     1
+    41         892       no      QREGEX_ir_MARG             2     1
+    42         900       no      QREGEX_r                   1
+    43         909       no      QREGIM_is                  2     1
+    44         916       no      QREGIM_s                   1
+    45         925       no      TRADEBALANCE               1
+    46         944       no      KEND                       1
+    47         953       no      BALDWIN                    8     1
+    48         967       no      DTBALRATIO                 1
+    49         986       no      PRICEINDEXREG              1
+    50         993       no      UTILITY                    1
+    51        1000       no      INCOME_EQUIV               1
+    52        1014       no      EVREG                      1
+    53        1021       no      EVWLD               
+    54        1034       no      EV_DECOMPOSITION           1
+    55        1051       no      WORLDEV             
+    56        1057       no      CONT_EV_pop                1
+    57        1063       no      CONT_EV_alleffr            1
+    58        1073       no      CONT_EV_alleffir_T         2     1
+    59        1082       no      CONT_EV_qimisr             2     1     1
+    60        1089       no      PWLDEX              
+    61        1097       no      CONT_EV_totr               1
+    62        1106       no      CNT_EV_cgdsr               1
+    63        1114       no      CONT_EV_endwr              1
+    64        1123       no      CONT_EV_endwir             4     1
+    65        1130       no      CONT_EV_techr              1
+    66        1138       no      CONT_EV_tech_amsr          1
+    67        1147       no      CONT_EV_tech_amsirs        2     1     1
+    68        1170       no      EXPPRICE_NMRG              2     1
+    69        1182       no      IMPPRICE1_NMRG             2     1
+    70        1195       no      WRLDPRICEi                 2
+    71        1209       no      WRLDPRICE           
+    72        1228       no      c1_irEQ                    2     1
+    73        1235       no      c2_irEQ                    2     1
+    74        1242       no      c3_irEQ                    2     1
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         245     no      VFM                3
+     2         247     no      VFM                4     5
+     3         290     no      VIM                7
+     4         299     no      VIM_ALT            5     2
+     5         312     no      VOM                6
+     6         314     no      VOM                6     4     5
+     7         320     no      VDM                1     4
+     8         326     no      VOM_ALT           12     8
+     9         359     no      REGINV            11
+    10         386     no      NETINV            11    16
+    11         475     no      VPM                1     2
+    12         480     no      PRIVEXP           23
+    13         485     no      INCOME            24    14
+    14         491     no      MTAX               7     8
+    15         498     no      INCOME_ALT        11    16    26
+    16         640     no      VVA                6
+    17         775     no      GLOBINV           17
+    18         782     no      GLOBINV_ALT       14
+    19         871     no      GDP               23    11     8
+    20         961     no      TBAL               8
+    21        1007     no      INCOMEEV          25
+    22        1164     no      SX_IRS             8
+    23        1177     no      SM_IRS             8
+    24        1189     no      SW_IR              8
+    25        1202     no      SW_I               8
+    26        1215     no      SX_IR              8
+    27        1222     no      SM_IR              8
+
+
+
+
+ ===============
+ ++ UPDATE TABLE
+ ===============
+
+           Defined   Semantic    Updated         RHS coeff/var nos
+  Number   at line    Error?    coefficient       (vars are negative)
+  -------------------------------------------------------------------
+     1         186     no      VDPM               1    -1    -2
+     2         199     no      VIPM               2    -3    -4
+     3         215     no      EVFM               3    -1    -5
+     4         227     no      VDFM               4    -1    -6
+     5         238     no      VIFM               5    -3    -7
+     6         269     no      VIMS               7   -10   -11
+     7         283     no      VIWS               8   -12   -11
+     8         341     no      SAVE              14   -14   -15
+     9         379     no      VDEP              16   -18   -16
+    10         399     no      VKB               18   -16   -18
+    11         412     no      POPN              19   -19
+    12        1009     no      INCOMEEV          33   -52
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        188       no      VDPM                2       VDPM
+     2        201       no      VIPM                2       VIPM
+     3        217       no      EVFM                2       EVFM
+     4        229       no      VDFM                2       VDFM
+     5        240       no      VIFM                2       VIFM
+     6        271       no      VIMS                2       VIMS
+     7        285       no      VIWS                2       VIWS
+     8        343       no      SAVE                2       SAVE
+     9        381       no      VDEP                2       VDEP
+    10        398       no      VKB                 2       VKB 
+    11        411       no      POPN                2       POP 
+    12        423       no      ESUBD               3       ESBD
+    13        429       no      ESUBM               3       ESBM
+    14        436       no      ESUBVA              3       ESBV
+
+
+
+
+ ===================
+ ++ ZERODIVIDE TABLE
+ ===================
+
+           Defined          Coefficient or
+  Number   at line   Type   real value specified
+  -----------------------------------------------
+     1       1161     ZDZ   0                   
+     2       1166     ZDZ   (Turned OFF)
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+
+ Total number of statements is 266.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CONDENSATION
+
+ ******************************************************************************
+
+
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +1+
+ ++> Task   1 - Substituting out variable 'qpm'
+ ==================================================
+
+
+  >> Equation number  12 selected for substitution.
+     Equation name is 'PHHLDAGRIMP'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     MKTCLIMP (equation number  25)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 1.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +2+
+ ++> Task   2 - Substituting out variable 'pva'
+ ==================================================
+
+
+  >> Equation number  17 selected for substitution.
+     Equation name is 'VAPRICE'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {VVA(j,r)}
+
+
+ %W% Check above coefficient will never be zero.
+
+ (To simplify the rewritten equations, we will set
+ 
+          (ALL,j,TRAD_COMM) (ALL,r,REG) C00040(j,r)
+
+  equal to  -1.0  divided by the coefficient shown above.)
+ 
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     ENDWDEMAND (equation number  19)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 2.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +3+
+ ++> Task   3 - Substituting out variable 'qva'
+ ==================================================
+
+
+  >> Equation number  18 selected for substitution.
+     Equation name is 'VADEMAND'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     ENDWDEMAND (equation number  19)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 3.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +4+
+ ++> Task   4 - Substituting out variable 'pcif'
+ ==================================================
+
+
+  >> Equation number  22 selected for substitution.
+     Equation name is 'EXPRICES'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     REGIONALINCOME (equation number   4)
+     MKTPRICES (equation number  23)
+     REGSUPRICE (equation number  37)
+
+ To simplify the 'pm' part of equation 'REGSUPRICE', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00041(i,r)
+
+  equal to the following expression: 
+ 
+          -SUM(s,REG,VIWS(i,r,s))
+
+
+ To simplify the 'psw' part of equation 'REGSUPRICE', we will set
+ 
+          (ALL,r,REG) C00042(r)
+
+  equal to the following expression: 
+ 
+          SUM(i,TRAD_COMM,SUM(s,REG,VIWS(i,r,s)))
+
+     REGDEMPRICE (equation number  38)
+
+ To simplify the 'pdw' part of equation 'REGDEMPRICE', we will set
+ 
+          (ALL,s,REG) C00043(s)
+
+  equal to the following expression: 
+ 
+          SUM(i,TRAD_COMM,SUM(r,REG,VIWS(i,r,s)))
+
+     TRADEBALANCE (equation number  45)
+
+ To simplify the 'pm' part of equation 'TRADEBALANCE', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00044(i,r)
+
+  equal to the following expression: 
+ 
+          -SUM(s,REG,VIWS(i,r,s) / 100)
+
+     EV_DECOMPOSITION (equation number  54)
+
+ To simplify the 'pm' part of equation 'EV_DECOMPOSITION', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00045(i,r)
+
+  equal to the following expression: 
+ 
+          -0.01   * INCOMEEV(r) / INCOME(r) * SUM(s,REG,VIWS(i,r,s))
+
+
+ To simplify the 'pop' part of equation 'EV_DECOMPOSITION', we will set
+ 
+          (ALL,r,REG) C00046(r)
+
+  equal to the following expression: 
+ 
+          -{0.01   * INCOMEEV(r) / INCOME(r) * [SUM(i,TRAD_COMM,SUM(s,REG,-
+
+          MTAX(i,s,r))) + SUM(i,ENDW_COMM,-VOM(i,r)) + VDEP(r)] + 0.01   * 
+
+          INCOMEEV(r)}
+
+     PWLDEX (equation number  60)
+
+ To simplify the 'pxwwld' part of equation 'PWLDEX', we will set
+ 
+          C00047
+
+  equal to the following expression: 
+ 
+          SUM(i,TRAD_COMM,SUM(r,REG,SUM(s,REG,VIWS(i,r,s))))
+
+     CONT_EV_totr (equation number  61)
+
+ To simplify the 'pxwwld' part of equation 'CONT_EV_totr', we will set
+ 
+          (ALL,r,REG) C00048(r)
+
+  equal to the following expression: 
+ 
+          -0.01   * INCOMEEV(r) / INCOME(r) * {SUM(i,TRAD_COMM,SUM(s,REG,-
+
+          VIWS(i,r,s))) - SUM(i,TRAD_COMM,SUM(s,REG,-VIWS(i,s,r)))}
+
+     EXPPRICE_NMRG (equation number  68)
+
+ To simplify the 'pm' part of equation 'EXPPRICE_NMRG', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00049(i,r)
+
+  equal to the following expression: 
+ 
+          -SUM(s,REG,SX_IRS(i,r,s))
+
+     IMPPRICE1_NMRG (equation number  69)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 4.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +5+
+ ++> Task   5 - Substituting out variable 'qf'
+ ==================================================
+
+
+  >> Equation number  14 selected for substitution.
+     Equation name is 'INTDEMAND'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     INDIMP (equation number  15)
+     INDDOM (equation number  16)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 5.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +6+
+ ++> Task   6 - Substituting out variable 'CNTtech_amsirs'
+ ==================================================
+
+
+  >> Equation number  67 selected for substitution.
+     Equation name is 'CONT_EV_tech_amsirs'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 6.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +7+
+ ++> Task   7 - Substituting out variable 'pms'
+ ==================================================
+
+
+  >> Equation number  23 selected for substitution.
+     Equation name is 'MKTPRICES'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     DPRICEIMP (equation number  24)
+     IMPORTDEMAND (equation number  26)
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 7.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +8+
+ ++> Task   8 - Substituting out variable 'qfd'
+ ==================================================
+
+
+  >> Equation number  16 selected for substitution.
+     Equation name is 'INDDOM'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     MKTCLDOM (equation number  27)
+
+ To simplify the 'pm' part of equation 'MKTCLDOM', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00050(i,r)
+
+  equal to the following expression: 
+ 
+          -SUM(j,PROD_COMM,-VDFM(i,j,r) * ESUBD(i))
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 8.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +9+
+ ++> Task   9 - Substituting out variable 'pf'
+ ==================================================
+
+
+  >> Equation number  13 selected for substitution.
+     Equation name is 'ICOMPRICE'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {VFM(i,j,r)}
+
+
+ %W% Check above coefficient will never be zero.
+
+ (To simplify the rewritten equations, we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,j,PROD_COMM) (ALL,r,REG) C00051(i,j,r)
+
+  equal to  -1.0  divided by the coefficient shown above.)
+ 
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     INDIMP (equation number  15)
+     MKTCLDOM (equation number  27)
+
+ To simplify the 'pm' part of equation 'MKTCLDOM', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00052(i,r)
+
+  equal to the following expression: 
+ 
+          C00050(i,r) + SUM(j,PROD_COMM,VDFM(i,j,r) * ESUBD(i) * C00051(i,j,r)
+
+           * VDFM(i,j,r))
+
+
+ To simplify the 'pim' part of equation 'MKTCLDOM', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00053(i,r)
+
+  equal to the following expression: 
+ 
+          SUM(j,PROD_COMM,VDFM(i,j,r) * ESUBD(i) * C00051(i,j,r) * VIFM(i,j,r))
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 9.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +10+
+ ++> Task  10 - Substituting out variable 'CNTtotr'
+ ==================================================
+
+
+  >> Equation number  61 selected for substitution.
+     Equation name is 'CONT_EV_totr'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 10.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +11+
+ ++> Task  11 - Substituting out variable 'qfm'
+ ==================================================
+
+
+  >> Equation number  15 selected for substitution.
+     Equation name is 'INDIMP'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+     MKTCLIMP (equation number  25)
+
+ To simplify the 'pm' part of equation 'MKTCLIMP', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00054(i,r)
+
+  equal to the following expression: 
+ 
+          SUM(j,PROD_COMM,VIFM(i,j,r) * ESUBD(i) * C00051(i,j,r) * VDFM(i,j,r))
+
+
+ To simplify the 'pim' part of equation 'MKTCLIMP', we will set
+ 
+          (ALL,i,TRAD_COMM) (ALL,r,REG) C00055(i,r)
+
+  equal to the following expression: 
+ 
+          VIPM(i,r) * ESUBD(i) + SUM(j,PROD_COMM,VIFM(i,j,r) * {ESUBD(i) + 
+
+          ESUBD(i) * C00051(i,j,r) * VIFM(i,j,r)})
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 11.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ +12+
+ ++> Task  12 - Substituting out variable 'CNTalleffr'
+ ==================================================
+
+
+  >> Equation number  57 selected for substitution.
+     Equation name is 'CONT_EV_alleffr'
+
+     Coefficient of substituted variable in this equation is :
+     ---------------------------------------------------------
+
+          {1.0}
+
+     This substitution was made in the following equations :
+     -------------------------------------------------------
+
+
+ This substitution was SUCCESSFUL
+  and constitutes CONDENSATION ACTION number 12.
+
+  >> Equation number  20 selected for substitution.
+     Equation name is 'ENDWDEMAND_CGDS'
+
+ ==================================================
+ --> Summary of CONDENSATION
+ ==================================================
+
+
+
+     ============================
+     List of CONDENSATION actions
+     ============================
+
+     The following  12 condensation actions were performed : 
+
+     Action |  Brief description of action
+     -------|---------------------------------------------------
+            | 
+         1  |  BACKSOLVE
+            |  Variable 'qpm            ' (var. no.   4)
+            |  was made available for backsolving
+            |  using equation 'PHHLDAGRIMP         ' (eq. no.  12)
+            | 
+         2  |  BACKSOLVE
+            |  Variable 'pva            ' (var. no.  28)
+            |  was made available for backsolving
+            |  using equation 'VAPRICE             ' (eq. no.  17)
+            | 
+         3  |  BACKSOLVE
+            |  Variable 'qva            ' (var. no.  29)
+            |  was made available for backsolving
+            |  using equation 'VADEMAND            ' (eq. no.  18)
+            | 
+         4  |  BACKSOLVE
+            |  Variable 'pcif           ' (var. no.  12)
+            |  was made available for backsolving
+            |  using equation 'EXPRICES            ' (eq. no.  22)
+            | 
+         5  |  BACKSOLVE
+            |  Variable 'qf             ' (var. no.  27)
+            |  was made available for backsolving
+            |  using equation 'INTDEMAND           ' (eq. no.  14)
+            | 
+         6  |  BACKSOLVE
+            |  Variable 'CNTtech_amsirs ' (var. no.  68)
+            |  was made available for backsolving
+            |  using equation 'CONT_EV_tech_amsirs ' (eq. no.  67)
+            | 
+         7  |  BACKSOLVE
+            |  Variable 'pms            ' (var. no.  10)
+            |  was made available for backsolving
+            |  using equation 'MKTPRICES           ' (eq. no.  23)
+            | 
+         8  |  BACKSOLVE
+            |  Variable 'qfd            ' (var. no.   6)
+            |  was made available for backsolving
+            |  using equation 'INDDOM              ' (eq. no.  16)
+            | 
+         9  |  BACKSOLVE
+            |  Variable 'pf             ' (var. no.  26)
+            |  was made available for backsolving
+            |  using equation 'ICOMPRICE           ' (eq. no.  13)
+            | 
+        10  |  BACKSOLVE
+            |  Variable 'CNTtotr        ' (var. no.  62)
+            |  was made available for backsolving
+            |  using equation 'CONT_EV_totr        ' (eq. no.  61)
+            | 
+        11  |  BACKSOLVE
+            |  Variable 'qfm            ' (var. no.   7)
+            |  was made available for backsolving
+            |  using equation 'INDIMP              ' (eq. no.  15)
+            | 
+        12  |  BACKSOLVE
+            |  Variable 'CNTalleffr     ' (var. no.  58)
+            |  was made available for backsolving
+            |  using equation 'CONT_EV_alleffr     ' (eq. no.  57)
+
+
+
+     =============================
+     Final status of all Equations
+     =============================
+
+  Number |      Equation        | Status of equation             |  Max   
+         |        name          |                                | number 
+ --------|----------------------|--------------------------------|--------
+         |                      |                                |        
+     1   | CAPGOODS             | In the condensed system        |         0
+     2   | PRCGOODS             | In the condensed system        |         0
+     3   | KAPSVCES             | In the condensed system        |         0
+     4   | REGIONALINCOME       | In the condensed system        |         0
+     5   | PRIVCONSEXP          | In the condensed system        |         0
+     6   | SAVING               | In the condensed system        |         0
+     7   | PCOMPRICE            | In the condensed system        |         0
+     8   | PHHLDINDEX           | In the condensed system        |         0
+     9   | PRIVU                | In the condensed system        |         0
+    10   | FNLDEM               | In the condensed system        |         0
+    11   | PHHLDDOM             | In the condensed system        |         0
+    12   | PHHLDAGRIMP          | Used for BACKSOLVING           |[         0]
+    13   | ICOMPRICE            | Used for BACKSOLVING           |[         0]
+    14   | INTDEMAND            | Used for BACKSOLVING           |[         0]
+    15   | INDIMP               | Used for BACKSOLVING           |[         0]
+    16   | INDDOM               | Used for BACKSOLVING           |[         0]
+    17   | VAPRICE              | Used for BACKSOLVING           |[         0]
+    18   | VADEMAND             | Used for BACKSOLVING           |[         0]
+    19   | ENDWDEMAND           | In the condensed system        |         0
+    20   | ENDWDEMAND_CGDS      | In the condensed system        |         0
+    21   | ZEROPROFITS          | In the condensed system        |         0
+    22   | EXPRICES             | Used for BACKSOLVING           |[         0]
+    23   | MKTPRICES            | Used for BACKSOLVING           |[         0]
+    24   | DPRICEIMP            | In the condensed system        |         0
+    25   | MKTCLIMP             | In the condensed system        |         0
+    26   | IMPORTDEMAND         | In the condensed system        |         0
+    27   | MKTCLDOM             | In the condensed system        |         0
+    28   | MKTCLTRD_MARG        | In the condensed system        |         0
+    29   | MKTCLENDWM           | In the condensed system        |         0
+    30   | WALRAS_D             | In the condensed system        |         1
+    31   | RORGLOBAL            | In the condensed system        |         0
+    32   | SAVEPRICE            | In the condensed system        |         0
+    33   | PRICGDS              | In the condensed system        |         1
+    34   | WALRAS_S             | In the condensed system        |         1
+    35   | WALRAS               | In the condensed system        |         1
+    36   | REALRETURN           | In the condensed system        |         0
+    37   | REGSUPRICE           | In the condensed system        |         0
+    38   | REGDEMPRICE          | In the condensed system        |         0
+    39   | TOTeq                | In the condensed system        |         0
+    40   | QGDP_r               | In the condensed system        |         0
+    41   | QREGEX_ir_MARG       | In the condensed system        |         0
+    42   | QREGEX_r             | In the condensed system        |         0
+    43   | QREGIM_is            | In the condensed system        |         0
+    44   | QREGIM_s             | In the condensed system        |         0
+    45   | TRADEBALANCE         | In the condensed system        |         0
+    46   | KEND                 | In the condensed system        |         0
+    47   | BALDWIN              | In the condensed system        |         0
+    48   | DTBALRATIO           | In the condensed system        |         0
+    49   | PRICEINDEXREG        | In the condensed system        |         0
+    50   | UTILITY              | In the condensed system        |         0
+    51   | INCOME_EQUIV         | In the condensed system        |         0
+    52   | EVREG                | In the condensed system        |         0
+    53   | EVWLD                | In the condensed system        |         1
+    54   | EV_DECOMPOSITION     | In the condensed system        |         0
+    55   | WORLDEV              | In the condensed system        |         1
+    56   | CONT_EV_pop          | In the condensed system        |         0
+    57   | CONT_EV_alleffr      | Used for BACKSOLVING           |[         0]
+    58   | CONT_EV_alleffir_T   | In the condensed system        |         0
+    59   | CONT_EV_qimisr       | In the condensed system        |         0
+    60   | PWLDEX               | In the condensed system        |         1
+    61   | CONT_EV_totr         | Used for BACKSOLVING           |[         0]
+    62   | CNT_EV_cgdsr         | In the condensed system        |         0
+    63   | CONT_EV_endwr        | In the condensed system        |         0
+    64   | CONT_EV_endwir       | In the condensed system        |         0
+    65   | CONT_EV_techr        | In the condensed system        |         0
+    66   | CONT_EV_tech_amsr    | In the condensed system        |         0
+    67   | CONT_EV_tech_amsirs  | Used for BACKSOLVING           |[         0]
+    68   | EXPPRICE_NMRG        | In the condensed system        |         0
+    69   | IMPPRICE1_NMRG       | In the condensed system        |         0
+    70   | WRLDPRICEi           | In the condensed system        |         0
+    71   | WRLDPRICE            | In the condensed system        |         1
+    72   | c1_irEQ              | In the condensed system        |         0
+    73   | c2_irEQ              | In the condensed system        |         0
+    74   | c3_irEQ              | In the condensed system        |         0
+
+
+ Maximum number of equations in condensed system is 8
+
+
+
+     =============================
+     Final status of all Variables
+     =============================
+
+  Number |    Variable     | Status of variable                  |   Max  
+         |      name       |                                     |  size  
+ --------|-----------------|-------------------------------------|--------
+         |                 |                                     |
+     1   | pm              | In the condensed system             |         0
+     2   | qpd             | In the condensed system             |         0
+     3   | pim             | In the condensed system             |         0
+     4   | qpm             | You can BACKSOLVE for its values    |         0B
+     5   | qfe             | In the condensed system             |         0
+     6   | qfd             | You can BACKSOLVE for its values    |         0B
+     7   | qfm             | You can BACKSOLVE for its values    |         0B
+     8   | tms             | In the condensed system             |         0
+     9   | ams             | In the condensed system             |         0
+    10   | pms             | You can BACKSOLVE for its values    |         0B
+    11   | qxs             | In the condensed system             |         0
+    12   | pcif            | You can BACKSOLVE for its values    |         0B
+    13   | qo              | In the condensed system             |         0
+    14   | psave           | In the condensed system             |         0
+    15   | qsave           | In the condensed system             |         0
+    16   | pcgds           | In the condensed system             |         0
+    17   | qcgds           | In the condensed system             |         0
+    18   | kb              | In the condensed system             |         0
+    19   | pop             | In the condensed system             |         0
+    20   | y               | In the condensed system             |         0
+    21   | yp              | In the condensed system             |         0
+    22   | ppriv           | In the condensed system             |         0
+    23   | pp              | In the condensed system             |         0
+    24   | up              | In the condensed system             |         0
+    25   | qp              | In the condensed system             |         0
+    26   | pf              | You can BACKSOLVE for its values    |         0B
+    27   | qf              | You can BACKSOLVE for its values    |         0B
+    28   | pva             | You can BACKSOLVE for its values    |         0B
+    29   | qva             | You can BACKSOLVE for its values    |         0B
+    30   | qim             | In the condensed system             |         0
+    31   | qds             | In the condensed system             |         0
+    32   | pcgdswld        | In the condensed system             |         1
+    33   | globalcgds      | In the condensed system             |         1
+    34   | walras_dem      | In the condensed system             |         1
+    35   | walras_sup      | In the condensed system             |         1
+    36   | walraslack      | In the condensed system             |         1
+    37   | pfactreal       | In the condensed system             |         0
+    38   | psw             | In the condensed system             |         0
+    39   | pdw             | In the condensed system             |         0
+    40   | tot             | In the condensed system             |         0
+    41   | qgdp            | In the condensed system             |         0
+    42   | qxw             | In the condensed system             |         0
+    43   | qxwreg          | In the condensed system             |         0
+    44   | qiw             | In the condensed system             |         0
+    45   | qiwreg          | In the condensed system             |         0
+    46   | DTBAL           | In the condensed system             |         0
+    47   | ke              | In the condensed system             |         0
+    48   | expand          | In the condensed system             |         0
+    49   | DTBALR          | In the condensed system             |         0
+    50   | p               | In the condensed system             |         0
+    51   | u               | In the condensed system             |         0
+    52   | yev             | In the condensed system             |         0
+    53   | EV              | In the condensed system             |         0
+    54   | WEV             | In the condensed system             |         1
+    55   | EV_ALT          | In the condensed system             |         0
+    56   | WEV_ALT         | In the condensed system             |         1
+    57   | CNTpopr         | In the condensed system             |         0
+    58   | CNTalleffr      | You can BACKSOLVE for its values    |         0B
+    59   | CNTalleffir     | In the condensed system             |         0
+    60   | CNTqimisr       | In the condensed system             |         0
+    61   | pxwwld          | In the condensed system             |         1
+    62   | CNTtotr         | You can BACKSOLVE for its values    |         0B
+    63   | CNTcgdsr        | In the condensed system             |         0
+    64   | CNTendwr        | In the condensed system             |         0
+    65   | CNTendwir       | In the condensed system             |         0
+    66   | CNTtechr        | In the condensed system             |         0
+    67   | CNTtech_amsr    | In the condensed system             |         0
+    68   | CNTtech_amsirs  | You can BACKSOLVE for its values    |         0B
+    69   | px_ir           | In the condensed system             |         0
+    70   | pm_ir           | In the condensed system             |         0
+    71   | px_i            | In the condensed system             |         0
+    72   | px_             | In the condensed system             |         1
+    73   | c1_ir           | In the condensed system             |         0
+    74   | c2_ir           | In the condensed system             |         0
+    75   | c3_ir           | In the condensed system             |         0
+
+
+ Maximum number of variables in condensed system is 9
+
+ 
+
+              Summary of model
+              ----------------
+
+ There are 62 equations left in the CONDENSED model.
+ 0 equations have been used to SUBSTITUTE out variables.
+ 12 equations have been used to BACKSOLVE for variables.
+ The entire model contains 74 equations.
+
+ There are 63 variables left in the CONDENSED model.
+ 0 variables have been SUBSTITUTED out.
+ 0 variables have been OMITTED.
+ You can BACKSOLVE for 12 variables.
+ The entire model contains 75 variables.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+
+
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      NMS Don't allow simulations
+             code
+                                    CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+! ( Program is 'gtapmini.for'.)
+ (Total number of lines of code is 39057.)
+
+ This program
+     o can create the Equations file (for the condensed system)
+     o can carry out multi-step simulations
+
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+! (Model Information file is 'gtapmini.min'.)
+
+ (Total number of programs written is 1.)
+
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'gtapmini.for'.
+
+ This program
+     o can create the Equations file (for the condensed system)
+     o can carry out multi-step simulations
+
+ *******************************************************************

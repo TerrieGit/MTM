@@ -1,0 +1,38 @@
+! first come a few macro variables
+u    u
+EV   EV
+WEV  WEV
+EVA  EV_ALT
+WEVA WEV_ALT
+! then come the decomp summary variables
+ALLR CNTalleffr	
+ENDR CNTendwr	
+TECR CNTtechr	
+popr CNTpopr   					
+TOTR CNTtotr	
+CGDS CNTcgdsr	
+! then the allocative efficiency effects
+AEFI CNTalleffir
+QIMS CNTqimisr	
+! Endowment
+ENDI CNTendwir
+! Technological change 
+AMSR CNTtech_amsr
+AMIR CNTtech_amsirs
+! and the terms of trade effects
+C1IR c1_ir
+C2IR c2_ir
+C3IR c3_ir
+pcgd pcgds
+psav psave
+! finally the volume changes
+qo   qo
+qxs  qxs
+qds  qds
+qfe  qfe
+qfm  qfm
+qfd  qfd
+qpm  qpm
+qpd  qpd
+
+

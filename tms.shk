@@ -1,0 +1,49 @@
+ 
+ ! This file was created at 15:01:25 on 19-AUG-2025 by the program
+ !  <shocks.for 17-OCT-2019> [shocks.tab,shocks.STI]
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Single-user Source-code Licence for GEMPACK on a PC  !               
+ !    !                 Licence No.  GFS-1744                 !               
+ !    !          Licence for Release 12.1 of GEMPACK          !               
+ !    !                  Terrie L. Walmsley                   !               
+ !    !             Named User-Terrie L. Walmsley             !               
+ !     -------------------------------------------------------                
+    
+ 
+ !
+ ! Values of TMS_HAT(TRAD_COMM,REG,REG) - an array of size 3x3x3
+ !-------------------------------------
+ !
+ 
+ ! (Entries are written one "row" at a time - maximum of 4 per line.)
+ 
+ 
+ 3 3 3  real row_order;
+ 
+ ! (This array is shown as 3 matrices - each of size 3x3.)
+ 
+ ! The matrix TMS_HAT(%1,%2,"USA") with %1 in TRAD_COMM and %2 in REG. +++++++
+ 
+ !%2= USA            EU              ROW
+   0.0000000     -0.95660627     -0.15280703     !%1=Agriculture
+   0.0000000      -1.2942947      -1.2172315     !%1=Manufactures
+   0.0000000       0.0000000       0.0000000     !%1=Services
+ 
+ ! The matrix TMS_HAT(%1,%2,"EU") with %1 in TRAD_COMM and %2 in REG. ++++++++
+ 
+ !%2= USA            EU              ROW
+  -1.7994175     -3.98357920E-02  -2.1309476     !%1=Agriculture
+  -2.0764749     -8.08173697E-03  -1.6789666     !%1=Manufactures
+   0.0000000       0.0000000       0.0000000     !%1=Services
+ 
+ ! The matrix TMS_HAT(%1,%2,"ROW") with %1 in TRAD_COMM and %2 in REG. +++++++
+ 
+ !%2= USA            EU              ROW
+  -8.9274588      -7.3721375      -8.2092791     !%1=Agriculture
+  -2.6021273      -4.5609570      -3.3426745     !%1=Manufactures
+   0.0000000     -1.19209271E-05 -1.46625272E-03 !%1=Services
+ 

@@ -1,0 +1,8 @@
+Exogenous
+          pop
+          pcgdswld
+          ams 
+          tms
+          qo(ENDW_COMM,REG) ;
+Rest Endogenous ;
+

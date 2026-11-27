@@ -1,0 +1,383 @@
+ 
+ <TABLO  Version 7.0   August 2018>
+   This program accesses some of the routines in the GEMPACK software release
+ <GEMPACK Release 12.1.004   January 2020>
+  
+ Licence file: C:\GP\licen.gem
+ Licence activation checked.
+ Licence is Activated
+  
+     -------------------------------------------------------
+    !            GEMPACK Software System Licence            !
+    !  Single-user Source-code Licence for GEMPACK on a PC  !
+    !                 Licence No.  GFS-1744                 !
+    !          Licence for Release 12.1 of GEMPACK          !
+    !                  Terrie L. Walmsley                   !
+    !             Named User-Terrie L. Walmsley             !
+     -------------------------------------------------------
+ 
+     << COPYRIGHT 1987-2018: CoPS/Impact and KPSOFT >>
+ 
+  Current directory is: C:\runGTAP375\MTM
+ 
+  Full path name of running EXE is: C:\GP\tablo.exe
+  Fortran compiler = GF64   version 6.4.0 64 bit
+  BLAS library: OpenBlas
+  OPENMP number of threads: 8
+  Gempack source corresponds to revision 1187.
+'wmic' is not recognized as an internal or external command,
+operable program or batch file.
+  Operating System is Unknwon/ Error retrieving info
+ 
+ 
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ 
+                    TABLO OPTIONS
+               ( --> indicates those in effect )
+ 
+       BAT Run in batch              STI Take inputs from a Stored-input file
+       BPR Brief prompts             SIF Store inputs on a file
+       LOG Output to log file        ASI Add to incomplete Stored-input file
+ 
+       First stage                   Last Stage
+   --> F1 CHECK                      L1 CHECK
+       F2 CONDENSATION               L2 CONDENSATION
+       F3 CODE GENERATION        --> L3 CODE GENERATION
+  
+       RMS Require maximum set sizes to be specified
+       NTX Dont store TAB file on Auxiliary file
+       ICT Ignore Condensation statements on TAB file
+       ASB All Substitutions treated as Backsolves
+       NWT Add Newton-correction terms to levels equations
+       ACD Always use Change Differentiation of levels equations
+       SCO Specialized Check Options menu
+   Select an option   :  <opt>      Deselect an option      : -<opt>
+   Help for an option : ?<opt>      Help on all options     : ??
+   Redisplay options  : /           Finish option selection : Carriage return
+ Your selection >
+ 
+  
+ bat
+ Running in batch
+ Your selection >
+ 
+  
+ L1
+  --> Last stage is CHECK
+ Your selection >
+ 
+  
+ ICT
+  -->  Ignore Condensation statements on TAB file
+ Your selection >
+ 
+  
+ MNC
+  -->  Will write MNC file
+ Your selection >
+ 
+  
+ 
+ 
+ Name of TABLO input file :
+ ------------------------
+   (Suffix '.tab' will be automatically appended.)
+ 
+  
+ ECON550
+ (Opened, as text, existing file 'ECON550.tab'.)
+ 
+ Name of Information file :
+ ------------------------
+ 
+  Input the full name (excluding suffix) of this file.
+   (The suffix '.inf' will be appended automatically to your input.)
+    Enter a CARRIAGE-RETURN to use the name 'ECON550'.
+ 
+  
+ 
+ (Opened new print file 'ECON550.inf'.)
+ 
+ Note that this implementation will be known by the name 'ECON550'.
+ Licence file: C:\GP\licen.gem
+ Licence activation checked.
+ Licence is Activated
+  
+     -------------------------------------------------------
+    !            GEMPACK Software System Licence            !
+    !  Single-user Source-code Licence for GEMPACK on a PC  !
+    !                 Licence No.  GFS-1744                 !
+    !          Licence for Release 12.1 of GEMPACK          !
+    !                  Terrie L. Walmsley                   !
+    !             Named User-Terrie L. Walmsley             !
+     -------------------------------------------------------
+ 
+ --> Starting CHECK stage
+  (Beginning preliminary pass of your TABLO Input file.)
+ 
+  NUMIG = 546, NUMZD = 4.
+  NUMST = 30, NUMSS = 25.
+  NUMFL = 5, NUMDS = 0.
+  NUMRD = 128, NUMWR = 3.
+  NUMCS = 103, NUMVC = 1.
+  TCSIND = 782, TVCIND = 413.
+  NUMEQ = 1, NUMFM = 119.
+  NUMUD = 127, NUMTR = 0.
+  NUMOMT = 0, NUMBST = 0.
+  NUMCP = 0, NUMMF = 0.
+  NumVCDefVPQTypeStrings = 0, NumCSDefVPQTypeStrings = 0.
+  (Beginning the check of your TABLO Input file.)
+  [Statement "TRAD_COMM is subset of NSAV_COMM ;" added by TABLO.]
+  [Statement "ENDW_COMM is subset of NSAV_COMM ;" added by TABLO.]
+ 
+ Coefficient  (all,r,REG)(all,k,GDPEXPEND)
+                                ?
+ %% Semantic problem in statement number 50 at line 171.
+  Unknown set.
+  (After 50 statements, total number of errors is 1.)
+ 
+     GDPEXP(r,"cons") = PRIVEXP(r);
+     ?
+ %% Semantic problem in statement number 51 at line 174.
+  Unknown coefficient or variable.
+ 
+     GDPEXP(r,"cons") = PRIVEXP(r);
+                        ?
+ %% Semantic problem in statement number 51 at line 174.
+  Unknown Coefficient, Variable or Mapping.
+ 
+     GDPEXP(r,"inv") = REGINV(r);
+     ?
+ %% Semantic problem in statement number 52 at line 176.
+  Unknown coefficient or variable.
+ 
+     GDPEXP(r,"inv") = REGINV(r);
+                       ?
+ %% Semantic problem in statement number 52 at line 176.
+  Unknown Coefficient, Variable or Mapping.
+ 
+     GDPEXP(r,"exp") = VEXPORTS(r);
+     ?
+ %% Semantic problem in statement number 53 at line 178.
+  Unknown coefficient or variable.
+ 
+     GDPEXP(r,"imp") = - VIMPORTS(r);
+     ?
+ %% Semantic problem in statement number 54 at line 180.
+  Unknown coefficient or variable.
+ 
+     NETINV(r) = REGINV(r) - VDEP(r);
+                 ?
+ %% Semantic problem in statement number 67 at line 212.
+  Unknown Coefficient, Variable or Mapping.
+ 
+ Coefficient (all,r,REG)(all,k,CAPACCT)
+                               ?
+ %% Semantic problem in statement number 68 at line 214.
+  Unknown set.
+ 
+     CAPITALACCT(r,"save") = SAVE(r);
+     ?
+ %% Semantic problem in statement number 69 at line 217.
+  Unknown coefficient or variable.
+ 
+     CAPITALACCT(r,"inv") = - NETINV(r);
+     ?
+ %% Semantic problem in statement number 70 at line 219.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,r,REG)(all,k,CURACCT)(all,i,TRAD_COMM)
+                               ?
+ %% Semantic problem in statement number 71 at line 221.
+  Unknown set.
+ 
+     CURRENTACCT(r,"exp",m) = sum{s,REG, VIWS(m,r,s)};
+     ?
+ %% Semantic problem in statement number 72 at line 224.
+  Unknown coefficient or variable.
+ 
+     CURRENTACCT(r,"imp",i) = - sum{s,REG, VIWS(i,s,r)};
+     ?
+ %% Semantic problem in statement number 73 at line 226.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,IMPVALUE)
+                                                           ?
+ %% Semantic problem in statement number 74 at line 237.
+  Unknown set.
+ 
+     VALIMPORTS(i,r,s,"impcost") = VIWS(i,r,s);
+     ?
+ %% Semantic problem in statement number 75 at line 240.
+  Unknown coefficient or variable.
+ 
+     VALIMPORTS(i,r,s,"mtax") = VIMS(i,r,s) - VIWS(i,r,s);
+     ?
+ %% Semantic problem in statement number 76 at line 242.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+                                     ?
+ %% Semantic problem in statement number 77 at line 255.
+  Unknown set.
+ 
+ Formula (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+                                 ?
+ %% Semantic problem in statement number 78 at line 258.
+  Unknown set.
+ 
+     OUTDISP(i,j,r) = 0.0;
+     ?
+ %% Semantic problem in statement number 78 at line 259.
+  Unknown coefficient or variable.
+ 
+     OUTDISP(i,"dom",r) = VDM(i,r);
+     ?
+ %% Semantic problem in statement number 79 at line 261.
+  Unknown coefficient or variable.
+ 
+     OUTDISP(i,"export",r) = sum{s,REG, VIWS(i,r,s)};
+     ?
+ %% Semantic problem in statement number 80 at line 263.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+                                     ?
+ %% Semantic problem in statement number 81 at line 265.
+  Unknown set.
+ 
+     DOMSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VDFM(i,j,r)};
+     ?
+ %% Semantic problem in statement number 82 at line 272.
+  Unknown coefficient or variable.
+ 
+     DOMSALESDISP(i,"cons",r) = VDPM(i,r);
+     ?
+ %% Semantic problem in statement number 83 at line 274.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+                                     ?
+ %% Semantic problem in statement number 84 at line 276.
+  Unknown set.
+ 
+     IMPSALESDISP(i,"prd",r) = sum{j,PROD_COMM, VIFM(i,j,r)};
+     ?
+ %% Semantic problem in statement number 85 at line 283.
+  Unknown coefficient or variable.
+ 
+     IMPSALESDISP(i,"cons",r) = VIPM(i,r);
+     ?
+ %% Semantic problem in statement number 86 at line 285.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,d,DIR)
+                                                                 ?
+ %% Semantic problem in statement number 93 at line 313.
+  Unknown set.
+ 
+     (all,k,PURCHVALUE)
+            ?
+ %% Semantic problem in statement number 93 at line 314.
+  Unknown set.
+ 
+     NVFA(i,j,r,"domestic","mktexp") = VFM(i,j,r);
+     ?
+ %% Semantic problem in statement number 94 at line 317.
+  Unknown coefficient or variable.
+ 
+     NVFA(i,j,r,"imported","mktexp") = 0;
+     ?
+ %% Semantic problem in statement number 95 at line 319.
+  Unknown coefficient or variable.
+ 
+     NVFA(i,j,s,"domestic","mktexp") = VDFM(i,j,s);
+     ?
+ %% Semantic problem in statement number 96 at line 321.
+  Unknown coefficient or variable.
+ 
+     NVFA(i,j,s,"imported","mktexp") = VIFM(i,j,s);
+     ?
+ %% Semantic problem in statement number 97 at line 323.
+  Unknown coefficient or variable.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+                                                ?
+ %% Semantic problem in statement number 98 at line 325.
+  Unknown set.
+ 
+ Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+                                                           ?
+ %% Semantic problem in statement number 98 at line 325.
+  Unknown set.
+ 
+     NVPA(i,s,"domestic","mktexp") = VDPM(i,s);
+     ?
+ %% Semantic problem in statement number 99 at line 328.
+  Unknown coefficient or variable.
+ 
+     NVPA(i,s,"imported","mktexp") = VIPM(i,s);
+     ?
+ %% Semantic problem in statement number 100 at line 330.
+  Unknown coefficient or variable.
+  (After 100 statements, total number of errors is 38.)
+  [Statement "ENDW_COMM is subset of tdindexes1 ;" added by TABLO.]
+  [Statement "RCAlabel is subset of tdindexes1 ;" added by TABLO.]
+  (After 150 statements, total number of errors is 38.)
+ 
+  (After 186 statements, total number of errors is 38.)
+ 
+  NUMIG = 186, NUMZD = 4.
+  NUMST = 32, NUMSS = 31.
+  NUMFL = 5, NUMDS = 0.
+  NUMRD = 9, NUMWR = 3.
+  NUMCS = 34, NUMVC = 0.
+  TCSIND = 782, TVCIND = 413.
+  NUMEQ = 0, NUMFM = 59.
+  NUMUD = 0, NUMTR = 0.
+  NUMOMT = 0, NUMBST = 0.
+  NUMCP = 0, NUMMF = 0.
+  NumVCDefVPQTypeStrings = 0, NumCSDefVPQTypeStrings = 0.
+  (Checking for duplicate name use.)
+  (Checking coefficient initialization.)
+ 
+ 
+ MESSAGE(S) ABOUT APPARENTLY REDUNDANT STATEMENTS
+ ------------------------------------------------
+ 
+  FORMULA for 'SUFFICIENCY' starting at line 298.
+ 
+  %%WARNING.  This formula appears to be redundant because
+     the coefficient 'SUFFICIENCY' affected by it occurs in no equation
+     update or 'ORIG_LEVEL=' qualifier, nor on the right hand side of any
+     subsequent formula, nor in any subsequent DISPLAY,
+     ZERODIVIDE, WRITE or SET statement.
+ 
+ COEFFICIENT INITIALIZATION SUMMARY
+ ----------------------------------
+ 
+  %% NOTE the 1 WARNING(s) above about coefficients.
+ 
+  %%INFORMATION. TABLO has created 2 new sets as follows:
+   S@Exports # Set with one element Exports, a subset of tdindexes1 #
+   S@RCA # Set with one element RCA, a subset of tdindexes1 #
+ 
+ 
+ 
+ INPUT CHECK SUMMARY
+ -------------------
+ 
+  Total number of statements is 186.
+  There are NO syntax errors.
+ 
+  Total number of semantic problems found is 38.
+ 
+ (ERROR RETURN FROM ROUTINE:TBSSC )
+ (E-At least one error found during CHECK stage)
+ 
+  (The program terminated with an error.)
+  (There was 1 general warning.)
+  (If you have a LOG file, search for '%%W' to see them.)
+  (Alternatively, search the Information file for '%%W'.)
+  Total elapsed time is:  1 seconds.
